@@ -25,7 +25,6 @@ use Utopia\Analytics\GoogleAnalytics;
 
 $ga = new GoogleAnalytics("UA-XXXXXXXXX-X", "CLIENT-ID");
 
-
 // Sends a pageview for `appwrite.io/docs/installation`.
 $ga->createPageView("appwrite.io", "/docs/installation");
 
