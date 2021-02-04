@@ -37,16 +37,4 @@ abstract class Analytics
     {
         $this->enabled = false;
     }
-
-    /**
-     * Generates a hash value based on the hosts name and ip adress. 
-     * Can be used to generate a Client ID to identify host machines.
-     * 
-     * @return string
-     */
-    static public function getUniqueByHostname(): string
-    {
-        $host = gethostname();
-        return md5(gethostbyname($host) . $host);
-    }
 }
