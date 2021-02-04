@@ -40,7 +40,7 @@ abstract class Analytics
      * 
      * @return string
      */
-    public function getUniqueByHostname():string {
+    static public function getUniqueByHostname():string {
         $host = gethostname();
         return md5(gethostbyname($host).$host);
     }
