@@ -16,20 +16,24 @@ namespace Utopia\Analytics;
 
 abstract class Analytics
 {
-    protected $enabled = true;
+    protected bool $enabled = true;
 
     /**
      * Enables tracking for this instance.
+     * 
+     * @return void
      */
-    public function enable()
+    public function enable(): void
     {
         $this->enabled = true;
     }
 
     /**
      * Disables tracking for this instance.
+     * 
+     * @return void
      */
-    public function disable()
+    public function disable(): void
     {
         $this->enabled = false;
     }
@@ -40,8 +44,9 @@ abstract class Analytics
      * 
      * @return string
      */
-    static public function getUniqueByHostname():string {
+    static public function getUniqueByHostname(): string
+    {
         $host = gethostname();
-        return md5(gethostbyname($host).$host);
+        return md5(gethostbyname($host) . $host);
     }
 }

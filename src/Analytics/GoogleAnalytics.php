@@ -51,7 +51,7 @@ class GoogleAnalytics extends Analytics
      * @param string $label
      * Specifies the event label.
      * 
-     * @param string $value
+     * @param null|int $value
      * Specifies the event value. Values must be non-negative.
      * 
      * @return bool
@@ -109,7 +109,7 @@ class GoogleAnalytics extends Analytics
         return true;
     }
 
-    private function execute(array $query)
+    private function execute(array $query): void
     {
         $ch = curl_init();
 
@@ -124,7 +124,7 @@ class GoogleAnalytics extends Analytics
         curl_close($ch);
     }
 
-    private function prepareCurl(&$ch, array $query)
+    private function prepareCurl(&$ch, array $query): void
     {
         curl_setopt($ch, CURLOPT_URL, self::URL);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
