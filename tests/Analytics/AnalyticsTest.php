@@ -28,6 +28,7 @@ class AnalyticsTest extends TestCase
 
     public function testGoogleAnalytics()
     {
+        $this->assertIsString($this->ga->getUniqueByHostname());
         $this->assertTrue($this->ga->createPageView("appwrite.io", "/docs/installation"));
         $this->assertTrue($this->ga->createEvent("testEvent", "testEvent"));
 
