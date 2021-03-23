@@ -55,8 +55,6 @@ class GoogleAnalytics extends Analytics
      * Specifies the event value. Values must be non-negative.
      * 
      * @return bool
-     * 
-     * @throws Exception
      */
     public function createEvent(string $category, string $action, string $label = null, int $value = null): bool
     {
@@ -89,8 +87,6 @@ class GoogleAnalytics extends Analytics
      * The title of the page / document.
      * 
      * @return bool
-     * 
-     * @throws Exception
      */
     public function createPageView(string $hostname, string $page, string $title = null): bool
     {
@@ -116,11 +112,6 @@ class GoogleAnalytics extends Analytics
         $this->prepareCurl($ch, $query);
 
         curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            throw new Exception('Error:' . curl_error($ch));
-        }
-
         curl_close($ch);
     }
 
@@ -129,6 +120,8 @@ class GoogleAnalytics extends Analytics
         curl_setopt($ch, CURLOPT_URL, self::URL);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/x-www-form-urlencoded'
         ]);

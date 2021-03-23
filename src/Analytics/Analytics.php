@@ -16,7 +16,7 @@ namespace Utopia\Analytics;
 
 abstract class Analytics
 {
-    protected bool $enabled = true;
+    protected $enabled = true;
 
     /**
      * Enables tracking for this instance.
