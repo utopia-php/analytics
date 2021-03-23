@@ -19,7 +19,7 @@ use Utopia\Analytics\GoogleAnalytics;
 
 class AnalyticsTest extends TestCase
 {
-    public GoogleAnalytics $ga;
+    public $ga;
 
     public function setUp(): void
     {
