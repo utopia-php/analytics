@@ -1,4 +1,4 @@
-name: 🚀 Feature
+name: "🚀 Feature"
 description: "Submit a proposal for a new feature"
 title: "🚀 Feature: "
 labels: [feature]
@@ -31,7 +31,7 @@ body:
       options:
         - label: "I checked and didn't find similar issue"
           required: true
-   - type: checkboxes
+  - type: checkboxes
     id: read-code-of-conduct
     attributes:
       label: "🏢 Have you read the Code of Conduct?"
