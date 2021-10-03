@@ -1,4 +1,4 @@
-name: "📚 Documentation "
+name: "📚 Documentation"
 description: "Report an issue related to documentation"
 title: "📚 Documentation: "
 labels: [documentation]
@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out our documentation update request form 🙏
+        Thanks for taking the time to make our documentation better 🙏
   - type: textarea
     id: issue-description
     validations:
@@ -27,6 +27,6 @@ body:
     id: read-code-of-conduct
     attributes:
       label: "🏢 Have you read the Code of Conduct?"
-       options:
-         - label: "I have read the [Code of Conduct](https://github.com/appwrite/appwrite/blob/HEAD/CODE_OF_CONDUCT.md)"
-           required: true
+      options:
+        - label: "I have read the [Code of Conduct](https://github.com/appwrite/appwrite/blob/HEAD/CODE_OF_CONDUCT.md)"
+          required: true
