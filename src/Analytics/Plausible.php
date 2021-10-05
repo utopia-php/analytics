@@ -19,7 +19,10 @@ class  PlausibleAdapter extends Analytics
 
   public function __construct(string $clientIP){
     $clientIP=$_SERVER['REMOTE_ADDR'];
-    $this->headers=array(' X_FORWARDED_FOR: '  .$clientIP , ' Content-Type: application/json ');
+    $this->headers = [
+        'X_FORWARDED_FOR: '  .$clientIP, 
+        'Content-Type: application/json'
+    ];
   }
 
   public function createPageView(string $url,string $domain):bool {
