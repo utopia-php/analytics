@@ -35,4 +35,13 @@ class AnalyticsTest extends TestCase
         $this->assertFalse($this->ga->createPageView("appwrite.io", "/docs/installation"));
         $this->assertFalse($this->ga->createEvent("testEvent", "testEvent"));
     }
+    public function testPlausible()
+    {
+        $this->assertTrue($this->ga->createPageView("appwrite.io", "/docs/installation"));
+        $this->assertTrue($this->ga->createEvent("testEvent", "testEvent"));
+
+        $this->ga->disable();
+        $this->assertFalse($this->ga->createPageView("appwrite.io", "/docs/installation"));
+        $this->assertFalse($this->ga->createEvent("testEvent", "testEvent"));
+    }
 }

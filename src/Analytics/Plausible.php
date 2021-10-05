@@ -16,20 +16,70 @@ class  PlausibleAdapter extends Analytics
 {
   private const URL='https://plausible.io/api/event';
 
+    /**
+     * @param string $clientIP
+     * Specifies the  client's IP address used for CLI mode
+     * 
+     * @return  PlausibleAdapter
+     */
 
-  public function __construct(string $clientIP){
+    public function __construct(string $clientIP = '127.0.0.1'){
     $clientIP=$_SERVER['REMOTE_ADDR'];
+
+    $this->useragent=$_SERVER['HTTP_USER_AGENT'];
+
     $this->headers=array(' X_FORWARDED_FOR: '  .$clientIP , ' Content-Type: application/json ');
   }
 
+    /**
+     * Sends an event to Plausible.
+     * 
+     * @param string $url
+     * URL of the page where the event was triggered.
+     * 
+     * @param string $domain
+     * Domain name of the site in Plausible.
+     * 
+     * @return bool
+     */
+    public function createEvent(string $url,string $domain): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+
+        $query = [
+            'url' => $url,
+            'domain' =>$domain,
+            'name' => 'event'
+        ];
+
+        $this->createConnection($query);
+        return true;
+    }
+
+
+
+/**
+     * Sends a page view to Plausible.
+     * 
+     * @param string $url
+     * URL of the page where the event was triggered.
+     * 
+     * @param string $domain
+     * Domain name of the site in Plausible.
+     * 
+     * 
+     * @return bool
+     */
   public function createPageView(string $url,string $domain):bool {
      if(!$this->enabled){
          return false;
      }
     $query=[
-        '__name' =>'pageview',
-        '__url' => $url,
-        '__domain' =>$domain
+        'name' =>'pageview',
+        'url' => $url,
+        'domain' =>$domain
     ];
     $this->createConnection($query);
     return true;
@@ -46,7 +96,7 @@ class  PlausibleAdapter extends Analytics
        curl_setopt($ch,CURLOPT_URL,self::URL);
        curl_setopt($ch,CURLOPT_POST,true);
        curl_setopt($ch,CURLOPT_HTTPHEADER ,$this->headers);
-       curl_setopt($ch,CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+       curl_setopt($ch,CURLOPT_USERAGENT,$this->useragent);
        curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($query));
 
    }
