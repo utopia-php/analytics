@@ -17,8 +17,7 @@ class  PlausibleAdapter extends Analytics
   private const URL='https://plausible.io/api/event';
 
 
-  public function __construct(string $clientIP){
-    $clientIP=$_SERVER['REMOTE_ADDR'];
+  public function __construct(string $clientIP = '127.0.0.1'){
     $this->headers = [
         'X_FORWARDED_FOR: '  .$clientIP, 
         'Content-Type: application/json'
