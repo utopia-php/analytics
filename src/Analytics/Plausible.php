@@ -51,7 +51,7 @@ class  PlausibleAdapter extends Analytics
 
         $query = [
             'url' => $url,
-            'poperty' => $property
+            'poperty' => $property,
             'domain' =>$domain,
             'name' => 'event'
         ];
