@@ -23,10 +23,8 @@ class  PlausibleAdapter extends Analytics
      * @return  PlausibleAdapter
      */
 
-    public function __construct(string $clientIP = '127.0.0.1'){
-    $clientIP=$_SERVER['REMOTE_ADDR'];
-    
-    $this->useragent=$_SERVER['HTTP_USER_AGENT'];
+    public function __construct(string $useragent, string $clientIP = '127.0.0.1'){
+        $this->useragent = $useragent;
 
     $this->headers=array(' X_FORWARDED_FOR: '  .$clientIP , ' Content-Type: application/json ');
   }
