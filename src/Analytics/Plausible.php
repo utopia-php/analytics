@@ -37,10 +37,13 @@ class  PlausibleAdapter extends Analytics
      * 
      * @param string $domain
      * Domain name of the site in Plausible.
+     *
+     * @param string $property
+     * Passes data to the event 
      * 
      * @return bool
      */
-    public function createEvent(string $url,string $domain): bool
+    public function createEvent(string $url,string $domain,string $property): bool
     {
         if (!$this->enabled) {
             return false;
@@ -48,6 +51,7 @@ class  PlausibleAdapter extends Analytics
 
         $query = [
             'url' => $url,
+            'poperty' => $property
             'domain' =>$domain,
             'name' => 'event'
         ];
