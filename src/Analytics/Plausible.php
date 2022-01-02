@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Utopia PHP Framework
  *
@@ -14,7 +15,7 @@ namespace Utopia\Analytics;
 
 class  PlausibleAdapter extends Analytics
 {
-  private const URL='https://plausible.io/api/event';
+    private const URL = 'https://plausible.io/api/event';
 
     /**
      * @param string $clientIP
@@ -23,11 +24,12 @@ class  PlausibleAdapter extends Analytics
      * @return  PlausibleAdapter
      */
 
-    public function __construct(string $useragent, string $clientIP = '127.0.0.1'){
+    public function __construct(string $useragent, string $clientIP = '127.0.0.1')
+    {
         $this->useragent = $useragent;
 
-    $this->headers=array(' X_FORWARDED_FOR: '  .$clientIP , ' Content-Type: application/json ');
-  }
+        $this->headers = array(' X_FORWARDED_FOR: '  . $clientIP, ' Content-Type: application/json ');
+    }
 
     /**
      * Sends an event to Plausible.
@@ -43,7 +45,7 @@ class  PlausibleAdapter extends Analytics
      * 
      * @return bool
      */
-    public function createEvent(string $url,string $domain,string $property): bool
+    public function createEvent(string $url, string $domain, string $property): bool
     {
         if (!$this->enabled) {
             return false;
@@ -52,7 +54,7 @@ class  PlausibleAdapter extends Analytics
         $query = [
             'url' => $url,
             'props' => $property,
-            'domain' =>$domain,
+            'domain' => $domain,
             'name' => 'event'
         ];
 
@@ -62,7 +64,7 @@ class  PlausibleAdapter extends Analytics
 
 
 
-/**
+    /**
      * Sends a page view to Plausible.
      * 
      * @param string $url
@@ -74,34 +76,33 @@ class  PlausibleAdapter extends Analytics
      * 
      * @return bool
      */
-  public function createPageView(string $url,string $domain):bool {
-     if(!$this->enabled){
-         return false;
-     }
-    $query=[
-        'name' =>'pageview',
-        'url' => $url,
-        'domain' =>$domain
-    ];
-    $this->createConnection($query);
-    return true;
-   }
+    public function createPageView(string $url, string $domain): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+        $query = [
+            'name' => 'pageview',
+            'url' => $url,
+            'domain' => $domain
+        ];
+        $this->createConnection($query);
+        return true;
+    }
 
-  private function  createConnection(array $query): void {
-     $ch=curl_init();
-     $this->createCurlCommand($ch,$query);
-     curl_exec($ch);
-     curl_close($ch);
-     
-   }
-   private function createCurlCommand(&$ch,array $query):void{
-       curl_setopt($ch,CURLOPT_URL,self::URL);
-       curl_setopt($ch,CURLOPT_POST,true);
-       curl_setopt($ch,CURLOPT_HTTPHEADER ,$this->headers);
-       curl_setopt($ch,CURLOPT_USERAGENT,$this->useragent);
-       curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($query));
-
-   }
-
+    private function  createConnection(array $query): void
+    {
+        $ch = curl_init();
+        $this->createCurlCommand($ch, $query);
+        curl_exec($ch);
+        curl_close($ch);
+    }
+    private function createCurlCommand(&$ch, array $query): void
+    {
+        curl_setopt($ch, CURLOPT_URL, self::URL);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
+        curl_setopt($ch, CURLOPT_USERAGENT, $this->useragent);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($query));
+    }
 }
-
