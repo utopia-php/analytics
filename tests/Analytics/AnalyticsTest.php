@@ -16,14 +16,14 @@ namespace Utopia\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Utopia\Analytics\Adapter\GoogleAnalytics;
+
 class AnalyticsTest extends TestCase
 {
     public $ga;
-    public $plausible;
 
     public function setUp(): void
     {
-        $this->ga = new GoogleAnalytics("UA-132779463-1", "test");
+        $this->ga = new GoogleAnalytics("UA-XXXXXXXXX-X", "test");
     }
 
     public function testGoogleAnalytics()
