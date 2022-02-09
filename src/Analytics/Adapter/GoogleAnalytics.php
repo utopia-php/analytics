@@ -12,14 +12,14 @@
  * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
  */
 
-namespace Utopia\Analytics;
+namespace Utopia\Analytics\Adapter;
 
 use Exception;
-use Utopia\Analytics\Analytics;
+use Utopia\Analytics\Adapter;
 
-class GoogleAnalytics extends Analytics
+class GoogleAnalytics extends Adapter
 {
-    private const URL = 'https://www.google-analytics.com/collect';
+    public $endpoint = 'https://www.google-analytics.com/collect';
 
     private $tid;
     private $cid;
@@ -70,7 +70,10 @@ class GoogleAnalytics extends Analytics
             't' => 'event'
         ];
 
-        $this->execute($query);
+        $this->execute(self::METHOD_POST, '', ['content-type' => 'application/x-www-form-urlencoded'], array_merge([
+            'tid' => $this->tid,
+            'cid' => $this->cid,
+            'v' => 1], $query));
         return true;
     }
 
@@ -101,38 +104,10 @@ class GoogleAnalytics extends Analytics
             't' => 'pageview'
         ];
 
-        $this->execute($query);
+        $this->execute(self::METHOD_POST, '', ['content-type' => 'application/x-www-form-urlencoded'], array_merge([
+            'tid' => $this->tid,
+            'cid' => $this->cid,
+            'v' => 1], $query));
         return true;
-    }
-
-    private function execute(array $query): void
-    {
-        $ch = curl_init();
-
-        $this->prepareCurl($ch, $query);
-
-        curl_exec($ch);
-        curl_close($ch);
-    }
-
-    private function prepareCurl(&$ch, array $query): void
-    {
-        curl_setopt($ch, CURLOPT_URL, self::URL);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded'
-        ]);
-        curl_setopt(
-            $ch,
-            CURLOPT_POSTFIELDS,
-            http_build_query(array_merge([
-                'tid' => $this->tid,
-                'cid' => $this->cid,
-                'v' => 1
-            ], $query))
-        );
     }
 }
