@@ -16,7 +16,15 @@ namespace Utopia\Analytics;
 
 abstract class Adapter
 {
+
+    /**
+    * @var boolean
+    **/
     protected $enabled = true;
+    
+    /**
+    * @var string
+    **/
     public $endpoint = '';
 
     const METHOD_GET = 'GET';
