@@ -14,15 +14,46 @@
 
 namespace Utopia\Analytics\Adapter;
 
-use Exception;
 use Utopia\Analytics\Adapter;
+use Utopia\Analytics\Event;
 
 class GoogleAnalytics extends Adapter
 {
-    public $endpoint = 'https://www.google-analytics.com/collect';
+    public string $endpoint = 'https://www.google-analytics.com/collect';
 
-    private $tid;
-    private $cid;
+    private string $tid;
+    private string $cid;
+    private bool $enabled = true;
+
+    /**
+     * Gets the name of the adapter.
+     * 
+     * @return string
+     */
+    public function getName(): string
+    {
+        return 'GoogleAnalytics';
+    }
+
+    /**
+     * Enables tracking for this instance.
+     * 
+     * @return void
+     */
+    public function enable(): void
+    {
+        $this->enabled = true;
+    }
+
+    /**
+     * Disables tracking for this instance.
+     * 
+     * @return void
+     */
+    public function disable(): void
+    {
+        $this->enabled = false;
+    }
 
     /**
      * @param string $tid 
@@ -40,74 +71,56 @@ class GoogleAnalytics extends Adapter
     }
 
     /**
-     * Sends an event to Google Analytics.
+     * Creates an Event on the remote analytics platform.
      * 
-     * @param string $category
-     * Specifies the event category.
-     * 
-     * @param string $action
-     * Specifies the event action.
-     * 
-     * @param string $label
-     * Specifies the event label.
-     * 
-     * @param null|int $value
-     * Specifies the event value. Values must be non-negative.
-     * 
+     * @param Event $event
      * @return bool
      */
-    public function createEvent(string $category, string $action, string $label = null, int $value = null): bool
+    public function createEvent(Event $event): bool 
     {
         if (!$this->enabled) {
             return false;
         }
 
         $query = [
-            'ec' => $category,
-            'ea' => $action,
-            'el' => $label,
-            'ev' => $value,
+            'ea' => $event->getType(),
             't' => 'event'
         ];
 
-        $this->execute(self::METHOD_POST, '', ['content-type' => 'application/x-www-form-urlencoded'], array_merge([
-            'tid' => $this->tid,
-            'cid' => $this->cid,
-            'v' => 1], $query));
-        return true;
-    }
-
-    /**
-     * Sends a page view to Google Analytics.
-     * 
-     * @param string $hostname
-     * Specifies the hostname from which content was hosted.
-     * 
-     * @param string $page
-     * The path portion of the page URL. Should begin with '/'.
-     * 
-     * @param string $title
-     * The title of the page / document.
-     * 
-     * @return bool
-     */
-    public function createPageView(string $hostname, string $page, string $title = null): bool
-    {
-        if (!$this->enabled) {
-            return false;
+        if (key_exists('category', $event->getProps())) {
+            $query['ec'] = $event->getProps()['category'];
         }
 
-        $query =  [
-            'dh' => $hostname,
-            'dp' => $page,
-            'dt' => $title,
-            't' => 'pageview'
-        ];
+        if (!empty($event->getName())) {
+            $query['el'] = $event->getName();
+        }
 
-        $this->execute(self::METHOD_POST, '', ['content-type' => 'application/x-www-form-urlencoded'], array_merge([
-            'tid' => $this->tid,
-            'cid' => $this->cid,
-            'v' => 1], $query));
+        if (!empty($event->getValue())) {
+            $query['ev'] = $event->getValue();
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded'
+        ]);
+        curl_setopt(
+            $ch,
+            CURLOPT_POSTFIELDS,
+            http_build_query(array_merge([
+                'tid' => $this->tid,
+                'cid' => $this->cid,
+                'v' => 1
+            ], $query))
+        );
+
+        curl_exec($ch);
+        curl_close($ch);
+
         return true;
     }
 }

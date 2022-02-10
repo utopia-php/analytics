@@ -16,6 +16,7 @@ namespace Utopia\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Utopia\Analytics\Adapter\GoogleAnalytics;
+use Utopia\Analytics\Event;
 
 class AnalyticsTest extends TestCase
 {
@@ -28,11 +29,24 @@ class AnalyticsTest extends TestCase
 
     public function testGoogleAnalytics()
     {
-        $this->assertTrue($this->ga->createPageView("appwrite.io", "/docs/installation"));
-        $this->assertTrue($this->ga->createEvent("testEvent", "testEvent"));
+        $pageviewEvent = new Event();
+        $pageviewEvent
+            ->setType('pageview')
+            ->setName('pageview')
+            ->setUrl('https://www.appwrite.io/docs/installation');
+
+        $normalEvent = new Event();
+        $normalEvent->setType('testEvent')
+            ->setName('testEvent')
+            ->setValue('testEvent')
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'testEvent']);;
+
+        $this->assertTrue($this->ga->createEvent($pageviewEvent));
+        $this->assertTrue($this->ga->createEvent($normalEvent));
 
         $this->ga->disable();
-        $this->assertFalse($this->ga->createPageView("appwrite.io", "/docs/installation"));
-        $this->assertFalse($this->ga->createEvent("testEvent", "testEvent"));
+        $this->assertFalse($this->ga->createEvent($pageviewEvent));
+        $this->assertFalse($this->ga->createEvent($normalEvent));
     }
 }
