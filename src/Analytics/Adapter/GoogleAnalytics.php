@@ -91,6 +91,10 @@ class GoogleAnalytics extends Adapter
             $query['ev'] = $event->getValue();
         }
 
+        if (!empty(parse_url($event->getUrl())['host'])) {
+            $query['dh'] = parse_url($event->getUrl())['host'];
+        }
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
