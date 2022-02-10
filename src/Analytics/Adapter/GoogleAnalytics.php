@@ -20,9 +20,9 @@ use Utopia\Analytics\Event;
 class GoogleAnalytics extends Adapter
 {
     /**
-    * Endpoint for Google Analytics
-    * @var string
-    **/
+     *  Endpoint for Google Analytics
+     *  @var string
+     */
     public string $endpoint = 'https://www.google-analytics.com/collect';
 
     /**
