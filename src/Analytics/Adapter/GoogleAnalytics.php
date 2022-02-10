@@ -83,8 +83,8 @@ class GoogleAnalytics extends Adapter
         }
 
         $query = [
-            'ea' => $event->getType(),
-            't' => 'event'
+            'ea' => $event->getProps('action')
+            't' => $event->getType();
         ];
 
         if (key_exists('category', $event->getProps())) {
