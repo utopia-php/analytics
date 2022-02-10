@@ -19,11 +19,23 @@ use Utopia\Analytics\Event;
 
 class GoogleAnalytics extends Adapter
 {
+    /**
+    * Endpoint for Google Analytics
+    * @var string
+    **/
     public string $endpoint = 'https://www.google-analytics.com/collect';
 
+    /**
+     * Tracking ID for Google Analytics
+     * @var string
+     */
     private string $tid;
+
+    /**
+     * A unique identifer for Google Analytics
+     * @var string
+     */
     private string $cid;
-    private bool $enabled = true;
 
     /**
      * Gets the name of the adapter.
@@ -33,26 +45,6 @@ class GoogleAnalytics extends Adapter
     public function getName(): string
     {
         return 'GoogleAnalytics';
-    }
-
-    /**
-     * Enables tracking for this instance.
-     * 
-     * @return void
-     */
-    public function enable(): void
-    {
-        $this->enabled = true;
-    }
-
-    /**
-     * Disables tracking for this instance.
-     * 
-     * @return void
-     */
-    public function disable(): void
-    {
-        $this->enabled = false;
     }
 
     /**
@@ -83,8 +75,8 @@ class GoogleAnalytics extends Adapter
         }
 
         $query = [
-            'ea' => $event->getProps('action')
-            't' => $event->getType();
+            'ea' => $event->getProps('action'),
+            't' => $event->getType()
         ];
 
         if (key_exists('category', $event->getProps())) {

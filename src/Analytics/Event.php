@@ -119,6 +119,31 @@ class Event {
     }
 
     /**
+     * Adds extra properties to the event
+     * 
+     * @param string $key
+     * @param string $value
+     * @return Event
+     */
+    public function addProp(string $key, string $value): self {
+        $this->props[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * Removes a property from the event
+     * 
+     * @param string $key
+     * @return Event
+     */
+    public function removeProp(string $key): self {
+        if (key_exists($key, $this->props)) {
+            unset($this->props[$key]);
+        }
+        return $this;
+    }
+
+    /**
      * Set the properties of the event
      * 
      * @param array[] $props
