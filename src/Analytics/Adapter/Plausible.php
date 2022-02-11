@@ -55,6 +55,12 @@ class Plausible extends Adapter
     }
 
     /**
+     * @param string $domain
+     * The Plausible domain to use for sending events
+     * 
+     * @param string $useragent
+     * The Useragent to use for sending events
+     * 
      * @param string $clientIP
      * Specifies the  client's IP address used for CLI mode
      * 
@@ -73,14 +79,7 @@ class Plausible extends Adapter
     /**
      * Sends an event to Plausible.
      * 
-     * @param string $url
-     * URL of the page where the event was triggered.
-     * 
-     * @param string $domain
-     * Domain name of the site in Plausible.
-     *
-     * @param string $property
-     * Passes data to the event 
+     * @param Event $event
      * 
      * @return bool
      */
