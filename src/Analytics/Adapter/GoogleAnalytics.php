@@ -75,33 +75,17 @@ class GoogleAnalytics extends Adapter
         }
 
         $query = [
-            'ec' => ,
-            'ea' => $event->getProps('action'),
+            'ec' => $event->getProp('category'),
+            'ea' => $event->getProp('action'),
             'el' => $event->getName(),
             'ev' => $event->getValue(),
-            'dh' => ,
-            'dp' => ,
-            'dt' => ,
+            'dh' => parse_url($event->getUrl())['host'],
+            'dp' => parse_url($event->getUrl())['path'],
+            'dt' => $event->getProp('documentTitle'),
             't' => $event->getType()
         ];
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
-
-        if (key_exists('category', $event->getProps())) {
-            $query['ec'] = $event->getProps()['category'];
-        }
-
-        if (!empty($event->getName())) {
-            $query['el'] = $event->getName();
-        }
-
-        if (!empty($event->getValue())) {
-            $query['ev'] = $event->getValue();
-        }
-
-        if (!empty(parse_url($event->getUrl())['host'])) {
-            $query['dh'] = parse_url($event->getUrl())['host'];
-        }
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->endpoint);
@@ -123,6 +107,11 @@ class GoogleAnalytics extends Adapter
         );
 
         curl_exec($ch);
+
+        if (curl_error($ch) !== '') {
+            return false;
+        }
+
         curl_close($ch);
 
         return true;
