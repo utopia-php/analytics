@@ -75,9 +75,17 @@ class GoogleAnalytics extends Adapter
         }
 
         $query = [
+            'ec' => ,
             'ea' => $event->getProps('action'),
+            'el' => $event->getName(),
+            'ev' => $event->getValue(),
+            'dh' => ,
+            'dp' => ,
+            'dt' => ,
             't' => $event->getType()
         ];
+        
+        $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 
         if (key_exists('category', $event->getProps())) {
             $query['ec'] = $event->getProps()['category'];
