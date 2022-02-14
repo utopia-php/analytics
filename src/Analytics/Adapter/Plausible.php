@@ -108,11 +108,12 @@ class Plausible extends Adapter
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($query));
     
         curl_exec($ch);
-        curl_close($ch);
 
         if (curl_error($ch) !== '') {
             return false;
         }
+
+        curl_close($ch);
     
         return true;
     }
