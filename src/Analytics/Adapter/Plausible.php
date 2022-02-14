@@ -98,14 +98,22 @@ class Plausible extends Adapter
 
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $this->domain);
+        curl_setopt($ch, CURLOPT_URL, $this->endpoint);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
         curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded'
+        ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($query));
     
         curl_exec($ch);
         curl_close($ch);
+
+        if (curl_error($ch) !== '') {
+            return false;
+        }
     
         return true;
     }
