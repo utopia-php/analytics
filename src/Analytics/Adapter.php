@@ -14,9 +14,16 @@
 
 namespace Utopia\Analytics;
 
-abstract class Analytics
+abstract class Adapter
 {
-    protected $enabled = true;
+    protected bool $enabled = true;
+
+    /**
+     * Gets the name of the adapter.
+     * 
+     * @return string
+     */
+    abstract public function getName(): string;
 
     /**
      * Enables tracking for this instance.
@@ -37,4 +44,13 @@ abstract class Analytics
     {
         $this->enabled = false;
     }
+
+    /**
+     * Creates an Event on the remote analytics platform.
+     * 
+     * @param Event $event
+     * @return bool
+     */
+    abstract public function createEvent(Event $event): bool;
+
 }
