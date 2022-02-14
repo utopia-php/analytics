@@ -16,8 +16,8 @@ namespace Utopia\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Utopia\Analytics\Adapter\GoogleAnalytics;
-use Utopia\Analytics\Event;
 use Utopia\Analytics\Adapter\Plausible;
+use Utopia\Analytics\Event;
 
 class AnalyticsTest extends TestCase
 {
