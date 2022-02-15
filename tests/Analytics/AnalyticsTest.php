@@ -26,7 +26,7 @@ class AnalyticsTest extends TestCase
     public function setUp(): void
     {
         $this->ga = new GoogleAnalytics("UA-XXXXXXXXX-X", "test");
-        $this->ac = new ActiveCampaign("99c8d61b2045ae8e2da13477c2276d76e52ceae5", "611851766");
+        $this->ac = new ActiveCampaign("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxx");
     }
 
     public function testGoogleAnalytics()
