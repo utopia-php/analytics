@@ -51,7 +51,7 @@ class Plausible extends Adapter
      */
     public function getName(): string
     {
-        return 'GoogleAnalytics';
+        return 'Plausible';
     }
 
     /**
