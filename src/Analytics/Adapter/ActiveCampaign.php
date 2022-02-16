@@ -59,10 +59,16 @@ class ActiveCampaign extends Adapter
      * 
      * @return ActiveCampaign
      */
-    public function __construct(string $key, string $actid)
+    public function __construct(string $configuration)
     {
-        $this->key = $key;
-        $this->actid = $actid;
+        $data = explode(',', $configuration);
+        $data = array_map(function($item) {
+            return explode('=', $item);
+        }, $data);
+        $data = array_combine(array_column($data, 0), array_column($data, 1));
+
+        $this->key = $data['key'];
+        $this->actid = $data['actid'];
     }
 
     /**
@@ -107,8 +113,6 @@ class ActiveCampaign extends Adapter
         if (curl_error($ch) !== '') {
             return false;
         }
-
-        var_dump($body);
 
         curl_close($ch);
 
