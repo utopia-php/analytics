@@ -48,18 +48,21 @@ class GoogleAnalytics extends Adapter
     }
 
     /**
-     * @param string $tid 
-     * The tracking ID / web property ID. The format is UA-XXXX-Y. All collected data is associated by this ID.
-     * 
-     * @param string $cid
-     * This pseudonymously identifies a particular user, device, or browser instance.
+     * @param string $configuration 
+     * Adapter configuration
      * 
      * @return GoogleAnalytics
      */
-    public function __construct(string $tid, string $cid)
+    public function __construct(string $configuration)
     {
-        $this->tid = $tid;
-        $this->cid = $cid;
+        $data = explode(',', $configuration);
+        $data = array_map(function($item) {
+            return explode('=', $item);
+        }, $data);
+        $data = array_combine(array_column($data, 0), array_column($data, 1));
+
+        $this->tid = $data['tid'];
+        $this->cid = $data['cid'];
     }
 
     /**
