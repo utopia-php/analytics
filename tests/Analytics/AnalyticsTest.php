@@ -27,7 +27,7 @@ class AnalyticsTest extends TestCase
     public function setUp(): void
     {
         $this->ga = new GoogleAnalytics("tid=UA-XXXXXXXXX-X,cid=test");
-        $this->orbit = new Orbit("workspacename", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        $this->orbit = new Orbit("workspace=workspacename,key=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     }
 
     public function testGoogleAnalytics()

@@ -48,15 +48,19 @@ class Orbit extends Adapter
     }
 
     /**
-     * @param string $workspace
-     * @param string $key
+     * @param string $configuration
      * 
      * @return Orbit
      */
-    public function __construct(string $workspace, string $key)
+    public function __construct(string $configuration)
     {
-        $this->workspace = $workspace;
-        $this->key = $key;
+        $data = explode(',', $configuration);
+        $data = array_map(function($item) {
+            return explode('=', $item);
+        }, $data);
+        $data = array_combine(array_column($data, 0), array_column($data, 1));
+        $this->workspace = $data['workspace'];
+        $this->key = $data['key'];
     }
 
     /**
