@@ -19,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 
 use Utopia\Analytics\Adapter\ActiveCampaign;
 use Utopia\Analytics\Adapter\GoogleAnalytics;
+use Utopia\Analytics\Adapter\Orbit;
 use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Event;
 
@@ -31,6 +32,7 @@ class AnalyticsTest extends TestCase
         $this->ga = new GoogleAnalytics("tid=UA-XXXXXXXXX-X,cid=test");
         $this->pa = new Plausible("domain=testdomain,useragent=UA-XXXXXXXXX-X,clientIP=test");
         $this->ac = new ActiveCampaign("key=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,actid=xxxxxxxxx");
+        $this->or = new Orbit('workspace=xxxxxxxxxxx,key=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
     }
 
     public function testGoogleAnalytics()
@@ -63,7 +65,7 @@ class AnalyticsTest extends TestCase
         $pageviewEvent
             ->setType('pageview')
             ->setName('pageview')
-            ->addProp('uid', 'test')
+            ->addProp('email', 'test@test.com')
             ->setUrl('https://www.appwrite.io/docs/installation');
 
         $normalEvent = new Event();
@@ -88,7 +90,7 @@ class AnalyticsTest extends TestCase
         $pageviewEvent
             ->setType('pageview')
             ->setName('pageview')
-            ->addProp('uid', 'test')
+            ->addProp('email', 'test@test.com')
             ->setUrl('https://www.appwrite.io/docs/installation');
 
         $normalEvent = new Event();
@@ -105,5 +107,30 @@ class AnalyticsTest extends TestCase
         $this->ac->disable();
         $this->assertFalse($this->ac->createEvent($pageviewEvent));
         $this->assertFalse($this->ac->createEvent($normalEvent));
+    }
+
+    public function testOrbit()
+    {
+        $pageviewEvent = new Event();
+        $pageviewEvent
+            ->setType('pageview')
+            ->setName('pageview')
+            ->addProp('email', 'test@test.com')
+            ->setUrl('https://www.appwrite.io/docs/installation');
+
+        $normalEvent = new Event();
+        $normalEvent->setType('testEvent')
+            ->setName('testEvent')
+            ->setValue('testEvent')
+            ->addProp('email', 'test@test.com')
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'testEvent']);;
+
+        $this->assertTrue($this->or->createEvent($pageviewEvent));
+        $this->assertTrue($this->or->createEvent($normalEvent));
+
+        $this->or->disable();
+        $this->assertFalse($this->or->createEvent($pageviewEvent));
+        $this->assertFalse($this->or->createEvent($normalEvent));
     }
 }
