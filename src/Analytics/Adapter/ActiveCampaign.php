@@ -1,5 +1,8 @@
 <?php
 
+// Note: ActiveCampaign requires the email prop to be set.
+// It also won't create contacts, it'll only add events to pre-existing contacts.
+
 /**
  * Utopia PHP Framework
  *
@@ -79,7 +82,7 @@ class ActiveCampaign extends Adapter
             'event' => $event->getName(),
             'actid' => $this->actid,
             'eventdata' => json_encode($event->getProps()),
-            'visit' => json_encode(['uid' => $event->getProp('uid')]),
+            'visit' => json_encode(['email' => $event->getProp('email')]),
         ];
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');

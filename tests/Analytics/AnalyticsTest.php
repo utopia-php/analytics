@@ -66,7 +66,7 @@ class AnalyticsTest extends TestCase
             ->setName('testEvent')
             ->setValue('testEvent')
             ->addProp('category', 'testEvent')
-            ->addProp('uid', 'test')
+            ->addProp('email', 'test@test.com')
             ->setUrl('https://www.appwrite.io/docs/installation');
 
         $this->assertTrue($this->ac->createEvent($pageviewEvent));
