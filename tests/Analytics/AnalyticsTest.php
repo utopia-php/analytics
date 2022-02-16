@@ -15,8 +15,8 @@
 namespace Utopia\Tests;
 
 use PHPUnit\Framework\TestCase;
-
 use Utopia\Analytics\Adapter\GoogleAnalytics;
+use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Event;
 
 class AnalyticsTest extends TestCase
@@ -26,6 +26,7 @@ class AnalyticsTest extends TestCase
     public function setUp(): void
     {
         $this->ga = new GoogleAnalytics("tid=UA-XXXXXXXXX-X,cid=test");
+        $this->pa = new Plausible("domain=testdomain,useragent=UA-XXXXXXXXX-X,clientIP=test");
     }
 
     public function testGoogleAnalytics()
@@ -49,5 +50,28 @@ class AnalyticsTest extends TestCase
         $this->ga->disable();
         $this->assertFalse($this->ga->createEvent($pageviewEvent));
         $this->assertFalse($this->ga->createEvent($normalEvent));
+    }
+
+    public function testPlausible()
+    {
+        $pageviewEvent = new Event();
+        $pageviewEvent
+            ->setType('pageview')
+            ->setName('pageview')
+            ->setUrl('https://www.appwrite.io/docs/installation');
+
+        $normalEvent = new Event();
+        $normalEvent->setType('testEvent')
+            ->setName('testEvent')
+            ->setValue('testEvent')
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'testEvent']);;
+
+        $this->assertTrue($this->pa->createEvent($pageviewEvent));
+        $this->assertTrue($this->pa->createEvent($normalEvent));
+
+        $this->pa->disable();
+        $this->assertFalse($this->pa->createEvent($pageviewEvent));
+        $this->assertFalse($this->pa->createEvent($normalEvent));
     }
 }
