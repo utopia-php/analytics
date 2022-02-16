@@ -67,13 +67,19 @@ class Plausible extends Adapter
      * @return Plausible
      */
 
-    public function __construct(string $domain, string $useragent, string $clientIP = '127.0.0.1')
+    public function __construct(string $configuration)
     {
-        $this->domain = $domain;
+        $data = explode(',', $configuration);
+        $data = array_map(function($item) {
+            return explode('=', $item);
+        }, $data);
+        $data = array_combine(array_column($data, 0), array_column($data, 1));
 
-        $this->userAgent = $useragent;
+        $this->domain = $data['domain'];
 
-        $this->headers = array(' X_FORWARDED_FOR: '  . $clientIP, ' Content-Type: application/json ');
+        $this->userAgent = $data['useragent'];
+
+        $this->headers = array(' X_FORWARDED_FOR: '  . $data['clientIP'], ' Content-Type: application/json ');
     }
 
     /**
