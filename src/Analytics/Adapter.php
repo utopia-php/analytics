@@ -26,6 +26,15 @@ abstract class Adapter
     abstract public function getName(): string;
 
     /**
+     * Adapter constructor.
+     * 
+     * @param string $configuration
+     * 
+     * @return Adapter
+     */
+    abstract public function __construct(string $configuration);
+
+    /**
      * Enables tracking for this instance.
      * 
      * @return void
