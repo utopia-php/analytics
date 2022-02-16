@@ -51,11 +51,8 @@ class ActiveCampaign extends Adapter
     }
 
     /**
-     * @param string $key 
-     * Event Key for ActiveCampaign.
-     * 
-     * @param string $actid
-     * ActiveCampaign actid
+     * @param string $configuration 
+     * Adapter configuration
      * 
      * @return ActiveCampaign
      */
