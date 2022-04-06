@@ -1,5 +1,8 @@
 <?php
 
+// Note: ActiveCampaign requires the email prop to be set.
+// It also won't create contacts, it'll only add events to pre-existing contacts.
+
 /**
  * Utopia PHP Framework
  *
@@ -17,25 +20,25 @@ namespace Utopia\Analytics\Adapter;
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
 
-class GoogleAnalytics extends Adapter
+class ActiveCampaign extends Adapter
 {
     /**
-     *  Endpoint for Google Analytics
+     *  Endpoint for ActiveCampaign
      *  @var string
      */
-    public string $endpoint = 'https://www.google-analytics.com/collect';
+    public string $endpoint = 'https://trackcmp.net/event';
 
     /**
-     * Tracking ID for Google Analytics
+     * Event Key for ActiveCampaign
      * @var string
      */
-    private string $tid;
+    private string $key;
 
     /**
-     * A unique identifer for Google Analytics
+     * ActiveCampaign actid.
      * @var string
      */
-    private string $cid;
+    private string $actid;
 
     /**
      * Gets the name of the adapter.
@@ -44,20 +47,20 @@ class GoogleAnalytics extends Adapter
      */
     public function getName(): string
     {
-        return 'GoogleAnalytics';
+        return 'ActiveCampaign';
     }
 
     /**
-     * @param string $tid 
-     * @param string $cid
+     * @param string $key 
+     * @param string $actid
      * Adapter configuration
      * 
-     * @return GoogleAnalytics
+     * @return ActiveCampaign
      */
-    public function __construct(string $tid, string $cid)
+    public function __construct(string $key, string $actid)
     {
-        $this->tid = $tid;
-        $this->cid = $cid;
+        $this->key = $key;
+        $this->actid = $actid;
     }
 
     /**
@@ -73,14 +76,11 @@ class GoogleAnalytics extends Adapter
         }
 
         $query = [
-            'ec' => $event->getProp('category'),
-            'ea' => $event->getProp('action'),
-            'el' => $event->getName(),
-            'ev' => $event->getValue(),
-            'dh' => parse_url($event->getUrl())['host'],
-            'dp' => parse_url($event->getUrl())['path'],
-            'dt' => $event->getProp('documentTitle'),
-            't' => $event->getType()
+            'key' => $this->key,
+            'event' => $event->getName(),
+            'actid' => $this->actid,
+            'eventdata' => json_encode($event->getProps()),
+            'visit' => json_encode(['email' => $event->getProp('email')]),
         ];
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
@@ -97,14 +97,10 @@ class GoogleAnalytics extends Adapter
         curl_setopt(
             $ch,
             CURLOPT_POSTFIELDS,
-            http_build_query(array_merge([
-                'tid' => $this->tid,
-                'cid' => $this->cid,
-                'v' => 1
-            ], $query))
+            http_build_query($query)
         );
 
-        curl_exec($ch);
+        $body = curl_exec($ch);
 
         if (curl_error($ch) !== '') {
             return false;
