@@ -22,11 +22,12 @@ use Utopia\Analytics\Event;
 class AnalyticsTest extends TestCase
 {
     public $ga;
+    public $pa;
 
     public function setUp(): void
     {
         $this->ga = new GoogleAnalytics("tid=UA-XXXXXXXXX-X,cid=test");
-        $this->pa = new Plausible("domain=testdomain,useragent=UA-XXXXXXXXX-X,clientIP=test");
+        $this->pa = new Plausible("testdomain", "UA-XXXXXXXXX-X", "test");
     }
 
     public function testGoogleAnalytics()
