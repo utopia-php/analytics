@@ -88,7 +88,7 @@ class Plausible extends Adapter
             'url' => $event->getUrl(),
             'props' => $event->getProps(),
             'domain' => $this->domain,
-            'name' => 'event'
+            'name' => $event->getName(),
         ];
 
         $ch = curl_init();
