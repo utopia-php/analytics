@@ -31,6 +31,9 @@ class AnalyticsTest extends TestCase
 
     public function testGoogleAnalytics()
     {
+        // Use Measurement Protocol Validation Server for testing.
+        $this->ga->endpoint = "https://www.google-analytics.com/debug/collect";
+
         $pageviewEvent = new Event();
         $pageviewEvent
             ->setType('pageview')
@@ -40,7 +43,6 @@ class AnalyticsTest extends TestCase
         $normalEvent = new Event();
         $normalEvent->setType('testEvent')
             ->setName('testEvent')
-            ->setValue('testEvent')
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent']);;
 

@@ -77,6 +77,11 @@ class GoogleAnalytics extends Adapter
             return false;
         }
 
+        if ($event->getType() !== 'pageview') {
+            $event->setProps(['action' => $event->getType(), ...$event->getProps()]);
+            $event->setType('event');
+        }
+
         $query = [
             'ec' => $event->getProp('category'),
             'ea' => $event->getProp('action'),
@@ -116,6 +121,11 @@ class GoogleAnalytics extends Adapter
         }
 
         curl_close($ch);
+
+        // Parse Debug data
+        if ($this->endpoint == "https://www.google-analytics.com/debug/collect") {
+            return json_decode($body, true)["hitParsingResult"][0]["valid"];
+        }
 
         return true;
     }
