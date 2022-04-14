@@ -29,13 +29,21 @@ class AnalyticsTest extends TestCase
 
     public function setUp(): void
     {
-        $this->ga = new GoogleAnalytics("UA-XXXXXXXXX-X", "test");
-        $this->ac = new ActiveCampaign("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxx");
-        $this->pa = new Plausible("testdomain", "UA-XXXXXXXXX-X", "test");
+        $this->ga = new GoogleAnalytics("UA-XXXXXXXX-1", "XXXXXXXX");
+        $this->ac = new ActiveCampaign(
+            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 
+            "XXXXXXXX",
+            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "XXXXXXXXX",
+            "XXXXXXXX@XXXXX.COM");
+        $this->pa = new Plausible("XXXXXXXXXXXXXX", "UA-XXXXXXXXX-X", "XXXXXXXX");
     }
 
     public function testGoogleAnalytics()
     {
+        // Use Measurement Protocol Validation Server for testing.
+        $this->ga->endpoint = "https://www.google-analytics.com/debug/collect";
+
         $pageviewEvent = new Event();
         $pageviewEvent
             ->setType('pageview')
@@ -45,7 +53,6 @@ class AnalyticsTest extends TestCase
         $normalEvent = new Event();
         $normalEvent->setType('testEvent')
             ->setName('testEvent')
-            ->setValue('testEvent')
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent']);;
 
