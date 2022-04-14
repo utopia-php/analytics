@@ -29,13 +29,13 @@ class AnalyticsTest extends TestCase
 
     public function setUp(): void
     {
-        $this->ga = new GoogleAnalytics("UA-XXXXXXXX-1", "XXXXXXXX");
+        $this->ga = new GoogleAnalytics(getenv("GA_TID"), getenv("GA_CID"));
         $this->ac = new ActiveCampaign(
-            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 
-            "XXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXX",
-            "XXXXXXXX@XXXXX.COM");
+            getenv("AC_KEY"), 
+            getenv("AC_ACTID"),
+            getenv("AC_APIKEY"),
+            getenv("AC_ORGID"),
+            "test@test.com");
         $this->pa = new Plausible("XXXXXXXXXXXXXX", "UA-XXXXXXXXX-X", "XXXXXXXX");
     }
 
