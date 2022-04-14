@@ -48,21 +48,16 @@ class GoogleAnalytics extends Adapter
     }
 
     /**
-     * @param string $configuration 
+     * @param string $tid 
+     * @param string $cid
      * Adapter configuration
      * 
      * @return GoogleAnalytics
      */
-    public function __construct(string $configuration)
+    public function __construct(string $tid, string $cid)
     {
-        $data = explode(',', $configuration);
-        $data = array_map(function($item) {
-            return explode('=', $item);
-        }, $data);
-        $data = array_combine(array_column($data, 0), array_column($data, 1));
-
-        $this->tid = $data['tid'];
-        $this->cid = $data['cid'];
+        $this->tid = $tid;
+        $this->cid = $cid;
     }
 
     /**
