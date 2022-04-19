@@ -111,4 +111,16 @@ class AnalyticsTest extends TestCase
         $this->assertFalse($this->ac->createEvent($pageviewEvent));
         $this->assertFalse($this->ac->createEvent($normalEvent));
     }
+
+    public function testActiveCampaignCreateContact() {
+        $this->assertTrue($this->ac->createContact('test@test.com', 'Paul', 'Van Doren'));
+    }
+
+    public function testActiveCampaignGetContact() {
+        $this->assertIsNumeric($this->ac->contactExists('test@test.com'));
+    }
+
+    public function testActiveCampaignDeleteContact() {
+        $this->assertTrue($this->ac->deleteContact('test@test.com'));
+    }
 }

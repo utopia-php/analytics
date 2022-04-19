@@ -73,17 +73,16 @@ class ActiveCampaign extends Adapter
      * Checks if a contact exists and returns a bool if it does.
      * 
      * @param string $email
-     * @return bool
+     * @return bool|int
      */
-    public function contactExists(string $email): bool
+    public function contactExists(string $email): bool|int
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts?'.http_build_query([
             'email' => $email
         ]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET' );
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Api-Token: '.$this->apiKey
         ]);
@@ -94,8 +93,8 @@ class ActiveCampaign extends Adapter
             return false;
         }
 
-        if (json_decode($body, true)['total'] > 0) {
-            return true;
+        if (json_decode($body, true)['meta']['total'] > 0) {
+            return (json_decode($body, true))['contacts'][0]['id'];
         } else {
             return false;
         }
@@ -115,11 +114,11 @@ class ActiveCampaign extends Adapter
         curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['contact' => [
             'email' => $email,
             'firstName' => $firstName,
             'lastName' => $lastName
-        ]));
+        ]]));
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Api-Token: '.$this->apiKey
@@ -134,6 +133,40 @@ class ActiveCampaign extends Adapter
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if ($statusCode == 201) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /** 
+     * Delete a contact 
+     * 
+     * @param string $email
+     * @return bool
+     */
+    public function deleteContact($email): bool {
+        $contact = $this->contactExists($email);
+
+        if (!$contact) {
+            return false;
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts/'.$contact);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        if (curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200) {
             return true;
         } else {
             return false;
