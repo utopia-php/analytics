@@ -31,6 +31,12 @@ class Plausible extends Adapter
     protected string $userAgent = 'Utopia PHP Framework';
 
     /**
+     * Plausible API key
+     * @var string
+     */
+    protected string $apiKey;
+
+    /**
      * Headers to use for events
      * @var array
      */
@@ -56,15 +62,18 @@ class Plausible extends Adapter
 
     /**
      * @param string $domain
+     * @param string $apiKey
      * @param string $useragent
      * @param string $clientIP
      * 
      * @return Plausible
      */
 
-    public function __construct(string $domain, string $useragent, string $clientIP)
+    public function __construct(string $domain, string $apiKey, string $useragent, string $clientIP)
     {
         $this->domain = $domain;
+
+        $this->apiKey = $apiKey;
 
         $this->userAgent = $useragent;
 
@@ -83,6 +92,8 @@ class Plausible extends Adapter
         if (!$this->enabled) {
             return false;
         }
+
+        $this->provisionGoal($event->getName());
 
         $query = [
             'url' => $event->getUrl(),
@@ -111,5 +122,31 @@ class Plausible extends Adapter
         curl_close($ch);
     
         return true;
+    }
+
+    private function provisionGoal(string $eventName)
+    {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $this->endpoint);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '  . $this->apiKey));
+        curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded'
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+            'site_id' => $this->domain,
+            'goal_type' => 'event',
+            'event_name' => $eventName,
+        ]));
+    
+        curl_exec($ch);
+
+        if (curl_error($ch) !== '') {
+            return false;
+        }
+
+        curl_close($ch);
     }
 }
