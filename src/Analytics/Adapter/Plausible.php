@@ -93,7 +93,9 @@ class Plausible extends Adapter
             return false;
         }
 
-        $this->provisionGoal($event->getName());
+        if (!$this->provisionGoal($event->getName())) {
+            return false;
+        }
 
         $query = [
             'url' => $event->getUrl(),
@@ -128,25 +130,32 @@ class Plausible extends Adapter
     {
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $this->endpoint);
+        curl_setopt($ch, CURLOPT_URL, "https://plausible.io/api/v1/sites/goals");
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '  . $this->apiKey));
         curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded'
+            'Content-Type: application/x-www-form-urlencoded', 
+            'Authorization: Bearer ' . $this->apiKey
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
             'site_id' => $this->domain,
             'goal_type' => 'event',
             'event_name' => $eventName,
         ]));
-    
+
         curl_exec($ch);
 
         if (curl_error($ch) !== '') {
             return false;
         }
 
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
+
+        if ($statusCode !== 200) {
+            return false;
+        }
+
+        return true;
     }
 }
