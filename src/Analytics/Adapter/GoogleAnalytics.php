@@ -48,21 +48,16 @@ class GoogleAnalytics extends Adapter
     }
 
     /**
-     * @param string $configuration 
+     * @param string $tid 
+     * @param string $cid
      * Adapter configuration
      * 
      * @return GoogleAnalytics
      */
-    public function __construct(string $configuration)
+    public function __construct(string $tid, string $cid)
     {
-        $data = explode(',', $configuration);
-        $data = array_map(function($item) {
-            return explode('=', $item);
-        }, $data);
-        $data = array_combine(array_column($data, 0), array_column($data, 1));
-
-        $this->tid = $data['tid'];
-        $this->cid = $data['cid'];
+        $this->tid = $tid;
+        $this->cid = $cid;
     }
 
     /**
@@ -78,7 +73,7 @@ class GoogleAnalytics extends Adapter
         }
 
         if ($event->getType() !== 'pageview') {
-            $event->setProps(['action' => $event->getType(), ...$event->getProps()]);
+            $event->setProps( array_merge($event->getProps(), ['action' => $event->getType()]));
             $event->setType('event');
         }
 
@@ -114,7 +109,7 @@ class GoogleAnalytics extends Adapter
             ], $query))
         );
 
-        curl_exec($ch);
+        $body = curl_exec($ch);
 
         if (curl_error($ch) !== '') {
             return false;
