@@ -48,6 +48,13 @@ class Plausible extends Adapter
      * @var string
      */
     protected string $domain;
+
+    /**
+     * The IP address to forward to Plausible
+     * 
+     * @var string
+     */
+    protected string $clientIP;
     
 
     /**
@@ -77,7 +84,7 @@ class Plausible extends Adapter
 
         $this->userAgent = $useragent;
 
-        $this->headers = array(' X_FORWARDED_FOR: '  . $clientIP, ' Content-Type: application/json ');
+        $this->clientIP = $clientIP;
     }
 
     /**
@@ -101,19 +108,24 @@ class Plausible extends Adapter
             'url' => $event->getUrl(),
             'props' => $event->getProps(),
             'domain' => $this->domain,
-            'name' => $event->getName(),
+            'name' => $event->getType(),
         ];
 
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $this->endpoint);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
         curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded'
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($query));
+
+
+        $headers = [
+            'X-Forwarded-For: '  . $this->clientIP,
+            'Content-Type: application/json',
+
+        ];
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($query));
     
         curl_exec($ch);
 
@@ -121,7 +133,13 @@ class Plausible extends Adapter
             return false;
         }
 
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
         curl_close($ch);
+
+        if ($statusCode !== 202) {
+            return false;
+        }
     
         return true;
     }

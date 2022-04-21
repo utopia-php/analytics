@@ -70,15 +70,12 @@ class AnalyticsTest extends TestCase
         $pageviewEvent = new Event();
         $pageviewEvent
             ->setType('pageview')
-            ->setName('pageview')
-            ->setUrl('https://www.appwrite.io/docs/installation');
+            ->setUrl('https://www.appwrite.io/docs/pageview123');
 
         $normalEvent = new Event();
-        $normalEvent->setType('testEvent')
-            ->setName('testEvent')
-            ->setValue('testEvent')
-            ->setUrl('https://www.appwrite.io/docs/installation')
-            ->setProps(['category' => 'testEvent']);;
+        $normalEvent->setType('myCoolEvent')
+            ->setUrl('https://www.appwrite.io/docs/myCoolEvent123')
+            ->setProps(['category' => 'coolEvent']);;
     
          $this->assertTrue($this->pa->createEvent($pageviewEvent));
          $this->assertTrue($this->pa->createEvent($normalEvent));
