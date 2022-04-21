@@ -22,15 +22,24 @@ use Utopia\Analytics\Event;
 class AnalyticsTest extends TestCase
 {
     public $ga;
+    public $ac;
 
     public function setUp(): void
     {
-        $this->ga = new GoogleAnalytics("UA-XXXXXXXXX-X", "test");
-        $this->ac = new ActiveCampaign("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxx");
-    }
+        $this->ga = new GoogleAnalytics(getenv("GA_TID"), getenv("GA_CID"));
+        $this->ac = new ActiveCampaign(
+            getenv("AC_KEY"), 
+            getenv("AC_ACTID"),
+            getenv("AC_APIKEY"),
+            getenv("AC_ORGID"),
+            "test@test.com");
+        }
 
     public function testGoogleAnalytics()
     {
+        // Use Measurement Protocol Validation Server for testing.
+        $this->ga->endpoint = "https://www.google-analytics.com/debug/collect";
+
         $pageviewEvent = new Event();
         $pageviewEvent
             ->setType('pageview')
@@ -75,5 +84,17 @@ class AnalyticsTest extends TestCase
         $this->ac->disable();
         $this->assertFalse($this->ac->createEvent($pageviewEvent));
         $this->assertFalse($this->ac->createEvent($normalEvent));
+    }
+
+    public function testActiveCampaignCreateContact() {
+        $this->assertTrue($this->ac->createContact('test@test.com', 'Paul', 'Van Doren'));
+    }
+
+    public function testActiveCampaignGetContact() {
+        $this->assertIsNumeric($this->ac->contactExists('test@test.com'));
+    }
+
+    public function testActiveCampaignDeleteContact() {
+        $this->assertTrue($this->ac->deleteContact('test@test.com'));
     }
 }
