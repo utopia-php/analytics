@@ -41,6 +41,24 @@ class ActiveCampaign extends Adapter
     private string $actid;
 
     /**
+     * ActiveCampaign apiKey
+     * @var string
+     */
+    private string $apiKey;
+
+    /**
+     * ActiveCampaign Organisation ID
+     * @var string
+     */
+    private string $organisationID;
+
+    /**
+     * ActiveCampaign Email
+     * @var string
+     */
+    private string $email;
+
+    /**
      * Gets the name of the adapter.
      * 
      * @return string
@@ -50,6 +68,111 @@ class ActiveCampaign extends Adapter
         return 'ActiveCampaign';
     }
 
+
+    /**
+     * Checks if a contact exists and returns a bool if it does.
+     * 
+     * @param string $email
+     * @return bool|int
+     */
+    public function contactExists(string $email): bool|int
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts?'.http_build_query([
+            'email' => $email
+        ]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET' );
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        $body = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        if (json_decode($body, true)['meta']['total'] > 0) {
+            return (json_decode($body, true))['contacts'][0]['id'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Create a contact
+     * 
+     * @param string $email
+     * @param string $firstName
+     * @param string $lastName
+     * @return bool
+     */
+    public function createContact(string $email, string $firstName, string $lastName): bool
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['contact' => [
+            'email' => $email,
+            'firstName' => $firstName,
+            'lastName' => $lastName
+        ]]));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($statusCode == 201) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /** 
+     * Delete a contact 
+     * 
+     * @param string $email
+     * @return bool
+     */
+    public function deleteContact($email): bool {
+        $contact = $this->contactExists($email);
+
+        if (!$contact) {
+            return false;
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts/'.$contact);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        if (curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * @param string $key 
      * @param string $actid
@@ -57,10 +180,13 @@ class ActiveCampaign extends Adapter
      * 
      * @return ActiveCampaign
      */
-    public function __construct(string $key, string $actid)
+    public function __construct(string $key, string $actid, string $apiKey, string $organisationID, string $email)
     {
         $this->key = $key;
         $this->actid = $actid;
+        $this->email = $email;
+        $this->apiKey = $apiKey;
+        $this->organisationID = $organisationID;
     }
 
     /**
