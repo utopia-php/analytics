@@ -106,19 +106,24 @@ class ActiveCampaign extends Adapter
      * @param string $email
      * @param string $firstName
      * @param string $lastName
+     * @param string $phone
      * @return bool
      */
-    public function createContact(string $email, string $firstName, string $lastName): bool
+    public function createContact(string $email, string $firstName = '', string $lastName = '', string $phone = ''): bool
     {
         $ch = curl_init();
+
+        $body = ['contact' => [
+            'email' => $email,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'phone' => $phone
+        ]];
+
         curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['contact' => [
-            'email' => $email,
-            'firstName' => $firstName,
-            'lastName' => $lastName
-        ]]));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array_filter($body)));
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Api-Token: '.$this->apiKey
@@ -133,6 +138,52 @@ class ActiveCampaign extends Adapter
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if ($statusCode == 201) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Update contact
+     * 
+     * @param string $contactId
+     * @param string $email
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $phone
+     * 
+     * @return bool
+     */
+    public function updateContact(string $contactId, string $email, string $firstName = '', string $lastName = '', string $phone = ''): bool
+    {
+        $ch = curl_init();
+
+        $body = ['contact' => [
+            'email' => $email,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'phone' => $phone
+        ]];
+
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts/'.$contactId);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array_filter($body)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        $data = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($statusCode == 200) {
             return true;
         } else {
             return false;
