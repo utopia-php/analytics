@@ -93,12 +93,14 @@ class AnalyticsTest extends TestCase
     public function testActiveCampaignGetContact() {
         $contactID = $this->ac->contactExists('test@test.com');
         $this->assertIsNumeric($contactID);
-        $this['contactID'] = $contactID;
-        return $this;
+
+        return [
+            'contactID' => $contactID,
+        ];
     }
 
-    public function testActiveCampaignUpdateContact() {
-        $this->assertTrue($this->ac->updateContact($this['contactID'], null, null, null, '7223224241'));
+    public function testActiveCampaignUpdateContact($data) {
+        $this->assertTrue($this->ac->updateContact($data['contactID'], null, null, null, '7223224241'));
     }
 
     public function testActiveCampaignDeleteContact() {
