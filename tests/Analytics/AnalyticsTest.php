@@ -99,6 +99,9 @@ class AnalyticsTest extends TestCase
         ];
     }
 
+    /**
+     * @depends testActiveCampaignGetContact
+     */
     public function testActiveCampaignUpdateContact($data) {
         $this->assertTrue($this->ac->updateContact($data['contactID'], null, null, null, '7223224241'));
     }
