@@ -147,6 +147,7 @@ class ActiveCampaign extends Adapter
     /**
      * Update contact
      * 
+     * @param string $contactId
      * @param string $email
      * @param string $firstName
      * @param string $lastName
@@ -154,7 +155,7 @@ class ActiveCampaign extends Adapter
      * 
      * @return bool
      */
-    public function updateContact(string $contactId, string $email = '', string $firstName = '', string $lastName = '', string $phone = ''): bool
+    public function updateContact(string $contactId, string $email, string $firstName = '', string $lastName = '', string $phone = ''): bool
     {
         $ch = curl_init();
 
@@ -174,7 +175,7 @@ class ActiveCampaign extends Adapter
             'Api-Token: '.$this->apiKey
         ]);
 
-        curl_exec($ch);
+        $data = curl_exec($ch);
 
         if (curl_errno($ch)) {
             return false;
