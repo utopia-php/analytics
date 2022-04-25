@@ -110,17 +110,46 @@ class AnalyticsTest extends TestCase
         $this->assertFalse($this->ac->createEvent($normalEvent));
     }
 
+    public function testActiveCampaignCreateAccount() {
+        $this->assertTrue($this->ac->createAccount(
+            'Appwrite',
+            'appwrite.io',
+            1,
+        ));
+    }
+
+    public function testActiveCampaignGetAccount() {
+        $accountID = $this->ac->accountExists('Appwrite');
+        $this->assertIsNumeric($accountID);
+
+        return [
+            'accountID' => $accountID,
+        ];
+    }
+
     public function testActiveCampaignCreateContact() {
         $this->assertTrue($this->ac->createContact('test@test.com', 'Paul', 'Van Doren'));
     }
 
-    public function testActiveCampaignGetContact() {
+    /**
+     * @depends testActiveCampaignGetAccount
+     */
+    public function testActiveCampaignGetContact($data) {
         $contactID = $this->ac->contactExists('test@test.com');
         $this->assertIsNumeric($contactID);
 
         return [
-            'contactID' => $contactID
+            'contactID' => $contactID,
+            'accountID' => $data['accountID'],
         ];
+    }
+
+    /**
+     * @depends testActiveCampaignGetContact
+     */
+    public function testActiveCampaignSyncAsociation($data) {
+        $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Owner'));
+        $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Software Developer'));
     }
 
     /**
@@ -132,5 +161,23 @@ class AnalyticsTest extends TestCase
 
     public function testActiveCampaignDeleteContact() {
         $this->assertTrue($this->ac->deleteContact('test@test.com'));
+    }
+
+    /**
+     * @depends testActiveCampaignGetAccount
+     */
+    public function testActiveCampaignUpdateAccount($data) {
+        $this->assertTrue($this->ac->updateAccount(
+            $data['accountID'], 
+            'Utopia', 
+            'utopia.com', 
+            1));
+    }
+
+    /**
+     * @depends testActiveCampaignGetAccount
+     */
+    public function testActiveCampaignDeleteAccount($data) {
+        $this->assertTrue($this->ac->deleteAccount($data['accountID']));
     }
 }
