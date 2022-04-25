@@ -225,6 +225,253 @@ class ActiveCampaign extends Adapter
     }
 
     /**
+     * Account Exists
+     * 
+     * @param string $domain
+     * @return bool|int
+     */
+    public function accountExists($name): bool|int
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accounts?'.http_build_query([
+            'search' => $name
+        ]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET' );
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        $body = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        if (intval(json_decode($body, true)['meta']['total']) > 0) {
+            return intval((json_decode($body, true))['accounts'][0]['id']);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Create an account
+     * 
+     * @param string $name
+     * @param string $url
+     * @param string $ownerID
+     * @param string $fields
+     * 
+     * @return bool
+     */
+    public function createAccount($name, $url = '', $ownerID = 1, $fields = []): bool
+    {
+        $ch = curl_init();
+
+        $body = ['account' => [
+            'name' => $name,
+            'accountUrl' => $url,
+            'owner' => $ownerID,
+            'fields' => $fields
+        ]];
+
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accounts');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array_filter($body)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($statusCode == 201) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Update an account
+     * 
+     * @param string $accountId
+     * @param string $name
+     * @param string $url
+     * @param int $ownerID
+     * @param array $fields
+     * 
+     * @return bool
+     */
+    public function updateAccount(string $accountId, string $name, string $url = '', int $ownerID = 1, array $fields = []): bool
+    {
+        $ch = curl_init();
+
+        $body = ['account' => [
+            'name' => $name,
+            'accountUrl' => $url,
+            'owner' => $ownerID,
+            'fields' => $fields
+        ]];
+
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accounts/'.$accountId);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array_filter($body)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        $data = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($statusCode == 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Delete an account
+     * 
+     * @param string $accountId
+     * 
+     * @return bool
+     */
+    public function deleteAccount(string $accountId): bool
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accounts/'.$accountId);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        if (curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Sync an association
+     * 
+     * Creates an association if it doesn't exist and updates it if it does
+     * 
+     * @param string $accountId
+     * @param string $contactId
+     * @param string $role
+     * 
+     * @return bool
+     */
+    public function syncAssociation(string $accountId, string $contactId, string $role = ''): bool
+    {
+        // See if the association already exists
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accountContacts?'.http_build_query([
+            'filters[account]' => $accountId,
+            'filters[contact]' => $contactId
+        ]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET' );
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Api-Token: '.$this->apiKey
+        ]);
+
+        $body = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return false;
+        }
+
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($statusCode !== 200) {
+            return false;
+        }
+
+        if (intval(json_decode($body, true)['meta']['total']) > 0) {
+            // Update the association
+            $associationId = intval((json_decode($body, true))['accountContacts'][0]['id']);
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accountContacts/'.$associationId);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT' );
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['accountContact' => [
+                'jobTitle' => $role
+            ]]));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Api-Token: '.$this->apiKey
+            ]);
+
+            curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                return false;
+            }
+
+            if (curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            // Create the association
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accountContacts');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['accountContact' => [
+                'account' => $accountId,
+                'contact' => $contactId,
+                'jobTitle' => $role
+            ]]));
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Api-Token: '.$this->apiKey
+            ]);
+
+            $body = curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                return false;
+            }
+
+            if (curl_getinfo($ch, CURLINFO_HTTP_CODE) === 201) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
      * @param string $key 
      * @param string $actid
      * Adapter configuration
