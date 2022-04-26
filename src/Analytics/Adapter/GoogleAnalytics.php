@@ -90,36 +90,15 @@ class GoogleAnalytics extends Adapter
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->endpoint);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded'
-        ]);
-        curl_setopt(
-            $ch,
-            CURLOPT_POSTFIELDS,
-            http_build_query(array_merge([
-                'tid' => $this->tid,
-                'cid' => $this->cid,
-                'v' => 1
-            ], $query))
-        );
-
-        $body = curl_exec($ch);
-
-        if (curl_error($ch) !== '') {
-            return false;
-        }
-
-        curl_close($ch);
+        $result = $this->call('POST', $this->endpoint, [], array_merge([
+            'tid' => $this->tid,
+            'cid' => $this->cid,
+            'v' => 1
+        ], $query));
 
         // Parse Debug data
         if ($this->endpoint == "https://www.google-analytics.com/debug/collect") {
-            return json_decode($body, true)["hitParsingResult"][0]["valid"];
+            return json_decode($result, true)["hitParsingResult"][0]["valid"];
         }
 
         return true;
