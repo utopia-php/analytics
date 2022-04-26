@@ -115,6 +115,12 @@ class AnalyticsTest extends TestCase
             'Appwrite',
             'appwrite.io',
             1,
+            [
+                [
+                    'customFieldId' => 1,
+                    'fieldValue' => 'Hello World!'
+                ],
+            ]
         ));
     }
 
