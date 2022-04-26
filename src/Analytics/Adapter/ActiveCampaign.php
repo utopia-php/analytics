@@ -47,12 +47,6 @@ class ActiveCampaign extends Adapter
     private string $apiKey;
 
     /**
-     * ActiveCampaign Organisation ID
-     * @var string
-     */
-    private string $organisationID;
-
-    /**
      * ActiveCampaign Email
      * @var string
      */
@@ -77,25 +71,19 @@ class ActiveCampaign extends Adapter
      */
     public function contactExists(string $email): bool|int
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts?'.http_build_query([
-            'email' => $email
-        ]));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET' );
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Api-Token: '.$this->apiKey
-        ]);
+        try {
+            $result = $this->call('GET', '/api/3/contacts', [], [
+                'email' => $email
+            ]);
 
-        $body = curl_exec($ch);
+            $result = json_decode($result, true);
 
-        if (curl_errno($ch)) {
-            return false;
-        }
-
-        if (json_decode($body, true)['meta']['total'] > 0) {
-            return (json_decode($body, true))['contacts'][0]['id'];
-        } else {
+            if ($result && $result['meta']['total'] > 0) {
+                return $result['contacts'][0]['id'];
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -111,8 +99,6 @@ class ActiveCampaign extends Adapter
      */
     public function createContact(string $email, string $firstName = '', string $lastName = '', string $phone = ''): bool
     {
-        $ch = curl_init();
-
         $body = ['contact' => [
             'email' => $email,
             'firstName' => $firstName,
@@ -120,26 +106,13 @@ class ActiveCampaign extends Adapter
             'phone' => $phone
         ]];
 
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array_filter($body)));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Api-Token: '.$this->apiKey
-        ]);
-
-        curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            return false;
-        }
-
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if ($statusCode == 201) {
+        try {
+            $this->call('POST', '/api/3/contacts', [
+                'content-type' => 'application/json'
+            ], $body);
             return true;
-        } else {
+        } catch (\Exception $e) {
+            throw $e;
             return false;
         }
     }
@@ -157,8 +130,6 @@ class ActiveCampaign extends Adapter
      */
     public function updateContact(string $contactId, string $email, string $firstName = '', string $lastName = '', string $phone = ''): bool
     {
-        $ch = curl_init();
-
         $body = ['contact' => [
             'email' => $email,
             'firstName' => $firstName,
@@ -166,26 +137,13 @@ class ActiveCampaign extends Adapter
             'phone' => $phone
         ]];
 
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts/'.$contactId);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array_filter($body)));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Api-Token: '.$this->apiKey
-        ]);
+        try {
+            $this->call('PUT', '/api/3/contacts/'.$contactId, [
+                'content-type' => 'application/json'
+            ], $body);
 
-        $data = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            return false;
-        }
-
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if ($statusCode == 200) {
             return true;
-        } else {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -203,23 +161,10 @@ class ActiveCampaign extends Adapter
             return false;
         }
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/contacts/'.$contact);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Api-Token: '.$this->apiKey
-        ]);
-
-        curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            return false;
-        }
-
-        if (curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200) {
+        try {
+            $this->call('DELETE', '/api/3/contacts/'.$contact);
             return true;
-        } else {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -232,25 +177,17 @@ class ActiveCampaign extends Adapter
      */
     public function accountExists($name): bool|int
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accounts?'.http_build_query([
-            'search' => $name
-        ]));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET' );
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Api-Token: '.$this->apiKey
-        ]);
+        try {
+            $result = $this->call('GET', '/api/3/accounts', [], [
+                'search' => $name
+            ]);
 
-        $body = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            return false;
-        }
-
-        if (intval(json_decode($body, true)['meta']['total']) > 0) {
-            return intval((json_decode($body, true))['accounts'][0]['id']);
-        } else {
+            if (intval(json_decode($result, true)['meta']['total']) > 0) {
+                return intval((json_decode($result, true))['accounts'][0]['id']);
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -267,35 +204,21 @@ class ActiveCampaign extends Adapter
      */
     public function createAccount($name, $url = '', $ownerID = 1, $fields = []): bool
     {
-        $ch = curl_init();
-
         $body = ['account' => [
             'name' => $name,
             'accountUrl' => $url,
             'owner' => $ownerID,
-            'fields' => $fields
+            'fields' => array_values(array_filter($fields, function($value) {
+                return $value['fieldValue'] !== '' && $value['fieldValue'] !== null && $value['fieldValue'] !== false;
+            }))
         ]];
 
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accounts');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array_filter($body)));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Api-Token: '.$this->apiKey
-        ]);
-
-        curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            return false;
-        }
-
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if ($statusCode == 201) {
+        try {
+            $this->call('POST', '/api/3/accounts', [
+                'content-type' => 'application/json'
+            ], $body);
             return true;
-        } else {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -313,35 +236,21 @@ class ActiveCampaign extends Adapter
      */
     public function updateAccount(string $accountId, string $name, string $url = '', int $ownerID = 1, array $fields = []): bool
     {
-        $ch = curl_init();
-
         $body = ['account' => [
             'name' => $name,
             'accountUrl' => $url,
             'owner' => $ownerID,
-            'fields' => $fields
+            'fields' => array_values(array_filter($fields, function($value) {
+                return $value['fieldValue'] !== '' && $value['fieldValue'] !== null && $value['fieldValue'] !== false;
+            }))
         ]];
 
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accounts/'.$accountId);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array_filter($body)));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Api-Token: '.$this->apiKey
-        ]);
-
-        $data = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            return false;
-        }
-
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if ($statusCode == 200) {
+        try {
+            $this->call('PUT', '/api/3/accounts/'.$accountId, [
+                'content-type' => 'application/json',
+            ], array_filter($body));
             return true;
-        } else {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -355,23 +264,10 @@ class ActiveCampaign extends Adapter
      */
     public function deleteAccount(string $accountId): bool
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accounts/'.$accountId);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Api-Token: '.$this->apiKey
-        ]);
-
-        curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            return false;
-        }
-
-        if (curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200) {
+        try {
+            $this->call('DELETE', '/api/3/accounts/'.$accountId);
             return true;
-        } else {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -390,91 +286,52 @@ class ActiveCampaign extends Adapter
     public function syncAssociation(string $accountId, string $contactId, string $role = ''): bool
     {
         // See if the association already exists
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accountContacts?'.http_build_query([
-            'filters[account]' => $accountId,
-            'filters[contact]' => $contactId
-        ]));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET' );
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Api-Token: '.$this->apiKey
-        ]);
 
-        $body = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            return false;
-        }
-
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if ($statusCode !== 200) {
-            return false;
-        }
-
-        if (intval(json_decode($body, true)['meta']['total']) > 0) {
-            // Update the association
-            $associationId = intval((json_decode($body, true))['accountContacts'][0]['id']);
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accountContacts/'.$associationId);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT' );
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['accountContact' => [
-                'jobTitle' => $role
-            ]]));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Api-Token: '.$this->apiKey
+        try {
+            $result = $this->call('GET', '/api/3/accountContacts', [], [
+                'filters[account]' => $accountId,
+                'filters[contact]' => $contactId
             ]);
+        } catch (\Exception $e) {
+            return false;
+        }
 
-            curl_exec($ch);
+        if (intval(json_decode($result, true)['meta']['total']) > 0) {
+            // Update the association
+            $associationId = intval((json_decode($result, true))['accountContacts'][0]['id']);
 
-            if (curl_errno($ch)) {
-                return false;
-            }
-
-            if (curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200) {
+            try {
+                $result = $this->call('PUT', '/api/3/accountContacts/'.$associationId, [
+                    'content-type' => 'application/json',
+                ], [
+                    'accountContact' => [
+                        'jobTitle' => $role
+                    ]
+                ]);
                 return true;
-            } else {
+            } catch (\Exception $e) {
                 return false;
             }
         } else {
             // Create the association
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://'.$this->organisationID.'.api-us1.com/api/3/accountContacts');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['accountContact' => [
+            $result = $this->call('POST', '/api/3/accountContacts', [
+                'content-type' => 'application/json',
+            ], ['accountContact' => [
                 'account' => $accountId,
                 'contact' => $contactId,
                 'jobTitle' => $role
-            ]]));
+            ]]);
 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Api-Token: '.$this->apiKey
-            ]);
-
-            $body = curl_exec($ch);
-
-            if (curl_errno($ch)) {
-                return false;
-            }
-
-            if (curl_getinfo($ch, CURLINFO_HTTP_CODE) === 201) {
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         }
     }
 
     /**
      * @param string $key 
      * @param string $actid
-     * Adapter configuration
+     * @param string $apiKey
+     * @param string $organisationID
+     * @param string $email
      * 
      * @return ActiveCampaign
      */
@@ -485,6 +342,11 @@ class ActiveCampaign extends Adapter
         $this->email = $email;
         $this->apiKey = $apiKey;
         $this->organisationID = $organisationID;
+        $this->endpoint = 'https://'.$organisationID.'.api-us1.com/';
+        $this->headers = [
+            'api-token' => $this->apiKey,
+            'content-type' => null
+        ];
     }
 
     /**
@@ -509,29 +371,11 @@ class ActiveCampaign extends Adapter
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->endpoint);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded'
-        ]);
-        curl_setopt(
-            $ch,
-            CURLOPT_POSTFIELDS,
-            http_build_query($query)
-        );
-
-        $body = curl_exec($ch);
-
-        if (curl_error($ch) !== '') {
+        try {
+            $this->call('POST', 'https://trackcmp.net/event', [], $query);
+            return true;
+        } catch (\Exception $e) {
             return false;
         }
-
-        curl_close($ch);
-
-        return true;
     }
 }
