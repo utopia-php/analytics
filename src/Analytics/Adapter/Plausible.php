@@ -27,6 +27,7 @@ class Plausible extends Adapter
 
     /**
      * Useragent to use for requests
+
      * @var string
      */
     protected string $userAgent = 'Utopia PHP Framework';
