@@ -115,12 +115,14 @@ class Plausible extends Adapter
             'name' => $event->getType(),
         ];
 
+        $headers = [
+            'X-Forwarded-For' => $this->clientIP,
+            'User-Agent' => $this->userAgent,
+            'Content-Type' => 'application/json'
+        ];
+
         try {
-            $this->call('POST', '/event', [
-                'X-Forwarded-For' => $this->clientIP,
-                'User-Agent' => $this->userAgent,
-                'Content-Type' => 'application/json'
-            ], $params);
+            $this->call('POST', '/event', $headers, $params);
             return true;
         } catch (\Exception $e) {
             return false;
