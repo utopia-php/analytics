@@ -131,7 +131,7 @@ class Plausible extends Adapter
     {
         try {
             $this->call('PUT', '/v1/sites/goals', [
-                'content-type' => null,
+                'Content-Type' => null,
                 'Authorization' => 'Bearer '.$this->apiKey
             ], [
                 'site_id' => $this->domain,
