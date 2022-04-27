@@ -15,6 +15,7 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
+use Utopia\CLI\Console;
 
 class Plausible extends Adapter
 {
@@ -125,6 +126,7 @@ class Plausible extends Adapter
             $this->call('POST', '/event', $headers, $params);
             return true;
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
