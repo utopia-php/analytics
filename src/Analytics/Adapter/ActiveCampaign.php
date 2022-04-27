@@ -36,6 +36,7 @@ class ActiveCampaign extends Adapter
 
     /**
      * ActiveCampaign actid.
+
      * @var string
      */
     private string $actid;
