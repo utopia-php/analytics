@@ -110,7 +110,7 @@ class ActiveCampaign extends Adapter
 
         try {
             $this->call('POST', '/api/3/contacts', [
-                'content-type' => 'application/json'
+                'Content-Type' => 'application/json'
             ], $body);
             return true;
         } catch (\Exception $e) {
@@ -141,7 +141,7 @@ class ActiveCampaign extends Adapter
 
         try {
             $this->call('PUT', '/api/3/contacts/'.$contactId, [
-                'content-type' => 'application/json'
+                'Content-Type' => 'application/json'
             ], $body);
 
             return true;
@@ -220,7 +220,7 @@ class ActiveCampaign extends Adapter
 
         try {
             $this->call('POST', '/api/3/accounts', [
-                'content-type' => 'application/json'
+                'Content-Type' => 'application/json'
             ], $body);
             return true;
         } catch (\Exception $e) {
@@ -253,7 +253,7 @@ class ActiveCampaign extends Adapter
 
         try {
             $this->call('PUT', '/api/3/accounts/'.$accountId, [
-                'content-type' => 'application/json',
+                'Content-Type' => 'application/json',
             ], array_filter($body));
             return true;
         } catch (\Exception $e) {
@@ -311,7 +311,7 @@ class ActiveCampaign extends Adapter
 
             try {
                 $result = $this->call('PUT', '/api/3/accountContacts/'.$associationId, [
-                    'content-type' => 'application/json',
+                    'Content-Type' => 'application/json',
                 ], [
                     'accountContact' => [
                         'jobTitle' => $role
@@ -325,7 +325,7 @@ class ActiveCampaign extends Adapter
         } else {
             // Create the association
             $result = $this->call('POST', '/api/3/accountContacts', [
-                'content-type' => 'application/json',
+                'Content-Type' => 'application/json',
             ], ['accountContact' => [
                 'account' => $accountId,
                 'contact' => $contactId,
@@ -355,7 +355,7 @@ class ActiveCampaign extends Adapter
         $this->endpoint = 'https://'.$organisationID.'.api-us1.com/';
         $this->headers = [
             'api-token' => $this->apiKey,
-            'content-type' => null
+            'Content-Type' => null
         ];
     }
 
