@@ -19,6 +19,7 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
+use Utopia\CLI\Console;
 
 class ActiveCampaign extends Adapter
 {
@@ -84,6 +85,7 @@ class ActiveCampaign extends Adapter
                 return false;
             }
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
@@ -112,7 +114,7 @@ class ActiveCampaign extends Adapter
             ], $body);
             return true;
         } catch (\Exception $e) {
-            throw $e;
+            Console::error($e->getMessage());
             return false;
         }
     }
@@ -144,6 +146,7 @@ class ActiveCampaign extends Adapter
 
             return true;
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
@@ -165,6 +168,7 @@ class ActiveCampaign extends Adapter
             $this->call('DELETE', '/api/3/contacts/'.$contact);
             return true;
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
@@ -188,6 +192,7 @@ class ActiveCampaign extends Adapter
                 return false;
             }
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
@@ -197,8 +202,8 @@ class ActiveCampaign extends Adapter
      * 
      * @param string $name
      * @param string $url
-     * @param string $ownerID
-     * @param string $fields
+     * @param int $ownerID
+     * @param array $fields
      * 
      * @return bool
      */
@@ -219,6 +224,7 @@ class ActiveCampaign extends Adapter
             ], $body);
             return true;
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
@@ -251,6 +257,7 @@ class ActiveCampaign extends Adapter
             ], array_filter($body));
             return true;
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
@@ -268,6 +275,7 @@ class ActiveCampaign extends Adapter
             $this->call('DELETE', '/api/3/accounts/'.$accountId);
             return true;
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
@@ -293,6 +301,7 @@ class ActiveCampaign extends Adapter
                 'filters[contact]' => $contactId
             ]);
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
 
@@ -310,6 +319,7 @@ class ActiveCampaign extends Adapter
                 ]);
                 return true;
             } catch (\Exception $e) {
+                Console::error($e->getMessage());
                 return false;
             }
         } else {
@@ -375,6 +385,7 @@ class ActiveCampaign extends Adapter
             $this->call('POST', 'https://trackcmp.net/event', [], $query);
             return true;
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
