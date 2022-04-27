@@ -30,6 +30,7 @@ class ActiveCampaign extends Adapter
 
     /**
      * Event Key for ActiveCampaign
+
      * @var string
      */
     private string $key;
