@@ -20,6 +20,7 @@ class Plausible extends Adapter
 {
     /**
      *  Endpoint for Plausible
+
      *  @var string
      */
     protected string $endpoint = 'https://plausible.io/api';
