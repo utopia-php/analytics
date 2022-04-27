@@ -135,11 +135,13 @@ class Plausible extends Adapter
             'event_name' => $eventName,
         ];
 
+        $headers = [
+            'Content-Type' => null,
+            'Authorization' => 'Bearer '.$this->apiKey
+        ];
+
         try {
-            $this->call('PUT', '/v1/sites/goals', [
-                'Content-Type' => null,
-                'Authorization' => 'Bearer '.$this->apiKey
-            ], $params);
+            $this->call('PUT', '/v1/sites/goals', $headers, $params);
             return true;
         } catch (\Exception $e) {
             throw $e;
