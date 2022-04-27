@@ -108,7 +108,7 @@ class Plausible extends Adapter
             return false;
         }
 
-        $query = [
+        $params = [
             'url' => $event->getUrl(),
             'props' => $event->getProps(),
             'domain' => $this->domain,
