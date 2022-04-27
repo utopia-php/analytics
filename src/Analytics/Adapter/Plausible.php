@@ -39,6 +39,7 @@ class Plausible extends Adapter
 
     /**
      * Plausible API key
+
      * @var string
      */
     protected string $apiKey;
