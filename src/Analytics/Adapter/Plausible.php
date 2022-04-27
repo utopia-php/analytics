@@ -129,15 +129,17 @@ class Plausible extends Adapter
 
     private function provisionGoal(string $eventName)
     {
+        $params = [
+            'site_id' => $this->domain,
+            'goal_type' => 'event',
+            'event_name' => $eventName,
+        ];
+
         try {
             $this->call('PUT', '/v1/sites/goals', [
                 'Content-Type' => null,
                 'Authorization' => 'Bearer '.$this->apiKey
-            ], [
-                'site_id' => $this->domain,
-                'goal_type' => 'event',
-                'event_name' => $eventName,
-            ]);
+            ], $params);
             return true;
         } catch (\Exception $e) {
             throw $e;
