@@ -120,7 +120,7 @@ class Plausible extends Adapter
                 'X-Forwarded-For' => $this->clientIP,
                 'User-Agent' => $this->userAgent,
                 'Content-Type' => 'application/json'
-            ], $query);
+            ], $params);
             return true;
         } catch (\Exception $e) {
             return false;
