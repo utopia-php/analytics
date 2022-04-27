@@ -24,6 +24,7 @@ class ActiveCampaign extends Adapter
 {
     /**
      *  Endpoint for ActiveCampaign
+
      *  @var string
      */
     public string $endpoint = 'https://trackcmp.net/event';
