@@ -30,7 +30,6 @@ class AnalyticsTest extends TestCase
     public function setUp(): void
     {
         $this->ga = new GoogleAnalytics("UA-XXXXXXXXX-X", "test");
-        $this->ac = new ActiveCampaign("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxx");
         $this->pa = new Plausible("testdomain", "UA-XXXXXXXXX-X", "test");
     }
 
@@ -78,30 +77,5 @@ class AnalyticsTest extends TestCase
          $this->pa->disable();
          $this->assertFalse($this->pa->createEvent($pageviewEvent));
          $this->assertFalse($this->pa->createEvent($normalEvent));
-    }
-
-    public function testActiveCampaign()
-    {
-        $pageviewEvent = new Event();
-        $pageviewEvent
-            ->setType('pageview')
-            ->setName('pageview')
-            ->addProp('uid', 'test')
-            ->setUrl('https://www.appwrite.io/docs/installation');
-
-        $normalEvent = new Event();
-        $normalEvent->setType('testEvent')
-            ->setName('testEvent')
-            ->setValue('testEvent')
-            ->addProp('category', 'testEvent')
-            ->addProp('email', 'test@test.com')
-            ->setUrl('https://www.appwrite.io/docs/installation');
-
-        $this->assertTrue($this->ac->createEvent($pageviewEvent));
-        $this->assertTrue($this->ac->createEvent($normalEvent));
-
-        $this->ac->disable();
-        $this->assertFalse($this->ac->createEvent($pageviewEvent));
-        $this->assertFalse($this->ac->createEvent($normalEvent));
     }
 }
