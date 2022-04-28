@@ -30,7 +30,7 @@ class AnalyticsTest extends TestCase
     public function setUp(): void
     {
         $this->ga = new GoogleAnalytics("UA-XXXXXXXXX-X", "test");
-        $this->pa = new Plausible("testdomain", "UA-XXXXXXXXX-X", "test");
+        $this->pa = new Plausible("testdomain", "UA-XXXXXXXXX-X", "test", "192.168.0.1");
     }
 
     public function testGoogleAnalytics()
