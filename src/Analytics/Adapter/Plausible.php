@@ -148,7 +148,7 @@ class Plausible extends Adapter
             $this->call('PUT', '/v1/sites/goals', $headers, $params);
             return true;
         } catch (\Exception $e) {
-            throw $e;
+            Console::error($e->getMessage());
             return false;
         }
     }
