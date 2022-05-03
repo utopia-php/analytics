@@ -157,7 +157,7 @@ class ActiveCampaign extends Adapter
      * @param string $email
      * @return bool
      */
-    public function deleteContact($email): bool {
+    public function deleteContact(string $email): bool {
         $contact = $this->contactExists($email);
 
         if (!$contact) {
