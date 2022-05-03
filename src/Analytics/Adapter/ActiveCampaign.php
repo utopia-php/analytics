@@ -207,7 +207,7 @@ class ActiveCampaign extends Adapter
      * 
      * @return bool
      */
-    public function createAccount($name, $url = '', $ownerID = 1, $fields = []): bool
+    public function createAccount(string $name, string $url = '', int $ownerID = 1, array $fields = []): bool
     {
         $body = ['account' => [
             'name' => $name,
