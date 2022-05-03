@@ -74,7 +74,7 @@ abstract class Adapter
      * @return array|string
      * @throws \Exception
      */
-    public function call($method, $path = '', $headers = array(), array $params = array())
+    public function call(string $method, $path = '', $headers = array(), array $params = array())
     {
         $headers            = array_merge($this->headers, $headers);
         $ch                 = curl_init((str_contains($path, 'http') ? $path : $this->endpoint . $path . (($method == 'GET' && !empty($params)) ? '?' . http_build_query($params) : '')));
