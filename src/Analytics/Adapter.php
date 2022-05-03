@@ -14,8 +14,6 @@
 
 namespace Utopia\Analytics;
 
-use Exception;
-
 abstract class Adapter
 {
     protected bool $enabled = true;
@@ -74,7 +72,7 @@ abstract class Adapter
      * @param array $params
      * @param array $headers
      * @return array|string
-     * @throws Exception
+     * @throws \Exception
      */
     public function call($method, $path = '', $headers = array(), array $params = array())
     {
@@ -137,16 +135,16 @@ abstract class Adapter
         }
 
         if (curl_errno($ch)) {
-            throw new Exception(curl_error($ch));
+            throw new \Exception(curl_error($ch));
         }
         
         curl_close($ch);
 
         if($responseStatus >= 400) {
             if(is_array($responseBody)) {
-                throw new Exception(json_encode($responseBody));
+                throw new \Exception(json_encode($responseBody));
             } else {
-                throw new Exception($responseStatus . ': ' . $responseBody);
+                throw new \Exception($responseStatus . ': ' . $responseBody);
             }
         }
 
