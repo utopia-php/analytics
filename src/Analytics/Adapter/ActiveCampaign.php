@@ -27,7 +27,7 @@ class ActiveCampaign extends Adapter
      *  Endpoint for ActiveCampaign
      *  @var string
      */
-    public string $endpoint = 'https://trackcmp.net/event';
+    public string $endpoint;
 
     /**
      * Event Key for ActiveCampaign
@@ -46,12 +46,6 @@ class ActiveCampaign extends Adapter
      * @var string
      */
     private string $apiKey;
-
-    /**
-     * ActiveCampaign Email
-     * @var string
-     */
-    private string $email;
 
     /**
      * Gets the name of the adapter.
@@ -176,10 +170,10 @@ class ActiveCampaign extends Adapter
     /**
      * Account Exists
      * 
-     * @param string $domain
+     * @param string $name
      * @return bool|int
      */
-    public function accountExists($name): bool|int
+    public function accountExists(string $name): bool|int
     {
         try {
             $result = $this->call('GET', '/api/3/accounts', [], [
@@ -341,18 +335,15 @@ class ActiveCampaign extends Adapter
      * @param string $actid
      * @param string $apiKey
      * @param string $organisationID
-     * @param string $email
      * 
      * @return ActiveCampaign
      */
-    public function __construct(string $key, string $actid, string $apiKey, string $organisationID, string $email)
+    public function __construct(string $key, string $actid, string $apiKey, string $organisationID)
     {
         $this->key = $key;
         $this->actid = $actid;
-        $this->email = $email;
         $this->apiKey = $apiKey;
-        $this->organisationID = $organisationID;
-        $this->endpoint = 'https://'.$organisationID.'.api-us1.com/';
+        $this->endpoint = 'https://'.$organisationID.'.api-us1.com/'; // ActiveCampaign API URL, Refer to https://developers.activecampaign.com/reference/url for more details.
         $this->headers = [
             'api-token' => $this->apiKey,
             'Content-Type' => null
@@ -382,7 +373,7 @@ class ActiveCampaign extends Adapter
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 
         try {
-            $this->call('POST', 'https://trackcmp.net/event', [], $query);
+            $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
             return true;
         } catch (\Exception $e) {
             Console::error($e->getMessage());
