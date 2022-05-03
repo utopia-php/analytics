@@ -79,7 +79,11 @@ class ActiveCampaign extends Adapter
                 return false;
             }
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
@@ -108,7 +112,11 @@ class ActiveCampaign extends Adapter
             ], $body);
             return true;
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
@@ -140,7 +148,11 @@ class ActiveCampaign extends Adapter
 
             return true;
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
@@ -162,7 +174,11 @@ class ActiveCampaign extends Adapter
             $this->call('DELETE', '/api/3/contacts/'.$contact);
             return true;
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
@@ -186,7 +202,11 @@ class ActiveCampaign extends Adapter
                 return false;
             }
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
@@ -218,7 +238,11 @@ class ActiveCampaign extends Adapter
             ], $body);
             return true;
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
@@ -251,7 +275,11 @@ class ActiveCampaign extends Adapter
             ], array_filter($body));
             return true;
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
@@ -269,7 +297,11 @@ class ActiveCampaign extends Adapter
             $this->call('DELETE', '/api/3/accounts/'.$accountId);
             return true;
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
@@ -295,7 +327,11 @@ class ActiveCampaign extends Adapter
                 'filters[contact]' => $contactId
             ]);
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
 
@@ -313,7 +349,11 @@ class ActiveCampaign extends Adapter
                 ]);
                 return true;
             } catch (\Exception $e) {
-                Console::error($e->getMessage());
+                Console::error('[Error] ActiveCampaign Analytics Error: ');
+                Console::error('[Error] Type: ' . get_class($e));
+                Console::error('[Error] Message: ' . $e->getMessage());
+                Console::error('[Error] File: ' . $e->getFile());
+                Console::error('[Error] Line: ' . $e->getLine());
                 return false;
             }
         } else {
@@ -376,7 +416,11 @@ class ActiveCampaign extends Adapter
             $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
             return true;
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] ActiveCampaign Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
