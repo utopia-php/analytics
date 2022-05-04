@@ -126,11 +126,21 @@ class Plausible extends Adapter
             $this->call('POST', '/event', $headers, $params);
             return true;
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] Plausible Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
 
+    /**
+     * Provision a goal for the given event.
+     * 
+     * @param string $eventName
+     * @return bool
+     */
     private function provisionGoal(string $eventName)
     {
         $params = [
@@ -148,7 +158,11 @@ class Plausible extends Adapter
             $this->call('PUT', '/v1/sites/goals', $headers, $params);
             return true;
         } catch (\Exception $e) {
-            Console::error($e->getMessage());
+            Console::error('[Error] Plausible Analytics Error: ');
+            Console::error('[Error] Type: ' . get_class($e));
+            Console::error('[Error] Message: ' . $e->getMessage());
+            Console::error('[Error] File: ' . $e->getFile());
+            Console::error('[Error] Line: ' . $e->getLine());
             return false;
         }
     }
