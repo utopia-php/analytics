@@ -14,8 +14,6 @@
 
 namespace Utopia\Analytics;
 
-use Exception;
-
 abstract class Adapter
 {
     protected bool $enabled = true;
@@ -127,6 +125,7 @@ abstract class Adapter
         }
 
         $responseBody   = curl_exec($ch);
+
         $responseType   = $responseHeaders['Content-Type'] ?? '';
         $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         
