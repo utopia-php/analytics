@@ -14,6 +14,8 @@
 
 namespace Utopia\Analytics;
 
+use Utopia\CLI\Console;
+
 abstract class Adapter
 {
     protected bool $enabled = true;
@@ -177,4 +179,14 @@ abstract class Adapter
         return $output;
     }
 
+    /**
+     * Log Error
+     */
+    protected function logError($e) {
+        Console::error('[Error] '.$this->getName().' Error: ');
+        Console::error('[Error] Type: ' . get_class($e));
+        Console::error('[Error] Message: ' . $e->getMessage());
+        Console::error('[Error] File: ' . $e->getFile());
+        Console::error('[Error] Line: ' . $e->getLine());
+    }
 }

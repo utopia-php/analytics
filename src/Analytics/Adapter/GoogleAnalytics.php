@@ -45,7 +45,7 @@ class GoogleAnalytics extends Adapter
      */
     public function getName(): string
     {
-        return 'GoogleAnalytics';
+        return 'Google Analytics';
     }
 
     /**
@@ -98,11 +98,7 @@ class GoogleAnalytics extends Adapter
                 'v' => 1
             ], $query));
         } catch (\Exception $e) {
-            Console::error('[Error] Google Analytics Error: ');
-            Console::error('[Error] Type: ' . get_class($e));
-            Console::error('[Error] Message: ' . $e->getMessage());
-            Console::error('[Error] File: ' . $e->getFile());
-            Console::error('[Error] Line: ' . $e->getLine());
+            $this->logError($e);
             return false;
         }
 
