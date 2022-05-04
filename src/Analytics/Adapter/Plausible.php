@@ -15,17 +15,20 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
+use Utopia\CLI\Console;
 
 class Plausible extends Adapter
 {
     /**
      *  Endpoint for Plausible
+
      *  @var string
      */
     protected string $endpoint = 'https://plausible.io/api';
 
     /**
      * Useragent to use for requests
+
      * @var string
      */
     protected string $userAgent = 'Utopia PHP Framework';
@@ -39,6 +42,7 @@ class Plausible extends Adapter
 
     /**
      * Plausible API key
+
      * @var string
      */
     protected string $apiKey;
@@ -105,39 +109,46 @@ class Plausible extends Adapter
             return false;
         }
 
-        $query = [
+        $params = [
             'url' => $event->getUrl(),
             'props' => $event->getProps(),
             'domain' => $this->domain,
             'name' => $event->getType(),
         ];
 
+        $headers = [
+            'X-Forwarded-For' => $this->clientIP,
+            'User-Agent' => $this->userAgent,
+            'Content-Type' => 'application/json'
+        ];
+
         try {
-            $this->call('POST', '/event', [
-                'X-Forwarded-For' => $this->clientIP,
-                'User-Agent' => $this->userAgent,
-                'content-type' => 'application/json'
-            ], $query);
+            $this->call('POST', '/event', $headers, $params);
             return true;
         } catch (\Exception $e) {
+            Console::error($e->getMessage());
             return false;
         }
     }
 
     private function provisionGoal(string $eventName)
     {
+        $params = [
+            'site_id' => $this->domain,
+            'goal_type' => 'event',
+            'event_name' => $eventName,
+        ];
+
+        $headers = [
+            'Content-Type' => null,
+            'Authorization' => 'Bearer '.$this->apiKey
+        ];
+
         try {
-            $this->call('PUT', '/v1/sites/goals', [
-                'content-type' => null,
-                'Authorization' => 'Bearer '.$this->apiKey
-            ], [
-                'site_id' => $this->domain,
-                'goal_type' => 'event',
-                'event_name' => $eventName,
-            ]);
+            $this->call('PUT', '/v1/sites/goals', $headers, $params);
             return true;
         } catch (\Exception $e) {
-            throw $e;
+            Console::error($e->getMessage());
             return false;
         }
     }

@@ -15,7 +15,6 @@
 namespace Utopia\Tests;
 
 use PHPUnit\Framework\TestCase;
-
 use Utopia\Analytics\Adapter\ActiveCampaign;
 use Utopia\Analytics\Adapter\GoogleAnalytics;
 use Utopia\Analytics\Adapter\Plausible;
@@ -83,31 +82,6 @@ class AnalyticsTest extends TestCase
          $this->pa->disable();
          $this->assertFalse($this->pa->createEvent($pageviewEvent));
          $this->assertFalse($this->pa->createEvent($normalEvent));
-    }
-
-    public function testActiveCampaign()
-    {
-        $pageviewEvent = new Event();
-        $pageviewEvent
-            ->setType('pageview')
-            ->setName('pageview')
-            ->addProp('uid', 'test')
-            ->setUrl('https://www.appwrite.io/docs/installation');
-
-        $normalEvent = new Event();
-        $normalEvent->setType('testEvent')
-            ->setName('testEvent')
-            ->setValue('testEvent')
-            ->addProp('category', 'testEvent')
-            ->addProp('email', 'test@test.com')
-            ->setUrl('https://www.appwrite.io/docs/installation');
-
-        $this->assertTrue($this->ac->createEvent($pageviewEvent));
-        $this->assertTrue($this->ac->createEvent($normalEvent));
-
-        $this->ac->disable();
-        $this->assertFalse($this->ac->createEvent($pageviewEvent));
-        $this->assertFalse($this->ac->createEvent($normalEvent));
     }
 
     public function testActiveCampaignCreateAccount() {

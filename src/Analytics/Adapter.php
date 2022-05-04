@@ -33,7 +33,7 @@ abstract class Adapter
      * @var array
      */
     protected $headers = [
-        'content-type' => '',
+        'Content-Type' => '',
     ];
 
     /**
@@ -74,9 +74,9 @@ abstract class Adapter
      * @param array $params
      * @param array $headers
      * @return array|string
-     * @throws Exception
+     * @throws \Exception
      */
-    public function call($method, $path = '', $headers = array(), array $params = array())
+    public function call(string $method, string $path = '', array $headers = array(), array $params = array()): array|string
     {
         $headers            = array_merge($this->headers, $headers);
         $ch                 = curl_init((str_contains($path, 'http') ? $path : $this->endpoint . $path . (($method == 'GET' && !empty($params)) ? '?' . http_build_query($params) : '')));
@@ -85,7 +85,7 @@ abstract class Adapter
         $responseType       = '';
         $responseBody       = '';
 
-        switch ($headers['content-type']) {
+        switch ($headers['Content-Type']) {
             case 'application/json':
                 $query = json_encode($params);
                 break;
@@ -127,7 +127,7 @@ abstract class Adapter
         }
 
         $responseBody   = curl_exec($ch);
-        $responseType   = $responseHeaders['content-type'] ?? '';
+        $responseType   = $responseHeaders['Content-Type'] ?? '';
         $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         
         switch(substr($responseType, 0, strpos($responseType, ';'))) {
@@ -137,16 +137,16 @@ abstract class Adapter
         }
 
         if (curl_errno($ch)) {
-            throw new Exception(curl_error($ch));
+            throw new \Exception(curl_error($ch));
         }
         
         curl_close($ch);
 
         if($responseStatus >= 400) {
             if(is_array($responseBody)) {
-                throw new Exception(json_encode($responseBody));
+                throw new \Exception(json_encode($responseBody));
             } else {
-                throw new Exception($responseStatus . ': ' . $responseBody);
+                throw new \Exception($responseStatus . ': ' . $responseBody);
             }
         }
 
