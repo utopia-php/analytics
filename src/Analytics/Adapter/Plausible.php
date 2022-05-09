@@ -96,7 +96,7 @@ class Plausible extends Adapter
      * 
      * @return bool
      */
-    public function createEvent(Event $event): bool
+    public function send(Event $event): bool
     {
         if (!$this->enabled) {
             return false;

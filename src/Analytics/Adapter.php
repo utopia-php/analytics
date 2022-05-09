@@ -14,6 +14,7 @@
 
 namespace Utopia\Analytics;
 
+use Exception;
 use Utopia\CLI\Console;
 
 abstract class Adapter
@@ -57,12 +58,28 @@ abstract class Adapter
     }
 
     /**
+     * Send the event to the adapter.
+     * 
+     * @param Event $event
+     * @return bool
+     */
+    public abstract function send(Event $event): bool;
+
+    /**
      * Creates an Event on the remote analytics platform.
      * 
      * @param Event $event
      * @return bool
      */
-    abstract public function createEvent(Event $event): bool;
+    public function createEvent(Event $event): bool
+    {
+        try {
+            return $this->send($event);
+        } catch (\Exception $e) {
+            $this->logError($e);
+            return false;
+        }
+    }
 
     /**
      * Call
@@ -181,8 +198,11 @@ abstract class Adapter
 
     /**
      * Log Error
+     * 
+     * @param Exception $e
+     * @return void
      */
-    protected function logError(Throwable $e) {
+    protected function logError(Exception $e) {
         Console::error('[Error] ' . $this->getName() . ' Error: ');
         Console::error('[Error] Type: ' . get_class($e));
         Console::error('[Error] Message: ' . $e->getMessage());
