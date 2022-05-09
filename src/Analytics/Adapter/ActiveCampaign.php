@@ -59,7 +59,7 @@ class ActiveCampaign extends Adapter
 
 
     /**
-     * Checks if a contact exists and returns a bool if it does.
+     * Checks if a contact exists by the email ID. Returns the User ID if it exists and false if it doesn't.
      * 
      * @param string $email
      * @return bool|int
