@@ -84,11 +84,8 @@ class Plausible extends Adapter
     public function __construct(string $domain, string $apiKey, string $useragent, string $clientIP)
     {
         $this->domain = $domain;
-
         $this->apiKey = $apiKey;
-
         $this->userAgent = $useragent;
-
         $this->clientIP = $clientIP;
     }
 
