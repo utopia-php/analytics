@@ -16,7 +16,6 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
-use Utopia\CLI\Console;
 
 class GoogleAnalytics extends Adapter
 {
@@ -91,16 +90,11 @@ class GoogleAnalytics extends Adapter
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 
-        try {
-            $result = $this->call('POST', $this->endpoint, [], array_merge([
-                'tid' => $this->tid,
-                'cid' => $this->cid,
-                'v' => 1
-            ], $query));
-        } catch (\Exception $e) {
-            $this->logError($e);
-            return false;
-        }
+        $result = $this->call('POST', $this->endpoint, [], array_merge([
+            'tid' => $this->tid,
+            'cid' => $this->cid,
+            'v' => 1
+        ], $query));
 
         // Parse Debug data
         if ($this->endpoint == "https://www.google-analytics.com/debug/collect") {

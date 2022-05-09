@@ -39,7 +39,7 @@ class ActiveCampaign extends Adapter
      * ActiveCampaign actid.
      * @var string
      */
-    private string $actid;
+    private string $actId;
 
     /**
      * ActiveCampaign apiKey
@@ -196,17 +196,17 @@ class ActiveCampaign extends Adapter
      * 
      * @param string $name
      * @param string $url
-     * @param int $ownerID
+     * @param int $ownerId
      * @param array $fields
      * 
      * @return bool
      */
-    public function createAccount(string $name, string $url = '', int $ownerID = 1, array $fields = []): bool
+    public function createAccount(string $name, string $url = '', int $ownerId = 1, array $fields = []): bool
     {
         $body = ['account' => [
             'name' => $name,
             'accountUrl' => $url,
-            'owner' => $ownerID,
+            'owner' => $ownerId,
             'fields' => array_values(array_filter($fields, function($value) {
                 return $value['fieldValue'] !== '' && $value['fieldValue'] !== null && $value['fieldValue'] !== false;
             }))
@@ -229,17 +229,17 @@ class ActiveCampaign extends Adapter
      * @param string $accountId
      * @param string $name
      * @param string $url
-     * @param int $ownerID
+     * @param int $ownerId
      * @param array $fields
      * 
      * @return bool
      */
-    public function updateAccount(string $accountId, string $name, string $url = '', int $ownerID = 1, array $fields = []): bool
+    public function updateAccount(string $accountId, string $name, string $url = '', int $ownerId = 1, array $fields = []): bool
     {
         $body = ['account' => [
             'name' => $name,
             'accountUrl' => $url,
-            'owner' => $ownerID,
+            'owner' => $ownerId,
             'fields' => array_values(array_filter($fields, function($value) {
                 return $value['fieldValue'] !== '' && $value['fieldValue'] !== null && $value['fieldValue'] !== false;
             }))
@@ -332,18 +332,18 @@ class ActiveCampaign extends Adapter
 
     /**
      * @param string $key 
-     * @param string $actid
+     * @param string $actId
      * @param string $apiKey
-     * @param string $organisationID
+     * @param string $organisationId
      * 
      * @return ActiveCampaign
      */
-    public function __construct(string $key, string $actid, string $apiKey, string $organisationID)
+    public function __construct(string $key, string $actId, string $apiKey, string $organisationId)
     {
         $this->key = $key;
-        $this->actid = $actid;
+        $this->actId = $actId;
         $this->apiKey = $apiKey;
-        $this->endpoint = 'https://' . $organisationID . '.api-us1.com/'; // ActiveCampaign API URL, Refer to https://developers.activecampaign.com/reference/url for more details.
+        $this->endpoint = 'https://' . $organisationId . '.api-us1.com/'; // ActiveCampaign API URL, Refer to https://developers.activecampaign.com/reference/url for more details.
         $this->headers = [
             'Api-Token' => $this->apiKey,
             'Content-Type' => null
@@ -365,19 +365,14 @@ class ActiveCampaign extends Adapter
         $query = [
             'key' => $this->key,
             'event' => $event->getName(),
-            'actid' => $this->actid,
+            'actid' => $this->actId,
             'eventdata' => json_encode($event->getProps()),
             'visit' => json_encode(['email' => $event->getProp('email')]),
         ];
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 
-        try {
-            $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
-            return true;
-        } catch (\Exception $e) {
-            $this->logError($e);
-            return false;
-        }
+        $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
+        return true;
     }
 }

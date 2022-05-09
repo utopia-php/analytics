@@ -119,13 +119,8 @@ class Plausible extends Adapter
             'Content-Type' => 'application/json'
         ];
 
-        try {
-            $this->call('POST', '/event', $headers, $params);
-            return true;
-        } catch (\Exception $e) {
-            $this->logError($e);
-            return false;
-        }
+        $this->call('POST', '/event', $headers, $params);
+        return true;
     }
 
     /**
