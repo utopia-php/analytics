@@ -74,7 +74,7 @@ class GoogleAnalytics extends Adapter
         }
 
         if ($event->getType() !== 'pageview') {
-            $event->setProps( array_merge($event->getProps(), ['action' => $event->getType()]));
+            $event->setProps(array_merge($event->getProps(), ['action' => $event->getType()]));
             $event->setType('event');
         }
 
