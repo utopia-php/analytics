@@ -182,7 +182,7 @@ abstract class Adapter
     /**
      * Log Error
      */
-    protected function logError($e) {
+    protected function logError(Throwable $e) {
         Console::error('[Error] ' . $this->getName() . ' Error: ');
         Console::error('[Error] Type: ' . get_class($e));
         Console::error('[Error] Message: ' . $e->getMessage());
