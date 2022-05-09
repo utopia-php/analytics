@@ -134,7 +134,7 @@ class Plausible extends Adapter
      * @param string $eventName
      * @return bool
      */
-    private function provisionGoal(string $eventName)
+    private function provisionGoal(string $eventName): bool
     {
         $params = [
             'site_id' => $this->domain,
