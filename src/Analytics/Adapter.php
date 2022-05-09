@@ -162,7 +162,7 @@ abstract class Adapter
      * @param string $prefix
      * @return array
      */
-    protected function flatten(array $data, $prefix = '') {
+    protected function flatten(array $data, string $prefix = ''): array {
         $output = [];
 
         foreach($data as $key => $value) {
