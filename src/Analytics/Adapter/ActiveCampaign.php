@@ -345,7 +345,7 @@ class ActiveCampaign extends Adapter
         $this->apiKey = $apiKey;
         $this->endpoint = 'https://'.$organisationID.'.api-us1.com/'; // ActiveCampaign API URL, Refer to https://developers.activecampaign.com/reference/url for more details.
         $this->headers = [
-            'api-token' => $this->apiKey,
+            'Api-Token' => $this->apiKey,
             'Content-Type' => null
         ];
     }
