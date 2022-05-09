@@ -19,7 +19,7 @@
         "psr-4": {"Utopia\\Analytics\\": "src/Analytics"}
     },
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "utopia-php/cli": "^0.13.0"
     },
     "require-dev": {
