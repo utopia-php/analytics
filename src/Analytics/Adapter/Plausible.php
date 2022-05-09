@@ -142,12 +142,7 @@ class Plausible extends Adapter
             'Authorization' => 'Bearer '.$this->apiKey
         ];
 
-        try {
-            $this->call('PUT', '/v1/sites/goals', $headers, $params);
-            return true;
-        } catch (\Exception $e) {
-            $this->logError($e);
-            return false;
-        }
+        $this->call('PUT', '/v1/sites/goals', $headers, $params);
+        return true;
     }
 }
