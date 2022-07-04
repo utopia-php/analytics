@@ -37,7 +37,7 @@ class AnalyticsTest extends TestCase
             getenv("AC_ORGID"));
         $this->pa = new Plausible(getenv("PA_DOMAIN"), getenv("PA_APIKEY"), 
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "192.168.0.1");
-        $this->or = new Orbit(getenv("OR_WORKSPACEID"), getenv("OR_APIKEY"), "Utopia Testing Suite");
+        $this->orbit = new Orbit(getenv("OR_WORKSPACEID"), getenv("OR_APIKEY"), "Utopia Testing Suite");
     }
 
     public function testGoogleAnalytics()
