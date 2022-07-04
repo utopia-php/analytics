@@ -26,6 +26,7 @@ class AnalyticsTest extends TestCase
     public $ga;
     public $ac;
     public $pa;
+    public $orbit;
 
     public function setUp(): void
     {
@@ -169,6 +170,6 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent', 'email' => 'test@test.com']);
 
-        $this->assertTrue($this->or->send($event));
+        $this->assertTrue($this->orbit->send($event));
     }
 }
