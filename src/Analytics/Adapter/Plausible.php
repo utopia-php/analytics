@@ -102,7 +102,7 @@ class Plausible extends Adapter
             return false;
         }
 
-        if (!$this->provisionGoal($event->getName())) {
+        if (!$this->provisionGoal($event->getType())) {
             return false;
         }
 
@@ -138,7 +138,7 @@ class Plausible extends Adapter
         ];
 
         $headers = [
-            'Content-Type' => null,
+            'Content-Type' => 'application/x-www-form-urlencoded',
             'Authorization' => 'Bearer '.$this->apiKey
         ];
 
