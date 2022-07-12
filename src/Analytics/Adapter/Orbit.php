@@ -32,10 +32,10 @@ class Orbit extends Adapter
     private string $apiKey;
 
     /**
-     * The source of the analytic data
+     * dataOrigin is where this analytic data originates from.
      * @var string
      */
-    private string $source;
+    private string $dataOrigin;
 
     /**
      * Gets the name of the adapter.
@@ -50,15 +50,15 @@ class Orbit extends Adapter
     /**
      * @param string $workspaceId 
      * @param string $apiKey
-     * Adapter configuration
+     * @param string $dataOrigin
      * 
      * @return Orbit
      */
-    public function __construct(string $workspaceId, string $apiKey, string $source)
+    public function __construct(string $workspaceId, string $apiKey, string $dataOrigin)
     {
         $this->endpoint = $this->endpoint . $workspaceId;
         $this->apiKey = $apiKey;
-        $this->source = $source;
+        $this->dataOrigin = $dataOrigin;
     }
 
     /**
@@ -79,7 +79,7 @@ class Orbit extends Adapter
         ];
 
         $identity = [
-            "source" => $this->source,
+            "source" => $this->dataOrigin,
             "email" => $event->getProp('email'),
             "username" => $event->getProp('username')
         ];
