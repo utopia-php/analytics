@@ -73,14 +73,15 @@ class Plausible extends Adapter
     }
 
     /**
-     * @param string $domain
-     * @param string $apiKey
-     * @param string $useragent
-     * @param string $clientIP
+     * Constructor.
+     * 
+     * @param string $domain    The domain to use for events
+     * @param string $apiKey    The API key to use for requests
+     * @param string $useragent The useragent to use for requests
+     * @param string $clientIP  The IP address to forward to Plausible
      * 
      * @return Plausible
      */
-
     public function __construct(string $domain, string $apiKey, string $useragent, string $clientIP)
     {
         $this->domain = $domain;
@@ -90,9 +91,33 @@ class Plausible extends Adapter
     }
 
     /**
+     * Sets the useragent to use for requests.
+     * 
+     * @param string $userAgent The useragent to use for requests.
+     * 
+     * @return void
+     */
+    public function setUserAgent(string $userAgent): void
+    {
+        $this->userAgent = $userAgent;
+    }
+
+    /**
+     * Sets the clientIP to use for requests.
+     * 
+     * @param string $clientIP The clientIP to use for requests.
+     * 
+     * @return void
+     */
+    public function setClientIP(string $clientIP): void
+    {
+        $this->clientIP = $clientIP;
+    }
+
+    /**
      * Sends an event to Plausible.
      * 
-     * @param Event $event
+     * @param Event $event The event to send.
      * 
      * @return bool
      */
@@ -126,7 +151,8 @@ class Plausible extends Adapter
     /**
      * Provision a goal for the given event.
      * 
-     * @param string $eventName
+     * @param string $eventName The name of the event.
+     * 
      * @return bool
      */
     private function provisionGoal(string $eventName): bool
