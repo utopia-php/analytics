@@ -38,6 +38,12 @@ class GoogleAnalytics extends Adapter
     private string $cid;
 
     /**
+     * Client IP Address
+     * @var string
+     */
+    private string $ip;
+
+    /**
      * Gets the name of the adapter.
      * 
      * @return string
@@ -58,6 +64,18 @@ class GoogleAnalytics extends Adapter
     {
         $this->tid = $tid;
         $this->cid = $cid;
+    }
+
+    /**
+     * Sets the client IP address.
+     * 
+     * @param string $ip The IP address to use.
+     * 
+     * @return void
+     */
+    public function setClientIP(string $ip)
+    {
+        $this->ip = $ip;
     }
 
     /**
@@ -85,7 +103,8 @@ class GoogleAnalytics extends Adapter
             'dh' => parse_url($event->getUrl())['host'],
             'dp' => parse_url($event->getUrl())['path'],
             'dt' => $event->getProp('documentTitle'),
-            't' => $event->getType()
+            't' => $event->getType(),
+            'uip' => $this->ip,
         ];
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
