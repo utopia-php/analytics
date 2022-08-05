@@ -44,6 +44,13 @@ class GoogleAnalytics extends Adapter
     private string $ip;
 
     /**
+     * Client user agent
+     * 
+     * @var string
+     */
+    private string $userAgent;
+
+    /**
      * Gets the name of the adapter.
      * 
      * @return string
@@ -79,6 +86,18 @@ class GoogleAnalytics extends Adapter
     }
 
     /**
+     * Sets the client user agent.
+     * 
+     * @param string $userAgent The user agent to use.
+     * 
+     * @return void
+     */
+    public function setUserAgent(string $userAgent)
+    {
+        $this->userAgent = $userAgent;
+    }
+
+    /**
      * Creates an Event on the remote analytics platform.
      * 
      * @param Event $event
@@ -105,6 +124,7 @@ class GoogleAnalytics extends Adapter
             'dt' => $event->getProp('documentTitle'),
             't' => $event->getType(),
             'uip' => $this->ip,
+            'ua' => $this->userAgent,
         ];
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
