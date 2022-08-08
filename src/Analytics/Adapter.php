@@ -66,6 +66,24 @@ abstract class Adapter
     public abstract function send(Event $event): bool;
 
     /**
+     * Sets the useragent to use for requests.
+     * 
+     * @param string $userAgent The useragent to use for requests.
+     * 
+     * @return void
+     */
+    abstract public function setUserAgent(string $userAgent): void;
+
+    /**
+     * Sets the clientIP to use for requests.
+     * 
+     * @param string $clientIP The clientIP to use for requests.
+     * 
+     * @return void
+     */
+    abstract public function setClientIP(string $clientIP): void;
+
+    /**
      * Creates an Event on the remote analytics platform.
      * 
      * @param Event $event
