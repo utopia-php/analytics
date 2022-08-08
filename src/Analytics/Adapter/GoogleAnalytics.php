@@ -80,9 +80,9 @@ class GoogleAnalytics extends Adapter
      * 
      * @return void
      */
-    public function setClientIP(string $ip)
+    public function setClientIP(string $clientIP): void
     {
-        $this->ip = $ip;
+        $this->ip = $clientIP;
     }
 
     /**
@@ -92,7 +92,7 @@ class GoogleAnalytics extends Adapter
      * 
      * @return void
      */
-    public function setUserAgent(string $userAgent)
+    public function setUserAgent(string $userAgent): void
     {
         $this->userAgent = $userAgent;
     }
