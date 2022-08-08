@@ -375,4 +375,26 @@ class ActiveCampaign extends Adapter
         $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
         return true;
     }
+
+    /**
+     * Sets the client IP address.
+     * 
+     * @param string $ip The IP address to use.
+     * 
+     * @return void
+     */
+    public function setClientIP(string $clientIP): void
+    {
+    }
+
+    /**
+     * Sets the client user agent.
+     * 
+     * @param string $userAgent The user agent to use.
+     * 
+     * @return void
+     */
+    public function setUserAgent(string $userAgent): void
+    {
+    }
 }

@@ -97,4 +97,26 @@ class Orbit extends Adapter
 
         return true;
     }
+
+    /**
+     * Sets the client IP address.
+     * 
+     * @param string $ip The IP address to use.
+     * 
+     * @return void
+     */
+    public function setClientIP(string $clientIP): void
+    {
+    }
+
+    /**
+     * Sets the client user agent.
+     * 
+     * @param string $userAgent The user agent to use.
+     * 
+     * @return void
+     */
+    public function setUserAgent(string $userAgent): void
+    {
+    }
 }
