@@ -22,6 +22,20 @@ abstract class Adapter
     protected bool $enabled = true;
 
     /**
+     * Useragent to use for requests
+
+     * @var string
+     */
+    protected string $userAgent = 'Utopia PHP Framework';
+
+    /**
+     * The IP address to forward to Plausible
+     * 
+     * @var string
+     */
+    protected string $clientIP;
+
+    /**
      * Gets the name of the adapter.
      * 
      * @return string
@@ -64,6 +78,32 @@ abstract class Adapter
      * @return bool
      */
     public abstract function send(Event $event): bool;
+
+    /**
+     * Sets the client IP address.
+     * 
+     * @param string $ip The IP address to use.
+     * 
+     * @return self
+     */
+    public function setClientIP(string $clientIP): self
+    {
+        $this->ip = $clientIP;
+        return $this;
+    }
+
+    /**
+     * Sets the client user agent.
+     * 
+     * @param string $userAgent The user agent to use.
+     * 
+     * @return self
+     */
+    public function setUserAgent(string $userAgent): self
+    {
+        $this->userAgent = $userAgent;
+        return $this;
+    }
 
     /**
      * Creates an Event on the remote analytics platform.

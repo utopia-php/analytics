@@ -97,4 +97,28 @@ class Orbit extends Adapter
 
         return true;
     }
+
+    /**
+     * Sets the client IP address.
+     * 
+     * @param string $ip The IP address to use.
+     * 
+     * @return self
+     */
+    public function setClientIP(string $clientIP): self
+    {
+        throw new \Exception('Not implemented');
+    }
+
+    /**
+     * Sets the client user agent.
+     * 
+     * @param string $userAgent The user agent to use.
+     * 
+     * @return self
+     */
+    public function setUserAgent(string $userAgent): self
+    {
+        throw new \Exception('Not implemented');
+    }
 }

@@ -85,7 +85,9 @@ class GoogleAnalytics extends Adapter
             'dh' => parse_url($event->getUrl())['host'],
             'dp' => parse_url($event->getUrl())['path'],
             'dt' => $event->getProp('documentTitle'),
-            't' => $event->getType()
+            't' => $event->getType(),
+            'uip' => $this->clientIP ?? "",
+            'ua' => $this->userAgent ?? "",
         ];
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');

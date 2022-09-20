@@ -19,7 +19,6 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
-use Utopia\CLI\Console;
 
 class ActiveCampaign extends Adapter
 {
@@ -374,5 +373,29 @@ class ActiveCampaign extends Adapter
 
         $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
         return true;
+    }
+
+    /**
+     * Sets the client IP address.
+     * 
+     * @param string $ip The IP address to use.
+     * 
+     * @return self
+     */
+    public function setClientIP(string $clientIP): self
+    {
+        throw new \Exception('Not implemented');
+    }
+
+    /**
+     * Sets the client user agent.
+     * 
+     * @param string $userAgent The user agent to use.
+     * 
+     * @return self
+     */
+    public function setUserAgent(string $userAgent): self
+    {
+        throw new \Exception('Not implemented');
     }
 }
