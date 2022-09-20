@@ -19,7 +19,6 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
-use Utopia\CLI\Console;
 
 class ActiveCampaign extends Adapter
 {

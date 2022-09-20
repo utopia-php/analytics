@@ -27,13 +27,6 @@ class Plausible extends Adapter
     protected string $endpoint = 'https://plausible.io/api';
 
     /**
-     * Useragent to use for requests
-
-     * @var string
-     */
-    protected string $userAgent = 'Utopia PHP Framework';
-
-    /**
      * Global Headers
      *
      * @var array
@@ -53,13 +46,6 @@ class Plausible extends Adapter
      * @var string
      */
     protected string $domain;
-
-    /**
-     * The IP address to forward to Plausible
-     * 
-     * @var string
-     */
-    protected string $clientIP;
     
 
     /**

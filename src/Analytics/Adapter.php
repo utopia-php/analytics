@@ -22,6 +22,20 @@ abstract class Adapter
     protected bool $enabled = true;
 
     /**
+     * Useragent to use for requests
+
+     * @var string
+     */
+    protected string $userAgent = 'Utopia PHP Framework';
+
+    /**
+     * The IP address to forward to Plausible
+     * 
+     * @var string
+     */
+    protected string $clientIP;
+
+    /**
      * Gets the name of the adapter.
      * 
      * @return string

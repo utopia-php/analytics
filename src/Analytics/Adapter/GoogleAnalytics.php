@@ -38,19 +38,6 @@ class GoogleAnalytics extends Adapter
     private string $cid;
 
     /**
-     * Client IP Address
-     * @var string
-     */
-    private string $ip;
-
-    /**
-     * Client user agent
-     * 
-     * @var string
-     */
-    private string $userAgent;
-
-    /**
      * Gets the name of the adapter.
      * 
      * @return string
@@ -99,7 +86,7 @@ class GoogleAnalytics extends Adapter
             'dp' => parse_url($event->getUrl())['path'],
             'dt' => $event->getProp('documentTitle'),
             't' => $event->getType(),
-            'uip' => $this->ip ?? "",
+            'uip' => $this->clientIP ?? "",
             'ua' => $this->userAgent ?? "",
         ];
         
