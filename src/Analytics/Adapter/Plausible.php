@@ -91,30 +91,6 @@ class Plausible extends Adapter
     }
 
     /**
-     * Sets the useragent to use for requests.
-     * 
-     * @param string $userAgent The useragent to use for requests.
-     * 
-     * @return void
-     */
-    public function setUserAgent(string $userAgent): void
-    {
-        $this->userAgent = $userAgent;
-    }
-
-    /**
-     * Sets the clientIP to use for requests.
-     * 
-     * @param string $clientIP The clientIP to use for requests.
-     * 
-     * @return void
-     */
-    public function setClientIP(string $clientIP): void
-    {
-        $this->clientIP = $clientIP;
-    }
-
-    /**
      * Sends an event to Plausible.
      * 
      * @param Event $event The event to send.

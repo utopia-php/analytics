@@ -74,30 +74,6 @@ class GoogleAnalytics extends Adapter
     }
 
     /**
-     * Sets the client IP address.
-     * 
-     * @param string $ip The IP address to use.
-     * 
-     * @return void
-     */
-    public function setClientIP(string $clientIP): void
-    {
-        $this->ip = $clientIP;
-    }
-
-    /**
-     * Sets the client user agent.
-     * 
-     * @param string $userAgent The user agent to use.
-     * 
-     * @return void
-     */
-    public function setUserAgent(string $userAgent): void
-    {
-        $this->userAgent = $userAgent;
-    }
-
-    /**
      * Creates an Event on the remote analytics platform.
      * 
      * @param Event $event
