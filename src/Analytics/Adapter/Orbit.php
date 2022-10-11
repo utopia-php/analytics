@@ -1,16 +1,5 @@
 <?php
 
-/**
- * Utopia PHP Framework
- *
- * @package Analytics
- * @subpackage Orbit
- *
- * @link https://github.com/utopia-php/framework
- * @version 1.0 RC1
- * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
- */
-
 namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
