@@ -3,12 +3,13 @@
 /**
  * Utopia PHP Framework
  *
- * @package Analytics
- * @subpackage Orbit
  *
  * @link https://github.com/utopia-php/framework
+ *
  * @author Torsten Dittmann <torsten@appwrite.io>
+ *
  * @version 1.0 RC1
+ *
  * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
  */
 
@@ -21,18 +22,21 @@ class Orbit extends Adapter
 {
     /**
      * Endpoint for Orbit Events
+     *
      * @var string
      */
     public string $endpoint = 'https://app.orbit.love/api/v1/';
 
     /**
      * API Key
+     *
      * @var string
      */
     private string $apiKey;
 
     /**
      * dataOrigin is where this analytic data originates from.
+     *
      * @var string
      */
     private string $dataOrigin;
@@ -48,51 +52,50 @@ class Orbit extends Adapter
     }
 
     /**
-     * @param string $workspaceId 
-     * @param string $apiKey
-     * @param string $dataOrigin
-     * 
+     * @param  string  $workspaceId
+     * @param  string  $apiKey
+     * @param  string  $dataOrigin
      * @return Orbit
      */
     public function __construct(string $workspaceId, string $apiKey, string $dataOrigin)
     {
-        $this->endpoint = $this->endpoint . $workspaceId;
+        $this->endpoint = $this->endpoint.$workspaceId;
         $this->apiKey = $apiKey;
         $this->dataOrigin = $dataOrigin;
     }
 
     /**
      * Creates an Event on the remote analytics platform. Requires email prop.
-     * 
-     * @param Event $event
+     *
+     * @param  Event  $event
      * @return bool
      */
     public function send(Event $event): bool
     {
-        if (!$event->getProp('email')) {
+        if (! $event->getProp('email')) {
             return false;
         }
 
         $activity = [
             'title' => $event->getName(),
-            'activity_type_key' => $event->getType()
+            'activity_type_key' => $event->getType(),
         ];
 
         $identity = [
-            "source" => $this->dataOrigin,
-            "email" => $event->getProp('email'),
-            "username" => $event->getProp('username')
+            'source' => $this->dataOrigin,
+            'email' => $event->getProp('email'),
+            'username' => $event->getProp('username'),
         ];
 
-        $activity = array_filter($activity, fn ($value) => !is_null($value) && $value !== '');
-        $identity = array_filter($identity, fn ($value) => !is_null($value) && $value !== '');
+        $activity = array_filter($activity, fn ($value) => ! is_null($value) && $value !== '');
+        $identity = array_filter($identity, fn ($value) => ! is_null($value) && $value !== '');
 
-        $this->call('POST', $this->endpoint . '/activities', [
+        $this->call('POST', $this->endpoint.'/activities', [
             'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $this->apiKey
+            'Authorization' => 'Bearer '.$this->apiKey,
         ], [
             'activity' => $activity,
-            'identity' => $identity
+            'identity' => $identity,
         ]);
 
         return true;
@@ -100,9 +103,8 @@ class Orbit extends Adapter
 
     /**
      * Sets the client IP address.
-     * 
-     * @param string $ip The IP address to use.
-     * 
+     *
+     * @param  string  $ip The IP address to use.
      * @return self
      */
     public function setClientIP(string $clientIP): self
@@ -112,9 +114,8 @@ class Orbit extends Adapter
 
     /**
      * Sets the client user agent.
-     * 
-     * @param string $userAgent The user agent to use.
-     * 
+     *
+     * @param  string  $userAgent The user agent to use.
      * @return self
      */
     public function setUserAgent(string $userAgent): self
