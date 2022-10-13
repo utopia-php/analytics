@@ -15,6 +15,9 @@
             "email": "torsten@appwrite.io"
         }
     ],
+    "scripts": {
+        "check": "./vendor/bin/phpstan analyse --level max src tests"
+    },
     "autoload": {
         "psr-4": {"Utopia\\Analytics\\": "src/Analytics"}
     },
