@@ -16,8 +16,8 @@
         }
     ],
     "scripts": {
-        "check": "./vendor/bin/phpstan analyse --level max src tests"
-      },
+        "check": "./vendor/bin/phpstan analyse --level 6 src tests"
+    },
     "autoload": {
         "psr-4": {"Utopia\\Analytics\\": "src/Analytics"}
     },
