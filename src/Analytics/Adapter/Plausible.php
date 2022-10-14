@@ -29,7 +29,7 @@ class Plausible extends Adapter
     /**
      * Global Headers
      *
-     * @var array
+     * @var array<int|string,mixed>
      */
     protected $headers = [];
 
@@ -42,15 +42,15 @@ class Plausible extends Adapter
 
     /**
      * Domain to use for events
-     * 
+     *
      * @var string
      */
     protected string $domain;
-    
+
 
     /**
      * Gets the name of the adapter.
-     * 
+     *
      * @return string
      */
     public function getName(): string
@@ -60,12 +60,12 @@ class Plausible extends Adapter
 
     /**
      * Constructor.
-     * 
+     *
      * @param string $domain    The domain to use for events
      * @param string $apiKey    The API key to use for requests
      * @param string $useragent The useragent to use for requests
      * @param string $clientIP  The IP address to forward to Plausible
-     * 
+     *
      * @return Plausible
      */
     public function __construct(string $domain, string $apiKey, string $useragent, string $clientIP)
@@ -78,9 +78,9 @@ class Plausible extends Adapter
 
     /**
      * Sends an event to Plausible.
-     * 
+     *
      * @param Event $event The event to send.
-     * 
+     *
      * @return bool
      */
     public function send(Event $event): bool
@@ -112,9 +112,9 @@ class Plausible extends Adapter
 
     /**
      * Provision a goal for the given event.
-     * 
+     *
      * @param string $eventName The name of the event.
-     * 
+     *
      * @return bool
      */
     private function provisionGoal(string $eventName): bool

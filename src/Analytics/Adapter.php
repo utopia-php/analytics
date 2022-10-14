@@ -30,14 +30,14 @@ abstract class Adapter
 
     /**
      * The IP address to forward to Plausible
-     * 
+     *
      * @var string
      */
     protected string $clientIP;
 
     /**
      * Gets the name of the adapter.
-     * 
+     *
      * @return string
      */
     abstract public function getName(): string;
@@ -45,7 +45,7 @@ abstract class Adapter
     /**
      * Global Headers
      *
-     * @var array
+     * @var array<int|string,mixed>
      */
     protected $headers = [
         'Content-Type' => '',
@@ -53,7 +53,7 @@ abstract class Adapter
 
     /**
      * Enables tracking for this instance.
-     * 
+     *
      * @return void
      */
     public function enable(): void
@@ -63,7 +63,7 @@ abstract class Adapter
 
     /**
      * Disables tracking for this instance.
-     * 
+     *
      * @return void
      */
     public function disable(): void
@@ -73,7 +73,7 @@ abstract class Adapter
 
     /**
      * Send the event to the adapter.
-     * 
+     *
      * @param Event $event
      * @return bool
      */
@@ -81,9 +81,9 @@ abstract class Adapter
 
     /**
      * Sets the client IP address.
-     * 
+     *
      * @param string $ip The IP address to use.
-     * 
+     *
      * @return self
      */
     public function setClientIP(string $clientIP): self
@@ -94,9 +94,9 @@ abstract class Adapter
 
     /**
      * Sets the client user agent.
-     * 
+     *
      * @param string $userAgent The user agent to use.
-     * 
+     *
      * @return self
      */
     public function setUserAgent(string $userAgent): self
@@ -107,7 +107,7 @@ abstract class Adapter
 
     /**
      * Creates an Event on the remote analytics platform.
-     * 
+     *
      * @param Event $event
      * @return bool
      */
@@ -128,12 +128,12 @@ abstract class Adapter
      *
      * @param string $method
      * @param string $path
-     * @param array $params
-     * @param array $headers
-     * @return array|string
+     * @param array<int|string,mixed> $params
+     * @param array<int|string,mixed> $headers
+     * @return array<int|string,mixed>|string
      * @throws \Exception
      */
-    public function call(string $method, string $path = '', array $headers = array(), array $params = array()): array|string
+    public function call(string $method, string $path = '', array $headers = array(), array $params = array()): array<int|string,mixed>|string
     {
         $headers            = array_merge($this->headers, $headers);
         $ch                 = curl_init((str_contains($path, 'http') ? $path : $this->endpoint . $path . (($method == 'GET' && !empty($params)) ? '?' . http_build_query($params) : '')));
@@ -187,7 +187,7 @@ abstract class Adapter
 
         $responseType   = $responseHeaders['Content-Type'] ?? '';
         $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
+
         switch(substr($responseType, 0, strpos($responseType, ';'))) {
             case 'application/json':
                 $responseBody = json_decode($responseBody, true);
@@ -197,7 +197,7 @@ abstract class Adapter
         if (curl_errno($ch)) {
             throw new \Exception(curl_error($ch));
         }
-        
+
         curl_close($ch);
 
         if($responseStatus >= 400) {
@@ -215,11 +215,11 @@ abstract class Adapter
     /**
      * Flatten params array to PHP multiple format
      *
-     * @param array $data
+     * @param array<int|string,mixed> $data
      * @param string $prefix
      * @return array
      */
-    protected function flatten(array $data, string $prefix = ''): array {
+    protected function flatten(array $data, string $prefix = ''): array<int|string,mixed> {
         $output = [];
 
         foreach($data as $key => $value) {
@@ -238,7 +238,7 @@ abstract class Adapter
 
     /**
      * Log Error
-     * 
+     *
      * @param Exception $e
      * @return void
      */
