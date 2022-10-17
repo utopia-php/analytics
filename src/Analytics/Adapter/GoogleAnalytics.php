@@ -86,7 +86,7 @@ class GoogleAnalytics extends Adapter
             'dp' => parse_url($event->getUrl())['path'],
             'dt' => $event->getProp('documentTitle'),
             't' => $event->getType(),
-            'uip' => $this->ip ?? "",
+            'uip' => $this->clientIP ?? "",
             'ua' => $this->userAgent ?? "",
         ];
         

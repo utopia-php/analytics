@@ -63,13 +63,17 @@ class Plausible extends Adapter
      * 
      * @param string $domain    The domain to use for events
      * @param string $apiKey    The API key to use for requests
+     * @param string $useragent The useragent to use for requests
+     * @param string $clientIP  The IP address to forward to Plausible
      * 
      * @return Plausible
      */
-    public function __construct(string $domain, string $apiKey)
+    public function __construct(string $domain, string $apiKey, string $useragent, string $clientIP)
     {
         $this->domain = $domain;
         $this->apiKey = $apiKey;
+        $this->userAgent = $useragent;
+        $this->clientIP = $clientIP;
     }
 
     /**
@@ -97,7 +101,7 @@ class Plausible extends Adapter
         ];
 
         $headers = [
-            'X-Forwarded-For' => $this->ip,
+            'X-Forwarded-For' => $this->clientIP,
             'User-Agent' => $this->userAgent,
             'Content-Type' => 'application/json'
         ];
