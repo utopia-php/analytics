@@ -81,14 +81,16 @@ abstract class Adapter
 
     /**
      * Sets the client IP address.
-     *
-     * @param string $ip The IP address to use.
-     *
+
+     * 
+     * @param string $clientIP The IP address to use.
+     * 
+
      * @return self
      */
     public function setClientIP(string $clientIP): self
     {
-        $this->ip = $clientIP;
+        $this->clientIP = $clientIP;
         return $this;
     }
 
