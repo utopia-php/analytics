@@ -77,6 +77,10 @@ class GoogleAnalytics extends Adapter
             $event->setType('event');
         }
 
+        if ($event->getProp('screenWidth') && $event->getProp('screenHeight')) {
+            $event->setProps(array_merge($event->getProps(), ['screenResolution' => $event->getProp('screenWidth') . 'x' . $event->getProp('screenHeight')]));
+        }
+
         $query = [
             'ec' => $event->getProp('category'),
             'ea' => $event->getProp('action'),
@@ -88,6 +92,9 @@ class GoogleAnalytics extends Adapter
             't' => $event->getType(),
             'uip' => $this->clientIP ?? "",
             'ua' => $this->userAgent ?? "",
+            'sr' => $event->getProp('screenResolution'),
+            'vp' => $event->getProp('viewportSize'),
+            'dr' => $event->getProp('referrer'),
         ];
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');

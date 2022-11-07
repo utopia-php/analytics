@@ -98,6 +98,8 @@ class Plausible extends Adapter
             'props' => $event->getProps(),
             'domain' => $this->domain,
             'name' => $event->getType(),
+            'referrer' => $event->getProp('referrer'),
+            'screen_width' => $event->getProp('screenWidth'),
         ];
 
         $headers = [
