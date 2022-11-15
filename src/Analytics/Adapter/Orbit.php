@@ -82,7 +82,11 @@ class Orbit extends Adapter
                 'name' => $event->getProp('name'),
                 'tags_to_add' => 'console'
             ],
+            'properties' => $event->getProps(),
         ];
+
+        unset($activity['properties']['email']);
+        unset($activity['properties']['name']);
 
         $activity = array_filter($activity, fn ($value) => !is_null($value) && $value !== '');
 
