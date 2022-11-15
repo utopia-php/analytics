@@ -75,24 +75,22 @@ class Orbit extends Adapter
 
         $activity = [
             'title' => $event->getName(),
-            'activity_type_key' => $event->getType()
-        ];
-
-        $identity = [
-            "source" => $this->dataOrigin,
-            "email" => $event->getProp('email'),
-            "username" => $event->getProp('username')
+            'actvity_type_key' => $event->getName(),
+            'link' => $event->getUrl(),
+            'member' => [
+                'email' => $event->getProp('email'),
+                'name' => $event->getProp('name'),
+                'tags_to_add' => 'console'
+            ],
         ];
 
         $activity = array_filter($activity, fn ($value) => !is_null($value) && $value !== '');
-        $identity = array_filter($identity, fn ($value) => !is_null($value) && $value !== '');
 
         $this->call('POST', $this->endpoint . '/activities', [
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer ' . $this->apiKey
         ], [
             'activity' => $activity,
-            'identity' => $identity
         ]);
 
         return true;
