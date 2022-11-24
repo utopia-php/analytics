@@ -78,6 +78,10 @@ class Orbit extends Adapter
             'activity_type_key' => $event->getType()
         ];
 
+        $member = [
+            'tags_to_add' => $event->getProp('account')
+        ];
+
         $identity = [
             "source" => $this->dataOrigin,
             "email" => $event->getProp('email'),
@@ -85,6 +89,7 @@ class Orbit extends Adapter
         ];
 
         $activity = array_filter($activity, fn ($value) => !is_null($value) && $value !== '');
+        $member = array_filter($member, fn ($value) => !is_null($value) && $value !== '');
         $identity = array_filter($identity, fn ($value) => !is_null($value) && $value !== '');
 
         $this->call('POST', $this->endpoint . '/activities', [
@@ -92,6 +97,7 @@ class Orbit extends Adapter
             'Authorization' => 'Bearer ' . $this->apiKey
         ], [
             'activity' => $activity,
+            'member' => $member,
             'identity' => $identity
         ]);
 
