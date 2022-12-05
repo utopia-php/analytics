@@ -75,30 +75,26 @@ class Orbit extends Adapter
 
         $activity = [
             'title' => $event->getName(),
-            'activity_type_key' => $event->getType()
+            'activity_type_key' => $event->getType(),
+            'link' => $event->getUrl(),
+            'member' => [
+                'email' => $event->getProp('email'),
+                'name' => $event->getProp('name'),
+                'tags_to_add' => $event->getProp('account')
+            ],
+            'properties' => array_filter($event->getProps(), fn ($value) => !is_null($value) && $value !== ''),
         ];
 
-        $member = [
-            'tags_to_add' => $event->getProp('account')
-        ];
-
-        $identity = [
-            "source" => $this->dataOrigin,
-            "email" => $event->getProp('email'),
-            "username" => $event->getProp('username')
-        ];
+        unset($activity['properties']['email']);
+        unset($activity['properties']['name']);
 
         $activity = array_filter($activity, fn ($value) => !is_null($value) && $value !== '');
-        $member = array_filter($member, fn ($value) => !is_null($value) && $value !== '');
-        $identity = array_filter($identity, fn ($value) => !is_null($value) && $value !== '');
 
         $this->call('POST', $this->endpoint . '/activities', [
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer ' . $this->apiKey
         ], [
-            'activity' => $activity,
-            'member' => $member,
-            'identity' => $identity
+            'activity' => $activity
         ]);
 
         return true;

@@ -98,8 +98,7 @@ class GoogleAnalytics extends Adapter
         ];
 
         if ($event->getProp('account')) {
-            $query['cd1'] = 'account';
-            $query['cm1'] = $event->getProp('account');
+            $query['cd1'] = $event->getProp('account');
         }
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
