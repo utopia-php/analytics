@@ -3,11 +3,11 @@
 /**
  * Utopia PHP Framework
  *
- * @package Analytics
- * @subpackage Tests
  *
  * @link https://github.com/utopia-php/framework
+ *
  * @version 1.0 RC1
+ *
  * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
  */
 
@@ -15,13 +15,13 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
-use Utopia\CLI\Console;
 
 class Plausible extends Adapter
 {
     /**
      *  Endpoint for Plausible
 
+     *
      *  @var string
      */
     protected string $endpoint = 'https://plausible.io/api';
@@ -36,21 +36,21 @@ class Plausible extends Adapter
     /**
      * Plausible API key
 
+     *
      * @var string
      */
     protected string $apiKey;
 
     /**
      * Domain to use for events
-     * 
+     *
      * @var string
      */
     protected string $domain;
-    
 
     /**
      * Gets the name of the adapter.
-     * 
+     *
      * @return string
      */
     public function getName(): string
@@ -60,12 +60,11 @@ class Plausible extends Adapter
 
     /**
      * Constructor.
-     * 
-     * @param string $domain    The domain to use for events
-     * @param string $apiKey    The API key to use for requests
-     * @param string $useragent The useragent to use for requests
-     * @param string $clientIP  The IP address to forward to Plausible
-     * 
+     *
+     * @param  string  $domain    The domain to use for events
+     * @param  string  $apiKey    The API key to use for requests
+     * @param  string  $useragent The useragent to use for requests
+     * @param  string  $clientIP  The IP address to forward to Plausible
      * @return Plausible
      */
     public function __construct(string $domain, string $apiKey, string $useragent, string $clientIP)
@@ -78,18 +77,17 @@ class Plausible extends Adapter
 
     /**
      * Sends an event to Plausible.
-     * 
-     * @param Event $event The event to send.
-     * 
+     *
+     * @param  Event  $event The event to send.
      * @return bool
      */
     public function send(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
-        if (!$this->provisionGoal($event->getType())) {
+        if (! $this->provisionGoal($event->getType())) {
             return false;
         }
 
@@ -105,18 +103,18 @@ class Plausible extends Adapter
         $headers = [
             'X-Forwarded-For' => $this->clientIP,
             'User-Agent' => $this->userAgent,
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ];
 
         $this->call('POST', '/event', $headers, $params);
+
         return true;
     }
 
     /**
      * Provision a goal for the given event.
-     * 
-     * @param string $eventName The name of the event.
-     * 
+     *
+     * @param  string  $eventName The name of the event.
      * @return bool
      */
     private function provisionGoal(string $eventName): bool
@@ -129,10 +127,11 @@ class Plausible extends Adapter
 
         $headers = [
             'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Bearer '.$this->apiKey
+            'Authorization' => 'Bearer '.$this->apiKey,
         ];
 
         $this->call('PUT', '/v1/sites/goals', $headers, $params);
+
         return true;
     }
 }
