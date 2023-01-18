@@ -73,6 +73,12 @@ class Orbit extends Adapter
             return false;
         }
 
+        $tags = is_array($event->getProp('tags')) ? $event->getProp('tags') : [];
+
+        if ($event->getProp('account')) {
+            $tags[] = $event->getProp('account');
+        }
+
         $activity = [
             'title' => $event->getName(),
             'activity_type_key' => $event->getType(),
@@ -80,7 +86,7 @@ class Orbit extends Adapter
             'member' => [
                 'email' => $event->getProp('email'),
                 'name' => $event->getProp('name'),
-                'tags_to_add' => $event->getProp('account')
+                'tags_to_add' => implode(',', $tags),
             ],
             'properties' => array_filter($event->getProps(), fn ($value) => !is_null($value) && $value !== ''),
         ];
