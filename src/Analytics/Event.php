@@ -149,7 +149,7 @@ class Event {
      * @param string $key
      * @return mixed
      */
-    public function getProp(string $key): ?mixed {
+    public function getProp(string $key): mixed {
         if (key_exists($key, $this->props)) {
             return $this->props[$key];
         }
