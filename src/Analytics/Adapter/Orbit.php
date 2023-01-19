@@ -86,9 +86,15 @@ class Orbit extends Adapter
             'member' => [
                 'email' => $event->getProp('email'),
                 'name' => $event->getProp('name'),
-                'tags_to_add' => implode(',', $tags),
+                'tags_to_add' => $tags,
             ],
-            'properties' => array_filter($event->getProps(), fn ($value) => !is_null($value) && $value !== ''),
+            'properties' => array_map(function ($value) {
+                if (is_array($value)) {
+                    return json_encode($value);
+                }
+
+                return $value;
+            }, array_filter($event->getProps(), fn ($value) => !is_null($value) && $value !== '')),
         ];
 
         unset($activity['properties']['email']);
