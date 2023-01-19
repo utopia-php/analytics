@@ -79,6 +79,10 @@ class Orbit extends Adapter
             $tags[] = $event->getProp('account');
         }
 
+        if ($event->getProp('code')) {
+            $tags[] = $event->getProp('code');
+        }
+
         $activity = [
             'title' => $event->getName(),
             'activity_type_key' => $event->getType(),
