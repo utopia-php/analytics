@@ -168,7 +168,7 @@ class AnalyticsTest extends TestCase
         $event->setType('testEvent')
             ->setName('testEvent')
             ->setUrl('https://www.appwrite.io/docs/installation')
-            ->setProps(['category' => 'testEvent', 'email' => 'test@test.com']);
+            ->setProps(['category' => 'testEvent', 'email' => 'test@test.com', 'tags' => ['test', 'test2']]);
 
         $this->assertTrue($this->orbit->send($event));
     }
