@@ -398,4 +398,33 @@ class ActiveCampaign extends Adapter
     {
         throw new \Exception('Not implemented');
     }
+
+    /**
+     * Set Tags
+     * 
+     * @param string $contactId
+     * @param array $tags
+     * 
+     * @return bool
+     */
+    public function setTags(string $contactId, array $tags): bool
+    {
+        foreach ($tags as $tag) {
+            try {
+                $this->call('POST', '/api/3/contactTags', [
+                    'Content-Type' => 'application/json',
+                ], [
+                    'contactTag' => [
+                        'contact' => $contactId,
+                        'tag' => $tag
+                    ]
+                ]);
+            } catch (\Exception $e) {
+                $this->logError($e);
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
