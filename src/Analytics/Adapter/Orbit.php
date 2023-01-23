@@ -75,14 +75,6 @@ class Orbit extends Adapter
 
         $tags = is_array($event->getProp('tags')) ? $event->getProp('tags') : [];
 
-        if ($event->getProp('account')) {
-            $tags[] = $event->getProp('account');
-        }
-
-        if ($event->getProp('code')) {
-            $tags[] = $event->getProp('code');
-        }
-
         $activity = [
             'title' => $event->getName(),
             'activity_type_key' => $event->getType(),
