@@ -441,27 +441,6 @@ class ActiveCampaign extends Adapter
         }
 
         $contactID = $this->contactExists($email);
-
-        if (!$contactID) {
-            $this->createContact(
-                $email,
-                "Amadeus",
-                "Test"
-            );
-
-            $contactID = $this->contactExists($email);
-        }
-
-        $event->addProp('email', $email);
-
-        $activeCampaignStatus = $this->createEvent($event);
-
-        if (!$activeCampaignStatus) {
-            throw new \Exception("Failed to create event on ActiveCampaign.");
-        }
-
-        sleep(2);
-
         $foundLog = false;
 
         // Get contact again, since AC doesn't refresh logs immediately

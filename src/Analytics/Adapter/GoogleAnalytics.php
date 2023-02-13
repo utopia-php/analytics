@@ -14,6 +14,11 @@ class GoogleAnalytics extends Adapter
     public string $endpoint = 'https://www.google-analytics.com/collect';
 
     /**
+     * Endpoint for Google Analytics Debug
+     */
+    public string $debugEndpoint = 'https://www.google-analytics.com/debug/collect';
+
+    /**
      * Tracking ID for Google Analytics
      * @var string
      */
@@ -66,35 +71,9 @@ class GoogleAnalytics extends Adapter
             throw new \Exception('Event name is required');
         }
 
-        $query = [
-            'ec' => $event->getProp('category'),
-            'ea' => $event->getProp('action'),
-            'el' => $event->getName(),
-            'ev' => $event->getValue(),
-            'dh' => parse_url($event->getUrl())['host'],
-            'dp' => parse_url($event->getUrl())['path'],
-            'dt' => $event->getProp('documentTitle'),
-            't' => 'event',
-            'uip' => $this->clientIP ?? "",
-            'ua' => $this->userAgent ?? "",
-            'sr' => $event->getProp('screenResolution'),
-            'vp' => $event->getProp('viewportSize'),
-            'dr' => $event->getProp('referrer'),
-        ];
+        global $lastResult;
 
-        $result = $this->call("POST", "https://www.google-analytics.com/debug/collect", [], array_merge([
-            'tid' => $this->tid,
-            'cid' => $this->cid,
-            'v' => 1
-        ], $query));
-
-        foreach (json_decode($result, true)['hitParsingResult'] as $hit) {
-            if ($hit['valid'] == false) {
-                throw new \Exception($hit['parserMessage']);
-            }
-        }
-
-        return true;
+        return $lastResult;
     }
 
     /**
@@ -140,7 +119,7 @@ class GoogleAnalytics extends Adapter
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 
-        $result = $this->call('POST', $this->endpoint, [], array_merge([
+        $result = $this->call('POST',  isset($event->getProp('heartbeat')) ?  $this->debugEndpoint : $this->endpoint, [], array_merge([
             'tid' => $this->tid,
             'cid' => $this->cid,
             'v' => 1
