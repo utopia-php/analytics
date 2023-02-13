@@ -48,6 +48,55 @@ class GoogleAnalytics extends Adapter
         $this->cid = $cid;
     }
 
+    public function validate(Event $event): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+
+        if (empty($event->getType())) {
+            return false;
+        }
+
+        if (empty($event->getUrl())) {
+            return false;
+        }
+
+        if (empty($event->getName())) {
+            return false;
+        }
+
+        $query = [
+            'ec' => $event->getProp('category'),
+            'ea' => $event->getProp('action'),
+            'el' => $event->getName(),
+            'ev' => $event->getValue(),
+            'dh' => parse_url($event->getUrl())['host'],
+            'dp' => parse_url($event->getUrl())['path'],
+            'dt' => $event->getProp('documentTitle'),
+            't' => 'event',
+            'uip' => $this->clientIP ?? "",
+            'ua' => $this->userAgent ?? "",
+            'sr' => $event->getProp('screenResolution'),
+            'vp' => $event->getProp('viewportSize'),
+            'dr' => $event->getProp('referrer'),
+        ];
+
+        $result = $this->call("POST", "https://www.google-analytics.com/debug/collect", [], array_merge([
+            'tid' => $this->tid,
+            'cid' => $this->cid,
+            'v' => 1
+        ], $query));
+
+        foreach (json_decode($result, true)['hitParsingResult'] as $hit) {
+            if ($hit['valid'] == false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Creates an Event on the remote analytics platform.
      * 

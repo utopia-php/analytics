@@ -127,4 +127,77 @@ class Orbit extends Adapter
     {
         throw new \Exception('Not implemented');
     }
+
+    public function validate(Event $event): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+
+        if (empty($event->getType())) {
+            return false;
+        }
+
+        if (empty($event->getUrl())) {
+            return false;
+        }
+
+        if (empty($event->getName())) {
+            return false;
+        }
+
+        if (empty($event->getProp('email'))) {
+            return false;
+        }
+
+        if (!$this->send($event)) {
+            return false;
+        }
+
+        // Check if event made it.
+        $listMembers = $this->call('GET', '/members/find', [
+            'Authorization' => 'Bearer '.$this->apiKey
+        ], [
+            'source' => 'email',
+            'email' => $event->getProp('email'),
+        ]);
+
+        $listMembers = json_decode($listMembers, true);
+
+        if (empty($listMembers['data'])) {
+            return false;
+        }
+
+        $member = $listMembers['data'];
+
+        $activities = $this->call('GET', '/members/'.$member['id'].'/activities', [
+            'Authorization' => 'Bearer '.$this->apiKey
+        ], [
+            'activity_type' => $event->getType(),
+        ]);
+
+        $activities = json_decode($activities, true);
+
+        if (empty($activities['data'])) {
+            return false;
+        }
+
+        $foundActivity = false;
+
+        foreach ($activities['data'] as $activity) {
+            if ($activity['attributes']['custom_title'] === $event->getName()) {
+                $foundActivity = $activity['id'];
+            }
+        }
+
+        if (!$foundActivity) {
+            return false;
+        }
+
+        $this->call('DELETE',  '/members/'.$member['id'].'/activities/'.$foundActivity, [
+            'Authorization' => 'Bearer '.$this->apiKey
+        ], []);
+
+        return true;
+    }
 }

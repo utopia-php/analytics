@@ -13,6 +13,7 @@
 
 namespace Utopia\Analytics\Adapter;
 
+use Exception;
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
 use Utopia\CLI\Console;
@@ -46,7 +47,7 @@ class Plausible extends Adapter
      * @var string
      */
     protected string $domain;
-    
+
 
     /**
      * Gets the name of the adapter.
@@ -129,10 +130,61 @@ class Plausible extends Adapter
 
         $headers = [
             'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Bearer '.$this->apiKey
+            'Authorization' => 'Bearer ' . $this->apiKey
         ];
 
         $this->call('PUT', '/v1/sites/goals', $headers, $params);
         return true;
+    }
+
+    public function validate(Event $event): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+
+        if (empty($event->getType())) {
+            return false;
+        }
+
+        if (empty($event->getUrl())) {
+            return false;
+        }
+
+        $name = 'testEvent_' . chr(mt_rand(97, 122)) . substr(md5(time()), 1);
+
+        if (!$this->provisionGoal($name)) {
+            return false;
+        }
+
+        $params = [
+            'url' => $event->getUrl(),
+            'props' => $event->getProps(),
+            'domain' => $this->domain,
+            'name' => $name,
+            'referrer' => $event->getProp('referrer'),
+            'screen_width' => $event->getProp('screenWidth'),
+        ];
+
+        $headers = [
+            'X-Forwarded-For' => $this->clientIP,
+            'User-Agent' => $this->userAgent,
+            'Content-Type' => 'application/json'
+        ];
+
+        $response = $this->call('POST', '/event', $headers, $params);
+
+        $validateURL = 'https://plausible.io/api/v1/stats/aggregate?' . http_build_query([
+            'site_id' => $this->domain,
+            'filters' => json_encode(["goal" => $name]),
+        ]);
+
+        $checkCreated = $this->call('GET', $validateURL, [
+            'Content-Type' => '',
+            'Authorization' => 'Bearer ' . $this->apiKey
+        ]);
+        $checkCreated = json_decode($checkCreated, true);
+
+        return $checkCreated['results']['visitors']['value'] > 0;
     }
 }

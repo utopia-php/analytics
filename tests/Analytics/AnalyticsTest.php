@@ -5,35 +5,54 @@ namespace Utopia\Tests;
 use PHPUnit\Framework\TestCase;
 use Utopia\Analytics\Adapter\ActiveCampaign;
 use Utopia\Analytics\Adapter\GoogleAnalytics;
-use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Adapter\Orbit;
+use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Event;
 
 class AnalyticsTest extends TestCase
 {
+    /** @var \Utopia\Analytics\Adapter\GoogleAnalytics $ga */
     public $ga;
+
+    /** @var \Utopia\Analytics\Adapter\ActiveCampaign|null $ac */
     public $ac;
+
+    /** @var \Utopia\Analytics\Adapter\Plausible $pa */
     public $pa;
+
+    /** @var \Utopia\Analytics\Adapter\Orbit $orbit */
     public $orbit;
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this->ga = new GoogleAnalytics(getenv("GA_TID"), getenv("GA_CID"));
+        $this->ac = new ActiveCampaign(
+            getenv("AC_KEY"),
+            getenv("AC_ACTID"),
+            getenv("AC_APIKEY"),
+            getenv("AC_ORGID")
+        );
+        $this->pa = new Plausible(getenv("PA_DOMAIN"), getenv("PA_APIKEY"), "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "192.168.0.1");
+        $this->orbit = new Orbit(getenv("OR_WORKSPACEID"), getenv("OR_APIKEY"), "Utopia Testing Suite");
+    }
 
     public function setUp(): void
     {
         $this->ga = new GoogleAnalytics(getenv("GA_TID"), getenv("GA_CID"));
         $this->ac = new ActiveCampaign(
-            getenv("AC_KEY"), 
+            getenv("AC_KEY"),
             getenv("AC_ACTID"),
             getenv("AC_APIKEY"),
-            getenv("AC_ORGID"));
-        $this->pa = new Plausible(getenv("PA_DOMAIN"), getenv("PA_APIKEY"), 
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "192.168.0.1");
+            getenv("AC_ORGID")
+        );
+        $this->pa = new Plausible(getenv("PA_DOMAIN"), getenv("PA_APIKEY"), "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "192.168.0.1");
         $this->orbit = new Orbit(getenv("OR_WORKSPACEID"), getenv("OR_APIKEY"), "Utopia Testing Suite");
     }
 
-    public function testGoogleAnalytics()
+    public function testGoogleAnalytics(): void
     {
         // Use Measurement Protocol Validation Server for testing.
-        $this->ga->endpoint = "https://www.google-analytics.com/debug/collect";
-
         $pageviewEvent = new Event();
         $pageviewEvent
             ->setType('pageview')
@@ -46,12 +65,12 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent']);;
 
-        $this->assertTrue($this->ga->createEvent($pageviewEvent));
-        $this->assertTrue($this->ga->createEvent($normalEvent));
+        $this->assertTrue($this->ga->validate($pageviewEvent));
+        $this->assertTrue($this->ga->validate($normalEvent));
 
         $this->ga->disable();
-        $this->assertFalse($this->ga->createEvent($pageviewEvent));
-        $this->assertFalse($this->ga->createEvent($normalEvent));
+        $this->assertFalse($this->ga->validate($pageviewEvent));
+        $this->assertFalse($this->ga->validate($normalEvent));
     }
 
     public function testPlausible()
@@ -62,60 +81,50 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/pageview123');
 
         $normalEvent = new Event();
-        $normalEvent->setType('myCoolEvent')
-            ->setUrl('https://www.appwrite.io/docs/myCoolEvent123')
-            ->setProps(['category' => 'coolEvent']);;
-    
-         $this->assertTrue($this->pa->createEvent($pageviewEvent));
-         $this->assertTrue($this->pa->createEvent($normalEvent));
-    
+        $normalEvent->setType('testEvent')
+            ->setName('testEvent')
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'testEvent']);;
+
+         $this->assertTrue($this->pa->validate($pageviewEvent));
+         $this->assertTrue($this->pa->validate($normalEvent));
+
          $this->pa->disable();
-         $this->assertFalse($this->pa->createEvent($pageviewEvent));
-         $this->assertFalse($this->pa->createEvent($normalEvent));
-    }
-
-    public function testActiveCampaignCreateAccount() {
-        $this->assertTrue($this->ac->createAccount(
-            'Appwrite',
-            'appwrite.io',
-            1,
-            [
-                [
-                    'customFieldId' => 1,
-                    'fieldValue' => 'Hello World!'
-                ],
-            ]
-        ));
-    }
-
-    public function testActiveCampaignGetAccount() {
-        $accountID = $this->ac->accountExists('Appwrite');
-        $this->assertIsNumeric($accountID);
-
-        return [
-            'accountID' => $accountID,
-        ];
+         $this->assertFalse($this->pa->validate($pageviewEvent));
+         $this->assertFalse($this->pa->validate($normalEvent));
     }
 
     public function testActiveCampaignCreateContact() {
         $this->assertTrue($this->ac->createContact('test@test.com', 'Paul', 'Van Doren'));
     }
 
-    /**
-     * @depends testActiveCampaignGetAccount
-     */
-    public function testActiveCampaignGetContact($data) {
+    public function testActiveCampaignGetContact() {
         $contactID = $this->ac->contactExists('test@test.com');
         $this->assertIsNumeric($contactID);
 
         return [
-            'contactID' => $contactID,
-            'accountID' => $data['accountID'],
+            'contactID' => $contactID
         ];
+    }
+
+    public function testActiveCampaignCreateAccount() {
+        $this->assertTrue($this->ac->createAccount('Example Account 1', 'https://example.com', '1234567890'));
     }
 
     /**
      * @depends testActiveCampaignGetContact
+     */
+    public function testActiveCampaignGetAccount($data) {
+        $accountID = $this->ac->accountExists('Example Account 1');
+        $this->assertIsNumeric($accountID);
+
+        return array_merge([
+            'accountID' => $accountID
+        ], $data);
+    }
+
+    /**
+     * @depends testActiveCampaignGetAccount
      */
     public function testActiveCampaignSyncAsociation($data) {
         $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Owner'));
@@ -151,13 +160,24 @@ class AnalyticsTest extends TestCase
         $this->assertTrue($this->ac->deleteAccount($data['accountID']));
     }
 
-    public function testOrbit() {
+    public function testActiveCampaign() {
         $event = new Event();
         $event->setType('testEvent')
             ->setName('testEvent')
             ->setUrl('https://www.appwrite.io/docs/installation')
-            ->setProps(['category' => 'testEvent', 'email' => 'test@test.com', 'tags' => ['test', 'test2']]);
+            ->setProps(['category' => 'analytics:test', 'email' => 'paul@vans.com', 'tags' => ['test', 'test2']]);
 
-        $this->assertTrue($this->orbit->send($event));
+        $this->assertTrue($this->ac->validate($event));
+    }
+
+    public function testOrbit(): void
+    {
+        $event = new Event();
+        $event->setType('testEvent')
+            ->setName('testEvent')
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'testEvent', 'email' => 'paul@vans.com', 'tags' => ['test', 'test2']]);
+
+        $this->assertTrue($this->orbit->validate($event));
     }
 }

@@ -121,7 +121,7 @@ class ActiveCampaign extends Adapter
         ]];
 
         try {
-            $this->call('PUT', '/api/3/contacts/'.$contactId, [
+            $this->call('PUT', '/api/3/contacts/' . $contactId, [
                 'Content-Type' => 'application/json'
             ], $body);
 
@@ -138,7 +138,8 @@ class ActiveCampaign extends Adapter
      * @param string $email
      * @return bool
      */
-    public function deleteContact(string $email): bool {
+    public function deleteContact(string $email): bool
+    {
         $contact = $this->contactExists($email);
 
         if (!$contact) {
@@ -146,7 +147,7 @@ class ActiveCampaign extends Adapter
         }
 
         try {
-            $this->call('DELETE', '/api/3/contacts/'.$contact);
+            $this->call('DELETE', '/api/3/contacts/' . $contact);
             return true;
         } catch (\Exception $e) {
             $this->logError($e);
@@ -194,7 +195,7 @@ class ActiveCampaign extends Adapter
             'name' => $name,
             'accountUrl' => $url,
             'owner' => $ownerId,
-            'fields' => array_values(array_filter($fields, function($value) {
+            'fields' => array_values(array_filter($fields, function ($value) {
                 return $value['fieldValue'] !== '' && $value['fieldValue'] !== null && $value['fieldValue'] !== false;
             }))
         ]];
@@ -227,13 +228,13 @@ class ActiveCampaign extends Adapter
             'name' => $name,
             'accountUrl' => $url,
             'owner' => $ownerId,
-            'fields' => array_values(array_filter($fields, function($value) {
+            'fields' => array_values(array_filter($fields, function ($value) {
                 return $value['fieldValue'] !== '' && $value['fieldValue'] !== null && $value['fieldValue'] !== false;
             }))
         ]];
 
         try {
-            $this->call('PUT', '/api/3/accounts/'.$accountId, [
+            $this->call('PUT', '/api/3/accounts/' . $accountId, [
                 'Content-Type' => 'application/json',
             ], array_filter($body));
             return true;
@@ -253,7 +254,7 @@ class ActiveCampaign extends Adapter
     public function deleteAccount(string $accountId): bool
     {
         try {
-            $this->call('DELETE', '/api/3/accounts/'.$accountId);
+            $this->call('DELETE', '/api/3/accounts/' . $accountId);
             return true;
         } catch (\Exception $e) {
             $this->logError($e);
@@ -291,7 +292,7 @@ class ActiveCampaign extends Adapter
             $associationId = intval((json_decode($result, true))['accountContacts'][0]['id']);
 
             try {
-                $result = $this->call('PUT', '/api/3/accountContacts/'.$associationId, [
+                $result = $this->call('PUT', '/api/3/accountContacts/' . $associationId, [
                     'Content-Type' => 'application/json',
                 ], [
                     'accountContact' => [
@@ -343,7 +344,7 @@ class ActiveCampaign extends Adapter
      * @param Event $event
      * @return bool
      */
-    public function send(Event $event): bool 
+    public function send(Event $event): bool
     {
         if (!$this->enabled) {
             return false;
@@ -356,11 +357,15 @@ class ActiveCampaign extends Adapter
             'eventdata' => json_encode($event->getProps()),
             'visit' => json_encode(['email' => $event->getProp('email')]),
         ];
-        
-        $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 
-        $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
-        return true;
+        $query = array_filter($query, fn ($value) => !is_null($value) && $value !== '');
+
+        $res = $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
+        if (json_decode($res, true)['success'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -414,5 +419,65 @@ class ActiveCampaign extends Adapter
         }
 
         return true;
+    }
+
+    public function validate(Event $event): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+
+        $email = $event->getProp('email');
+
+        $name = 'testEvent_' . chr(mt_rand(97, 122)) . substr(md5(time()), 1, 5);
+        $event->setName($name);
+
+        if (empty($email)) {
+            return false;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        $contactID = $this->contactExists($email);
+
+        if (!$contactID) {
+            $this->createContact(
+                $email,
+                "Amadeus",
+                "Test"
+            );
+
+            $contactID = $this->contactExists($email);
+        }
+
+        $event->addProp('email', $email);
+
+        $activeCampaignStatus = $this->createEvent($event);
+
+        if (!$activeCampaignStatus) {
+            return false;
+        }
+
+        sleep(2);
+
+        $foundLog = false;
+
+        // Get contact again, since AC doesn't refresh logs immediately
+        $response = $this->call('GET', '/api/3/activities', [], [
+            'contact' => $contactID
+        ]);
+
+        $response = json_decode($response, true);
+
+        foreach ($response['trackingLogs'] as $log) {
+            if ($log['type'] === $name) {
+                $foundLog = true;
+                break;
+            }
+        }
+
+        return boolval($foundLog);
     }
 }
