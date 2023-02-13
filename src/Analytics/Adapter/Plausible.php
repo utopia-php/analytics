@@ -144,17 +144,17 @@ class Plausible extends Adapter
         }
 
         if (empty($event->getType())) {
-            return false;
+            throw new Exception('Event type is required');
         }
 
         if (empty($event->getUrl())) {
-            return false;
+            throw new Exception('Event URL is required');
         }
 
         $name = 'testEvent_' . chr(mt_rand(97, 122)) . substr(md5(time()), 1);
 
         if (!$this->provisionGoal($name)) {
-            return false;
+            throw new Exception('Failed to provision goal');
         }
 
         $params = [
@@ -174,6 +174,10 @@ class Plausible extends Adapter
 
         $response = $this->call('POST', '/event', $headers, $params);
 
+        if ($response !== 'ok') {
+            throw new Exception('Failed to send event');
+        }
+
         $validateURL = 'https://plausible.io/api/v1/stats/aggregate?' . http_build_query([
             'site_id' => $this->domain,
             'filters' => json_encode(["goal" => $name]),
@@ -184,6 +188,10 @@ class Plausible extends Adapter
             'Authorization' => 'Bearer ' . $this->apiKey
         ]);
         $checkCreated = json_decode($checkCreated, true);
+
+        if (!isset($checkCreated['results']['visitors']['value'])) {
+            throw new Exception('Failed to validate event');
+        }
 
         return $checkCreated['results']['visitors']['value'] > 0;
     }

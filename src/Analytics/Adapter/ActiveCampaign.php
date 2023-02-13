@@ -433,11 +433,11 @@ class ActiveCampaign extends Adapter
         $event->setName($name);
 
         if (empty($email)) {
-            return false;
+            throw new \Exception("Email is required.");
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return false;
+            throw new \Exception("Invalid email address.");
         }
 
         $contactID = $this->contactExists($email);
@@ -457,7 +457,7 @@ class ActiveCampaign extends Adapter
         $activeCampaignStatus = $this->createEvent($event);
 
         if (!$activeCampaignStatus) {
-            return false;
+            throw new \Exception("Failed to create event on ActiveCampaign.");
         }
 
         sleep(2);
@@ -471,6 +471,10 @@ class ActiveCampaign extends Adapter
 
         $response = json_decode($response, true);
 
+        if (empty($response['trackingLogs'])) {
+            throw new \Exception("Failed to find event on ActiveCampaign side.");
+        }
+
         foreach ($response['trackingLogs'] as $log) {
             if ($log['type'] === $name) {
                 $foundLog = true;
@@ -478,6 +482,10 @@ class ActiveCampaign extends Adapter
             }
         }
 
-        return boolval($foundLog);
+        if (!$foundLog) {
+            throw new \Exception("Failed to find event on ActiveCampaign side.");
+        }
+
+        return true;
     }
 }

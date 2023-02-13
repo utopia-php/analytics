@@ -135,23 +135,23 @@ class Orbit extends Adapter
         }
 
         if (empty($event->getType())) {
-            return false;
+            throw new \Exception('Event type is required');
         }
 
         if (empty($event->getUrl())) {
-            return false;
+            throw new \Exception('Event URL is required');
         }
 
         if (empty($event->getName())) {
-            return false;
+            throw new \Exception('Event name is required');
         }
 
         if (empty($event->getProp('email'))) {
-            return false;
+            throw new \Exception('Event email is required');
         }
 
         if (!$this->send($event)) {
-            return false;
+            throw new \Exception('Failed to send event');
         }
 
         // Check if event made it.
@@ -179,7 +179,7 @@ class Orbit extends Adapter
         $activities = json_decode($activities, true);
 
         if (empty($activities['data'])) {
-            return false;
+            throw new \Exception('Failed to find event in Orbit');
         }
 
         $foundActivity = false;
@@ -191,7 +191,7 @@ class Orbit extends Adapter
         }
 
         if (!$foundActivity) {
-            return false;
+            throw new \Exception('Failed to find event in Orbit');
         }
 
         $this->call('DELETE',  '/members/'.$member['id'].'/activities/'.$foundActivity, [

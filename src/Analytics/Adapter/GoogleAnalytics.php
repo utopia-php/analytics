@@ -55,15 +55,15 @@ class GoogleAnalytics extends Adapter
         }
 
         if (empty($event->getType())) {
-            return false;
+            throw new \Exception('Event type is required');
         }
 
         if (empty($event->getUrl())) {
-            return false;
+            throw new \Exception('Event URL is required');
         }
 
         if (empty($event->getName())) {
-            return false;
+            throw new \Exception('Event name is required');
         }
 
         $query = [
@@ -90,7 +90,7 @@ class GoogleAnalytics extends Adapter
 
         foreach (json_decode($result, true)['hitParsingResult'] as $hit) {
             if ($hit['valid'] == false) {
-                return false;
+                throw new \Exception($hit['parserMessage']);
             }
         }
 

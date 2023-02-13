@@ -78,8 +78,11 @@ abstract class Adapter
      * Validate the adapter.
      * Sends a test event to the adapter and validates if it was received.
      * 
+     * Throws an exception if the adapter is not valid.
+     * 
      * @param Event $event
      * @return bool
+     * @throws Exception
      */
     public abstract function validate(Event $event): bool;
 
