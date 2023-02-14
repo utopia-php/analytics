@@ -429,9 +429,6 @@ class ActiveCampaign extends Adapter
 
         $email = $event->getProp('email');
 
-        $name = 'testEvent_' . chr(mt_rand(97, 122)) . substr(md5(time()), 1, 5);
-        $event->setName($name);
-
         if (empty($email)) {
             throw new \Exception("Email is required.");
         }
@@ -455,7 +452,7 @@ class ActiveCampaign extends Adapter
         }
 
         foreach ($response['trackingLogs'] as $log) {
-            if ($log['type'] === $name) {
+            if ($log['type'] === $event->getName()) {
                 $foundLog = true;
                 break;
             }

@@ -151,36 +151,9 @@ class Plausible extends Adapter
             throw new Exception('Event URL is required');
         }
 
-        $name = 'testEvent_' . chr(mt_rand(97, 122)) . substr(md5(time()), 1);
-
-        if (!$this->provisionGoal($name)) {
-            throw new Exception('Failed to provision goal');
-        }
-
-        $params = [
-            'url' => $event->getUrl(),
-            'props' => $event->getProps(),
-            'domain' => $this->domain,
-            'name' => $name,
-            'referrer' => $event->getProp('referrer'),
-            'screen_width' => $event->getProp('screenWidth'),
-        ];
-
-        $headers = [
-            'X-Forwarded-For' => $this->clientIP,
-            'User-Agent' => $this->userAgent,
-            'Content-Type' => 'application/json'
-        ];
-
-        $response = $this->call('POST', '/event', $headers, $params);
-
-        if ($response !== 'ok') {
-            throw new Exception('Failed to send event');
-        }
-
         $validateURL = 'https://plausible.io/api/v1/stats/aggregate?' . http_build_query([
             'site_id' => $this->domain,
-            'filters' => json_encode(["goal" => $name]),
+            'filters' => json_encode(["goal" => $event->getName()]),
         ]);
 
         $checkCreated = $this->call('GET', $validateURL, [
