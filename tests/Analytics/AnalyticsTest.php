@@ -86,12 +86,10 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent']);;
 
-         $this->assertTrue($this->pa->validate($pageviewEvent));
-         $this->assertTrue($this->pa->validate($normalEvent));
-
-         $this->pa->disable();
-         $this->assertFalse($this->pa->validate($pageviewEvent));
-         $this->assertFalse($this->pa->validate($normalEvent));
+        $this->assertTrue($this->pa->send($pageviewEvent));
+        $this->assertTrue($this->pa->validate($pageviewEvent));
+        $this->assertTrue($this->pa->send($normalEvent));
+        $this->assertTrue($this->pa->validate($normalEvent));
     }
 
     public function testActiveCampaignCreateContact() {
@@ -167,6 +165,7 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'analytics:test', 'email' => 'paul@vans.com', 'tags' => ['test', 'test2']]);
 
+        $this->assertTrue($this->ac->send($event));
         $this->assertTrue($this->ac->validate($event));
     }
 
@@ -178,6 +177,7 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent', 'email' => 'paul@vans.com', 'tags' => ['test', 'test2']]);
 
+        $this->assertTrue($this->orbit->send($event));
         $this->assertTrue($this->orbit->validate($event));
     }
 }
