@@ -442,7 +442,8 @@ class ActiveCampaign extends Adapter
 
         // Get contact again, since AC doesn't refresh logs immediately
         $response = $this->call('GET', '/api/3/activities', [], [
-            'contact' => $contactID
+            'contact' => $contactID,
+            'orders[tstamp]' => 'DESC'
         ]);
 
         $response = json_decode($response, true);
