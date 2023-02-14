@@ -79,7 +79,7 @@ class GoogleAnalytics extends Adapter
             'dh' => parse_url($event->getUrl())['host'],
             'dp' => parse_url($event->getUrl())['path'],
             'dt' => $event->getProp('documentTitle'),
-            't' => $event->getType(),
+            't' => ($event->getType() === 'pageview') ? 'pageview' : 'event',
             'uip' => $this->clientIP ?? "",
             'ua' => $this->userAgent ?? "",
             'sr' => $event->getProp('screenResolution'),
@@ -98,7 +98,9 @@ class GoogleAnalytics extends Adapter
             ]
         ));
 
-        if (json_decode($validateResponse)->hitParsingResult[0]->valid !== true) {
+        $validateResponse = json_decode($validateResponse, true);
+
+        if ($validateResponse['hitParsingResult'][0]['valid'] !== true) {
             throw new \Exception('Invalid event');
         }
 
