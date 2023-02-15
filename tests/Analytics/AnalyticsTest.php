@@ -168,7 +168,7 @@ class AnalyticsTest extends TestCase
             ->setProps(['category' => 'analytics:test', 'email' => 'analytics@utopiaphp.com', 'tags' => ['test', 'test2']]);
 
         $this->assertTrue($this->ac->send($event));
-        sleep(1);
+        sleep(10);
         $this->assertTrue($this->ac->validate($event));
     }
 
