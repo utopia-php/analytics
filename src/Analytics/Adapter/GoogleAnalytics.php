@@ -150,7 +150,7 @@ class GoogleAnalytics extends Adapter
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 
-        $result = $this->call('POST',  null !== $event->getProp('heartbeat') ?  $this->debugEndpoint : $this->endpoint, [], array_merge([
+        $result = $this->call('POST', $this->endpoint, [], array_merge([
             'tid' => $this->tid,
             'cid' => $this->cid,
             'v' => 1
