@@ -2,7 +2,6 @@ language: php
 
 php:
 - 8.0
-- nightly
 
 notifications:
   email:

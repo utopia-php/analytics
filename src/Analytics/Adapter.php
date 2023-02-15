@@ -24,6 +24,13 @@ abstract class Adapter
     protected string $clientIP;
 
     /**
+     * Endpoint
+     * 
+     * @var string
+     */
+    protected string $endpoint;
+
+    /**
      * Gets the name of the adapter.
      * 
      * @return string
@@ -66,6 +73,18 @@ abstract class Adapter
      * @return bool
      */
     public abstract function send(Event $event): bool;
+
+    /**
+     * Validate the adapter.
+     * Sends a test event to the adapter and validates if it was received.
+     * 
+     * Throws an exception if the adapter is not valid.
+     * 
+     * @param Event $event
+     * @return bool
+     * @throws Exception
+     */
+    public abstract function validate(Event $event): bool;
 
     /**
      * Sets the client IP address.

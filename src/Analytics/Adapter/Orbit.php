@@ -127,4 +127,77 @@ class Orbit extends Adapter
     {
         throw new \Exception('Not implemented');
     }
+
+    public function validate(Event $event): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+
+        if (empty($event->getType())) {
+            throw new \Exception('Event type is required');
+        }
+
+        if (empty($event->getUrl())) {
+            throw new \Exception('Event URL is required');
+        }
+
+        if (empty($event->getName())) {
+            throw new \Exception('Event name is required');
+        }
+
+        if (empty($event->getProp('email'))) {
+            throw new \Exception('Event email is required');
+        }
+
+        if (!$this->send($event)) {
+            throw new \Exception('Failed to send event');
+        }
+
+        // Check if event made it.
+        $listMembers = $this->call('GET', '/members/find', [
+            'Authorization' => 'Bearer '.$this->apiKey
+        ], [
+            'source' => 'email',
+            'email' => $event->getProp('email'),
+        ]);
+
+        $listMembers = json_decode($listMembers, true);
+
+        if (empty($listMembers['data'])) {
+            return false;
+        }
+
+        $member = $listMembers['data'];
+
+        $activities = $this->call('GET', '/members/'.$member['id'].'/activities', [
+            'Authorization' => 'Bearer '.$this->apiKey
+        ], [
+            'activity_type' => $event->getType(),
+        ]);
+
+        $activities = json_decode($activities, true);
+
+        if (empty($activities['data'])) {
+            throw new \Exception('Failed to find event in Orbit');
+        }
+
+        $foundActivity = false;
+
+        foreach ($activities['data'] as $activity) {
+            if ($activity['attributes']['custom_title'] === $event->getName()) {
+                $foundActivity = $activity['id'];
+            }
+        }
+
+        if (!$foundActivity) {
+            throw new \Exception('Failed to find event in Orbit');
+        }
+
+        $this->call('DELETE',  '/members/'.$member['id'].'/activities/'.$foundActivity, [
+            'Authorization' => 'Bearer '.$this->apiKey
+        ], []);
+
+        return true;
+    }
 }
