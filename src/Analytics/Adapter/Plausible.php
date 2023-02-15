@@ -151,7 +151,7 @@ class Plausible extends Adapter
             throw new Exception('Event URL is required');
         }
 
-        $validateURL = 'https://plausible.io/api/v1/stats/aggregate?' . http_build_query([
+        $validateURL = $this->endpoint . '/v1/stats/aggregate?' . http_build_query([
             'site_id' => $this->domain,
             'filters' => json_encode(["goal" => $event->getName()]),
         ]);
