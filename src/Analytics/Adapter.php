@@ -1,18 +1,5 @@
 <?php
 
-/**
- * Utopia PHP Framework
- *
- *
- * @link https://github.com/utopia-php/framework
- *
- * @author Torsten Dittmann <torsten@appwrite.io>
- *
- * @version 1.0 RC1
- *
- * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
- */
-
 namespace Utopia\Analytics;
 
 use Exception;
@@ -36,6 +23,13 @@ abstract class Adapter
      * @var string
      */
     protected string $clientIP;
+
+    /**
+     * Endpoint
+     * 
+     * @var string
+     */
+    protected string $endpoint;
 
     /**
      * Gets the name of the adapter.
@@ -80,6 +74,18 @@ abstract class Adapter
      * @return bool
      */
     abstract public function send(Event $event): bool;
+
+    /**
+     * Validate the adapter.
+     * Sends a test event to the adapter and validates if it was received.
+     * 
+     * Throws an exception if the adapter is not valid.
+     * 
+     * @param Event $event
+     * @return bool
+     * @throws Exception
+     */
+    public abstract function validate(Event $event): bool;
 
     /**
      * Sets the client IP address.

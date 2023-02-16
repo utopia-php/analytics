@@ -3,19 +3,6 @@
 // Note: ActiveCampaign requires the email prop to be set.
 // It also won't create contacts, it'll only add events to pre-existing contacts.
 
-/**
- * Utopia PHP Framework
- *
- *
- * @link https://github.com/utopia-php/framework
- *
- * @author Torsten Dittmann <torsten@appwrite.io>
- *
- * @version 1.0 RC1
- *
- * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
- */
-
 namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
@@ -139,8 +126,8 @@ class ActiveCampaign extends Adapter
         ]];
 
         try {
-            $this->call('PUT', '/api/3/contacts/'.$contactId, [
-                'Content-Type' => 'application/json',
+            $this->call('PUT', '/api/3/contacts/' . $contactId, [
+                'Content-Type' => 'application/json'
             ], $body);
 
             return true;
@@ -166,8 +153,7 @@ class ActiveCampaign extends Adapter
         }
 
         try {
-            $this->call('DELETE', '/api/3/contacts/'.$contact);
-
+            $this->call('DELETE', '/api/3/contacts/' . $contact);
             return true;
         } catch (\Exception $e) {
             $this->logError($e);
@@ -256,7 +242,7 @@ class ActiveCampaign extends Adapter
         ]];
 
         try {
-            $this->call('PUT', '/api/3/accounts/'.$accountId, [
+            $this->call('PUT', '/api/3/accounts/' . $accountId, [
                 'Content-Type' => 'application/json',
             ], array_filter($body));
 
@@ -277,8 +263,7 @@ class ActiveCampaign extends Adapter
     public function deleteAccount(string $accountId): bool
     {
         try {
-            $this->call('DELETE', '/api/3/accounts/'.$accountId);
-
+            $this->call('DELETE', '/api/3/accounts/' . $accountId);
             return true;
         } catch (\Exception $e) {
             $this->logError($e);
@@ -317,7 +302,7 @@ class ActiveCampaign extends Adapter
             $associationId = intval((json_decode($result, true))['accountContacts'][0]['id']);
 
             try {
-                $result = $this->call('PUT', '/api/3/accountContacts/'.$associationId, [
+                $result = $this->call('PUT', '/api/3/accountContacts/' . $associationId, [
                     'Content-Type' => 'application/json',
                 ], [
                     'accountContact' => [
@@ -384,11 +369,14 @@ class ActiveCampaign extends Adapter
             'visit' => json_encode(['email' => $event->getProp('email')]),
         ];
 
-        $query = array_filter($query, fn ($value) => ! is_null($value) && $value !== '');
+        $query = array_filter($query, fn ($value) => !is_null($value) && $value !== '');
 
-        $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
-
-        return true;
+        $res = $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
+        if (json_decode($res, true)['success'] === 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -411,5 +399,79 @@ class ActiveCampaign extends Adapter
     public function setUserAgent(string $userAgent): self
     {
         throw new \Exception('Not implemented');
+    }
+
+    /**
+     * Set Tags
+     * 
+     * @param string $contactId
+     * @param array $tags
+     * 
+     * @return bool
+     */
+    public function setTags(string $contactId, array $tags): bool
+    {
+        foreach ($tags as $tag) {
+            try {
+                $this->call('POST', '/api/3/contactTags', [
+                    'Content-Type' => 'application/json',
+                ], [
+                    'contactTag' => [
+                        'contact' => $contactId,
+                        'tag' => $tag
+                    ]
+                ]);
+            } catch (\Exception $e) {
+                $this->logError($e);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function validate(Event $event): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+
+        $email = $event->getProp('email');
+
+        if (empty($email)) {
+            throw new \Exception("Email is required.");
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \Exception("Invalid email address.");
+        }
+
+        $contactID = $this->contactExists($email);
+        $foundLog = false;
+
+        // Get contact again, since AC doesn't refresh logs immediately
+        $response = $this->call('GET', '/api/3/activities', [], [
+            'contact' => $contactID,
+            'orders[tstamp]' => 'DESC'
+        ]);
+
+        $response = json_decode($response, true);
+
+        if (empty($response['trackingLogs'])) {
+            throw new \Exception("Failed to find event on ActiveCampaign side.");
+        }
+
+        foreach ($response['trackingLogs'] as $log) {
+            if ($log['type'] === $event->getName()) {
+                $foundLog = true;
+                break;
+            }
+        }
+
+        if (!$foundLog) {
+            throw new \Exception("Failed to find event on ActiveCampaign side.");
+        }
+
+        return true;
     }
 }

@@ -1,18 +1,5 @@
 <?php
 
-/**
- * Utopia PHP Framework
- *
- *
- * @link https://github.com/utopia-php/framework
- *
- * @author Torsten Dittmann <torsten@appwrite.io>
- *
- * @version 1.0 RC1
- *
- * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
- */
-
 namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
@@ -76,6 +63,16 @@ class Orbit extends Adapter
             return false;
         }
 
+        $tags = is_array($event->getProp('tags')) ? $event->getProp('tags') : [];
+
+        if ($event->getProp('account')) {
+            $tags[] = $event->getProp('account');
+        }
+
+        if ($event->getProp('code')) {
+            $tags[] = $event->getProp('code');
+        }
+
         $activity = [
             'title' => $event->getName(),
             'activity_type_key' => $event->getType(),
@@ -83,9 +80,15 @@ class Orbit extends Adapter
             'member' => [
                 'email' => $event->getProp('email'),
                 'name' => $event->getProp('name'),
-                'tags_to_add' => $event->getProp('account'),
+                'tags_to_add' => $tags,
             ],
-            'properties' => array_filter($event->getProps(), fn ($value) => ! is_null($value) && $value !== ''),
+            'properties' => array_map(function ($value) {
+                if (is_array($value)) {
+                    return json_encode($value);
+                }
+
+                return $value;
+            }, array_filter($event->getProps(), fn ($value) => !is_null($value) && $value !== '')),
         ];
 
         unset($activity['properties']['email']);
@@ -123,5 +126,78 @@ class Orbit extends Adapter
     public function setUserAgent(string $userAgent): self
     {
         throw new \Exception('Not implemented');
+    }
+
+    public function validate(Event $event): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+
+        if (empty($event->getType())) {
+            throw new \Exception('Event type is required');
+        }
+
+        if (empty($event->getUrl())) {
+            throw new \Exception('Event URL is required');
+        }
+
+        if (empty($event->getName())) {
+            throw new \Exception('Event name is required');
+        }
+
+        if (empty($event->getProp('email'))) {
+            throw new \Exception('Event email is required');
+        }
+
+        if (!$this->send($event)) {
+            throw new \Exception('Failed to send event');
+        }
+
+        // Check if event made it.
+        $listMembers = $this->call('GET', '/members/find', [
+            'Authorization' => 'Bearer '.$this->apiKey
+        ], [
+            'source' => 'email',
+            'email' => $event->getProp('email'),
+        ]);
+
+        $listMembers = json_decode($listMembers, true);
+
+        if (empty($listMembers['data'])) {
+            return false;
+        }
+
+        $member = $listMembers['data'];
+
+        $activities = $this->call('GET', '/members/'.$member['id'].'/activities', [
+            'Authorization' => 'Bearer '.$this->apiKey
+        ], [
+            'activity_type' => $event->getType(),
+        ]);
+
+        $activities = json_decode($activities, true);
+
+        if (empty($activities['data'])) {
+            throw new \Exception('Failed to find event in Orbit');
+        }
+
+        $foundActivity = false;
+
+        foreach ($activities['data'] as $activity) {
+            if ($activity['attributes']['custom_title'] === $event->getName()) {
+                $foundActivity = $activity['id'];
+            }
+        }
+
+        if (!$foundActivity) {
+            throw new \Exception('Failed to find event in Orbit');
+        }
+
+        $this->call('DELETE',  '/members/'.$member['id'].'/activities/'.$foundActivity, [
+            'Authorization' => 'Bearer '.$this->apiKey
+        ], []);
+
+        return true;
     }
 }

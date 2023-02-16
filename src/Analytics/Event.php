@@ -162,13 +162,12 @@ class Event
 
     /**
      * Get a property from the event
-     *
-     * @param  string  $key
-     * @return string|null
+     * 
+     * @param string $key
+     * @return mixed
      */
-    public function getProp(string $key): ?string
-    {
-        if (array_key_exists($key, $this->props)) {
+    public function getProp(string $key): mixed {
+        if (key_exists($key, $this->props)) {
             return $this->props[$key];
         }
 
