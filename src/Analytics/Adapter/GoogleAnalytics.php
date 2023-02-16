@@ -1,17 +1,5 @@
 <?php
 
-/**
- * Utopia PHP Framework
- *
- * @package Analytics
- * @subpackage Tests
- *
- * @link https://github.com/utopia-php/framework
- * @author Torsten Dittmann <torsten@appwrite.io>
- * @version 1.0 RC1
- * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
- */
-
 namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
@@ -24,6 +12,11 @@ class GoogleAnalytics extends Adapter
      *  @var string
      */
     public string $endpoint = 'https://www.google-analytics.com/collect';
+
+    /**
+     * Endpoint for Google Analytics Debug
+     */
+    public string $debugEndpoint = 'https://www.google-analytics.com/debug/collect';
 
     /**
      * Tracking ID for Google Analytics
@@ -60,6 +53,60 @@ class GoogleAnalytics extends Adapter
         $this->cid = $cid;
     }
 
+    public function validate(Event $event): bool
+    {
+        if (!$this->enabled) {
+            return false;
+        }
+
+        if (empty($event->getType())) {
+            throw new \Exception('Event type is required');
+        }
+
+        if (empty($event->getUrl())) {
+            throw new \Exception('Event URL is required');
+        }
+
+        if (empty($event->getName())) {
+            throw new \Exception('Event name is required');
+        }
+
+        $query = [
+            'ec' => $event->getProp('category'),
+            'ea' => $event->getProp('action'),
+            'el' => $event->getName(),
+            'ev' => $event->getValue(),
+            'dh' => parse_url($event->getUrl())['host'],
+            'dp' => parse_url($event->getUrl())['path'],
+            'dt' => $event->getProp('documentTitle'),
+            't' => ($event->getType() === 'pageview') ? 'pageview' : 'event',
+            'uip' => $this->clientIP ?? "",
+            'ua' => $this->userAgent ?? "",
+            'sr' => $event->getProp('screenResolution'),
+            'vp' => $event->getProp('viewportSize'),
+            'dr' => $event->getProp('referrer'),
+        ];
+
+        $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
+
+        $validateResponse = $this->call('POST', $this->debugEndpoint, [], array_merge(
+            $query,
+            [
+                'tid' => $this->tid,
+                'cid' => $this->cid,
+                'v' => 1
+            ]
+        ));
+
+        $validateResponse = json_decode($validateResponse, true);
+
+        if ($validateResponse['hitParsingResult'][0]['valid'] !== true) {
+            throw new \Exception('Invalid event');
+        }
+
+        return true;
+    }
+
     /**
      * Creates an Event on the remote analytics platform.
      * 
@@ -77,6 +124,10 @@ class GoogleAnalytics extends Adapter
             $event->setType('event');
         }
 
+        if ($event->getProp('screenWidth') && $event->getProp('screenHeight')) {
+            $event->setProps(array_merge($event->getProps(), ['screenResolution' => $event->getProp('screenWidth') . 'x' . $event->getProp('screenHeight')]));
+        }
+
         $query = [
             'ec' => $event->getProp('category'),
             'ea' => $event->getProp('action'),
@@ -88,7 +139,14 @@ class GoogleAnalytics extends Adapter
             't' => $event->getType(),
             'uip' => $this->clientIP ?? "",
             'ua' => $this->userAgent ?? "",
+            'sr' => $event->getProp('screenResolution'),
+            'vp' => $event->getProp('viewportSize'),
+            'dr' => $event->getProp('referrer'),
         ];
+
+        if ($event->getProp('account')) {
+            $query['cd1'] = $event->getProp('account');
+        }
         
         $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
 

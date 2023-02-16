@@ -1,37 +1,48 @@
 <?php
 
-/**
- * Utopia PHP Framework
- *
- * @package Analytics
- * @subpackage Tests
- *
- * @link https://github.com/utopia-php/framework
- * @author Torsten Dittmann <torsten@appwrite.io>
- * @version 1.0 RC1
- * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
- */
-
 namespace Utopia\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Utopia\Analytics\Adapter\ActiveCampaign;
 use Utopia\Analytics\Adapter\GoogleAnalytics;
-use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Adapter\Orbit;
+use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Event;
+use Utopia\App;
 
 class AnalyticsTest extends TestCase
 {
+    /** @var \Utopia\Analytics\Adapter\GoogleAnalytics $ga */
     public $ga;
+
+    /** @var \Utopia\Analytics\Adapter\ActiveCampaign|null $ac */
     public $ac;
+
+    /** @var \Utopia\Analytics\Adapter\Plausible $pa */
     public $pa;
+
+    /** @var \Utopia\Analytics\Adapter\Orbit $orbit */
     public $orbit;
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this->ga = new GoogleAnalytics(App::getEnv("GA_TID"), App::getEnv("GA_CID"));
+        $this->ac = new ActiveCampaign(
+            App::getEnv("AC_KEY"),
+            App::getEnv("AC_ACTID"),
+            App::getEnv("AC_APIKEY"),
+            App::getEnv("AC_ORGID")
+        );
+        $this->pa = new Plausible(App::getEnv("PA_DOMAIN"), App::getEnv("PA_APIKEY"), "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "192.168.0.1");
+        $this->orbit = new Orbit(App::getEnv("OR_WORKSPACEID"), App::getEnv("OR_APIKEY"), "Utopia Testing Suite");
+    }
 
     public function setUp(): void
     {
-        $this->ga = new GoogleAnalytics(getenv("GA_TID"), getenv("GA_CID"));
+        $this->ga = new GoogleAnalytics(App::getEnv("GA_TID"), App::getEnv("GA_CID"));
         $this->ac = new ActiveCampaign(
+<<<<<<< HEAD
             getenv("AC_KEY"),
             getenv("AC_ACTID"),
             getenv("AC_APIKEY"),
@@ -39,13 +50,20 @@ class AnalyticsTest extends TestCase
         $this->pa = new Plausible(getenv("PA_DOMAIN"), getenv("PA_APIKEY"),
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "192.168.0.1");
         $this->orbit = new Orbit(getenv("OR_WORKSPACEID"), getenv("OR_APIKEY"), "Utopia Testing Suite");
+=======
+            App::getEnv("AC_KEY"),
+            App::getEnv("AC_ACTID"),
+            App::getEnv("AC_APIKEY"),
+            App::getEnv("AC_ORGID")
+        );
+        $this->pa = new Plausible(App::getEnv("PA_DOMAIN"), App::getEnv("PA_APIKEY"), "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "192.168.0.1");
+        $this->orbit = new Orbit(App::getEnv("OR_WORKSPACEID"), App::getEnv("OR_APIKEY"), "Utopia Testing Suite");
+>>>>>>> f0306021de06277309d2f121bc1860a639c852b5
     }
 
     public function testGoogleAnalytics(): void
     {
         // Use Measurement Protocol Validation Server for testing.
-        $this->ga->endpoint = "https://www.google-analytics.com/debug/collect";
-
         $pageviewEvent = new Event();
         $pageviewEvent
             ->setType('pageview')
@@ -58,12 +76,12 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent']);;
 
-        $this->assertTrue($this->ga->createEvent($pageviewEvent));
-        $this->assertTrue($this->ga->createEvent($normalEvent));
+        $this->assertTrue($this->ga->validate($pageviewEvent));
+        $this->assertTrue($this->ga->validate($normalEvent));
 
         $this->ga->disable();
-        $this->assertFalse($this->ga->createEvent($pageviewEvent));
-        $this->assertFalse($this->ga->createEvent($normalEvent));
+        $this->assertFalse($this->ga->validate($pageviewEvent));
+        $this->assertFalse($this->ga->validate($normalEvent));
     }
 
     public function testPlausible(): void
@@ -74,6 +92,7 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/pageview123');
 
         $normalEvent = new Event();
+<<<<<<< HEAD
         $normalEvent->setType('myCoolEvent')
             ->setUrl('https://www.appwrite.io/docs/myCoolEvent123')
             ->setProps(['category' => 'coolEvent']);;
@@ -111,25 +130,55 @@ class AnalyticsTest extends TestCase
 
     public function testActiveCampaignCreateContact(): void {
         $this->assertTrue($this->ac->createContact('test@test.com', 'Paul', 'Van Doren'));
+=======
+        $normalEvent->setType('testEvent')
+            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'testEvent']);;
+
+        $this->assertTrue($this->pa->send($pageviewEvent));
+        $this->assertTrue($this->pa->send($normalEvent));
+        $this->assertTrue($this->pa->validate($normalEvent));
     }
 
-    /**
-     * @depends testActiveCampaignGetAccount
-     */
-    public function testActiveCampaignGetContact($data) {
-        $contactID = $this->ac->contactExists('test@test.com');
+    public function testActiveCampaignCreateContact() {
+        $this->assertTrue($this->ac->createContact('analytics2@utopiaphp.com', 'Analytics', 'Utopia'));
+>>>>>>> f0306021de06277309d2f121bc1860a639c852b5
+    }
+
+    public function testActiveCampaignGetContact() {
+        $contactID = $this->ac->contactExists('analytics2@utopiaphp.com');
         $this->assertIsNumeric($contactID);
 
         return [
-            'contactID' => $contactID,
-            'accountID' => $data['accountID'],
+            'contactID' => $contactID
         ];
+    }
+
+    public function testActiveCampaignCreateAccount() {
+        $this->assertTrue($this->ac->createAccount('Example Account 1', 'https://example.com', '1234567890'));
     }
 
     /**
      * @depends testActiveCampaignGetContact
      */
+<<<<<<< HEAD
     public function testActiveCampaignSyncAsociation($data): void{
+=======
+    public function testActiveCampaignGetAccount($data) {
+        $accountID = $this->ac->accountExists('Example Account 1');
+        $this->assertIsNumeric($accountID);
+
+        return array_merge([
+            'accountID' => $accountID
+        ], $data);
+    }
+
+    /**
+     * @depends testActiveCampaignGetAccount
+     */
+    public function testActiveCampaignSyncAsociation($data) {
+>>>>>>> f0306021de06277309d2f121bc1860a639c852b5
         $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Owner'));
         $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Software Developer'));
     }
@@ -137,12 +186,21 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testActiveCampaignGetContact
      */
+<<<<<<< HEAD
     public function testActiveCampaignUpdateContact($data): void {
         $this->assertTrue($this->ac->updateContact($data['contactID'], 'test@test.com', '', '', '7223224241'));
     }
 
     public function testActiveCampaignDeleteContact(): void {
         $this->assertTrue($this->ac->deleteContact('test@test.com'));
+=======
+    public function testActiveCampaignUpdateContact($data) {
+        $this->assertTrue($this->ac->updateContact($data['contactID'], 'analytics2@utopiaphp.com', '', '', '7223224241'));
+    }
+
+    public function testActiveCampaignDeleteContact() {
+        $this->assertTrue($this->ac->deleteContact('analytics2@utopiaphp.com'));
+>>>>>>> f0306021de06277309d2f121bc1860a639c852b5
     }
 
     /**
@@ -163,13 +221,51 @@ class AnalyticsTest extends TestCase
         $this->assertTrue($this->ac->deleteAccount($data['accountID']));
     }
 
+<<<<<<< HEAD
     public function testOrbit(): void {
+=======
+    public function testActiveCampaign() {
+        $this->assertTrue($this->ac->createContact('analytics@utopiaphp.com', 'Analytics', 'Utopia'));
+
+        $event = new Event();
+        $event->setType('testEvent')
+            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'analytics:test', 'email' => 'analytics@utopiaphp.com', 'tags' => ['test', 'test2']]);
+
+        $this->assertTrue($this->ac->send($event));
+        sleep(10);
+        $this->assertTrue($this->ac->validate($event));
+    }
+
+    public function testOrbit(): void
+    {
+>>>>>>> f0306021de06277309d2f121bc1860a639c852b5
         $event = new Event();
         $event->setType('testEvent')
             ->setName('testEvent')
             ->setUrl('https://www.appwrite.io/docs/installation')
-            ->setProps(['category' => 'testEvent', 'email' => 'test@test.com']);
+            ->setProps(['category' => 'testEvent', 'email' => 'analytics@utopiaphp.com', 'tags' => ['test', 'test2']]);
 
         $this->assertTrue($this->orbit->send($event));
+        $this->assertTrue($this->orbit->validate($event));
     }
+<<<<<<< HEAD
+=======
+
+    function testCleanup(): void
+    {
+        if ($this->ac->contactExists('analytics@utopiaphp.com')) {
+            $this->assertTrue($this->ac->deleteContact('analytics@utopiaphp.com'));
+        }
+
+        if ($this->ac->contactExists('analytics2@utopiaphp.com')) {
+            $this->assertTrue($this->ac->deleteContact('analytics2@utopiaphp.com'));
+        }
+
+        if ($this->ac->accountExists('Example Account 1')) {
+            $this->assertTrue($this->ac->deleteAccount($this->ac->accountExists('Example Account 1')));
+        }
+    }
+>>>>>>> f0306021de06277309d2f121bc1860a639c852b5
 }
