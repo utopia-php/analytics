@@ -3,7 +3,7 @@
 namespace Utopia\Analytics;
 
 class Event {
-    
+
     /**
      * @var string (required)
      */
@@ -25,13 +25,13 @@ class Event {
     private ?string $value = null;
 
     /**
-     * @var array[]
+     * @var array<int|string,mixed>
      */
     private array $props = [];
 
     /**
      * Get the type of event
-     * 
+     *
      * @return string
      */
     public function getType(): string {
@@ -40,7 +40,7 @@ class Event {
 
     /**
      * Set the type of event
-     * 
+     *
      * @param string $type
      * @return Event
      */
@@ -51,7 +51,7 @@ class Event {
 
     /**
      * Get the URL of the event
-     * 
+     *
      * @return string
      */
     public function getUrl(): string {
@@ -60,7 +60,7 @@ class Event {
 
     /**
      * Set the URL of the event
-     * 
+     *
      * @param string $url
      * @return Event
      */
@@ -71,7 +71,7 @@ class Event {
 
     /**
      * Get the name of the event
-     * 
+     *
      * @return string
      */
     public function getName(): string {
@@ -80,7 +80,7 @@ class Event {
 
     /**
      * Set the name of the event
-     * 
+     *
      * @param string $name
      * @return Event
      */
@@ -91,7 +91,7 @@ class Event {
 
     /**
      * Get the value of the event
-     * 
+     *
      * @return string|null
      */
     public function getValue(): ?string {
@@ -100,7 +100,7 @@ class Event {
 
     /**
      * Set the value of the event
-     * 
+     *
      * @param string|null $value
      * @return Event
      */
@@ -111,8 +111,8 @@ class Event {
 
     /**
      * Get the properties of the event
-     * 
-     * @return array[]
+     *
+     * @return array<int|string,mixed>
      */
     public function getProps(): array {
         return $this->props;
@@ -120,7 +120,7 @@ class Event {
 
     /**
      * Adds extra properties to the event
-     * 
+     *
      * @param string $key
      * @param string $value
      * @return Event
@@ -132,7 +132,7 @@ class Event {
 
     /**
      * Removes a property from the event
-     * 
+     *
      * @param string $key
      * @return Event
      */
@@ -145,7 +145,7 @@ class Event {
 
     /**
      * Get a property from the event
-     * 
+     *
      * @param string $key
      * @return mixed
      */
@@ -158,8 +158,8 @@ class Event {
 
     /**
      * Set the properties of the event
-     * 
-     * @param array[] $props
+     *
+     * @param array<int|string,mixed> $props
      * @return Event
      */
     public function setProps(array $props): self {

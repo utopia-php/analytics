@@ -36,7 +36,7 @@ class ActiveCampaign extends Adapter
 
     /**
      * Gets the name of the adapter.
-     * 
+     *
      * @return string
      */
     public function getName(): string
@@ -47,13 +47,14 @@ class ActiveCampaign extends Adapter
 
     /**
      * Checks if a contact exists by the email ID. Returns the User ID if it exists and false if it doesn't.
-     * 
+     *
      * @param string $email
      * @return bool|int
      */
     public function contactExists(string $email): bool|int
     {
         try {
+            
             $result = $this->call('GET', '/api/3/contacts', [], [
                 'email' => $email
             ]);
@@ -73,7 +74,7 @@ class ActiveCampaign extends Adapter
 
     /**
      * Create a contact
-     * 
+     *
      * @param string $email
      * @param string $firstName
      * @param string $lastName
@@ -102,13 +103,13 @@ class ActiveCampaign extends Adapter
 
     /**
      * Update contact
-     * 
+     *
      * @param string $contactId
      * @param string $email
      * @param string $firstName
      * @param string $lastName
      * @param string $phone
-     * 
+     *
      * @return bool
      */
     public function updateContact(string $contactId, string $email, string $firstName = '', string $lastName = '', string $phone = ''): bool
@@ -132,9 +133,9 @@ class ActiveCampaign extends Adapter
         }
     }
 
-    /** 
-     * Delete a contact 
-     * 
+    /**
+     * Delete a contact
+     *
      * @param string $email
      * @return bool
      */
@@ -157,7 +158,7 @@ class ActiveCampaign extends Adapter
 
     /**
      * Account Exists
-     * 
+     *
      * @param string $name
      * @return bool|int
      */
@@ -181,12 +182,12 @@ class ActiveCampaign extends Adapter
 
     /**
      * Create an account
-     * 
+     *
      * @param string $name
      * @param string $url
      * @param int $ownerId
-     * @param array $fields
-     * 
+     * @param array<int|string,mixed> $fields
+     *
      * @return bool
      */
     public function createAccount(string $name, string $url = '', int $ownerId = 1, array $fields = []): bool
@@ -213,13 +214,13 @@ class ActiveCampaign extends Adapter
 
     /**
      * Update an account
-     * 
+     *
      * @param string $accountId
      * @param string $name
      * @param string $url
      * @param int $ownerId
-     * @param array $fields
-     * 
+     * @param array<int|string,mixed> $fields
+     *
      * @return bool
      */
     public function updateAccount(string $accountId, string $name, string $url = '', int $ownerId = 1, array $fields = []): bool
@@ -246,9 +247,9 @@ class ActiveCampaign extends Adapter
 
     /**
      * Delete an account
-     * 
+     *
      * @param string $accountId
-     * 
+     *
      * @return bool
      */
     public function deleteAccount(string $accountId): bool
@@ -264,13 +265,13 @@ class ActiveCampaign extends Adapter
 
     /**
      * Sync an association
-     * 
+     *
      * Creates an association if it doesn't exist and updates it if it does
-     * 
+     *
      * @param string $accountId
      * @param string $contactId
      * @param string $role
-     * 
+     *
      * @return bool
      */
     public function syncAssociation(string $accountId, string $contactId, string $role = ''): bool
@@ -319,11 +320,11 @@ class ActiveCampaign extends Adapter
     }
 
     /**
-     * @param string $key 
+     * @param string $key
      * @param string $actId
      * @param string $apiKey
      * @param string $organisationId
-     * 
+     *
      * @return ActiveCampaign
      */
     public function __construct(string $key, string $actId, string $apiKey, string $organisationId)
@@ -340,7 +341,7 @@ class ActiveCampaign extends Adapter
 
     /**
      * Creates an Event on the remote analytics platform.
-     * 
+     *
      * @param Event $event
      * @return bool
      */
@@ -370,9 +371,9 @@ class ActiveCampaign extends Adapter
 
     /**
      * Sets the client IP address.
-     * 
+     *
      * @param string $ip The IP address to use.
-     * 
+     *
      * @return self
      */
     public function setClientIP(string $clientIP): self
@@ -382,9 +383,9 @@ class ActiveCampaign extends Adapter
 
     /**
      * Sets the client user agent.
-     * 
+     *
      * @param string $userAgent The user agent to use.
-     * 
+     *
      * @return self
      */
     public function setUserAgent(string $userAgent): self

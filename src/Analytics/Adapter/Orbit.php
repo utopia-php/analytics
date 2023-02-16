@@ -107,7 +107,7 @@ class Orbit extends Adapter
     /**
      * Sets the client IP address.
      * 
-     * @param string $ip The IP address to use.
+     * @param string $clientIP The IP address to use.
      * 
      * @return self
      */
