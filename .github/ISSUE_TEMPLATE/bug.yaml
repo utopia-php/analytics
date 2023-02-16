@@ -52,6 +52,7 @@ body:
       description: "What version of PHP are you running?"
       options:
         - PHP 8.0
+        - Different version (specify in environment)
         
   - type: dropdown
     id: operating-system
