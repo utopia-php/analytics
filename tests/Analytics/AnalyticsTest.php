@@ -12,16 +12,16 @@ use Utopia\App;
 
 class AnalyticsTest extends TestCase
 {
-    /** @var \Utopia\Analytics\Adapter\GoogleAnalytics $ga */
+    /** @var GoogleAnalytics $ga */
     public $ga;
 
-    /** @var \Utopia\Analytics\Adapter\ActiveCampaign|null $ac */
+    /** @var ActiveCampaign|null $ac */
     public $ac;
 
-    /** @var \Utopia\Analytics\Adapter\Plausible $pa */
+    /** @var Plausible $pa */
     public $pa;
 
-    /** @var \Utopia\Analytics\Adapter\Orbit $orbit */
+    /** @var Orbit $orbit */
     public $orbit;
     
     public function __construct()
@@ -83,7 +83,7 @@ class AnalyticsTest extends TestCase
 
         $normalEvent = new Event();
         $normalEvent->setType('testEvent')
-            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(strval(time())), 1, 5))
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent']);;
 
@@ -92,11 +92,16 @@ class AnalyticsTest extends TestCase
         $this->assertTrue($this->pa->validate($normalEvent));
     }
 
-    public function testActiveCampaignCreateContact() {
+    public function testActiveCampaignCreateContact(): void 
+    {
         $this->assertTrue($this->ac->createContact('analytics2@utopiaphp.com', 'Analytics', 'Utopia'));
     }
 
-    public function testActiveCampaignGetContact() {
+    /**
+     * @return array<string, int>
+     */
+    public function testActiveCampaignGetContact(): array
+    {
         $contactID = $this->ac->contactExists('analytics2@utopiaphp.com');
         $this->assertIsNumeric($contactID);
 
@@ -105,14 +110,20 @@ class AnalyticsTest extends TestCase
         ];
     }
 
-    public function testActiveCampaignCreateAccount() {
-        $this->assertTrue($this->ac->createAccount('Example Account 1', 'https://example.com', '1234567890'));
+    public function testActiveCampaignCreateAccount(): void 
+    {
+        $this->assertTrue($this->ac->createAccount('Example Account 1', 'https://example.com', 1234567890));
     }
 
     /**
      * @depends testActiveCampaignGetContact
+     * 
+     * @param array<string,string> $data
+     * 
+     * @return array<string, mixed>
      */
-    public function testActiveCampaignGetAccount($data) {
+    public function testActiveCampaignGetAccount($data): array 
+    {
         $accountID = $this->ac->accountExists('Example Account 1');
         $this->assertIsNumeric($accountID);
 
@@ -123,25 +134,34 @@ class AnalyticsTest extends TestCase
 
     /**
      * @depends testActiveCampaignGetAccount
+     * 
+     * @param array<string, mixed> $data
      */
-    public function testActiveCampaignSyncAsociation($data) {
+    public function testActiveCampaignSyncAsociation($data): void 
+    {
         $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Owner'));
         $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Software Developer'));
     }
 
     /**
      * @depends testActiveCampaignGetContact
+     * 
+     * @param array<string, mixed> $data
      */
-    public function testActiveCampaignUpdateContact($data) {
+    public function testActiveCampaignUpdateContact($data): void 
+    {
         $this->assertTrue($this->ac->updateContact($data['contactID'], 'analytics2@utopiaphp.com', '', '', '7223224241'));
     }
 
-    public function testActiveCampaignDeleteContact() {
+    public function testActiveCampaignDeleteContact(): void 
+    {
         $this->assertTrue($this->ac->deleteContact('analytics2@utopiaphp.com'));
     }
 
     /**
      * @depends testActiveCampaignGetAccount
+     * 
+     * @param array<string, mixed> $data
      */
     public function testActiveCampaignUpdateAccount($data): void {
         $this->assertTrue($this->ac->updateAccount(
@@ -153,17 +173,21 @@ class AnalyticsTest extends TestCase
 
     /**
      * @depends testActiveCampaignGetAccount
+     * 
+     * @param array<string, mixed> $data
      */
-    public function testActiveCampaignDeleteAccount($data): void {
+    public function testActiveCampaignDeleteAccount($data): void 
+    {
         $this->assertTrue($this->ac->deleteAccount($data['accountID']));
     }
 
-    public function testActiveCampaign() {
+    public function testActiveCampaign(): void 
+    {
         $this->assertTrue($this->ac->createContact('analytics@utopiaphp.com', 'Analytics', 'Utopia'));
 
         $event = new Event();
         $event->setType('testEvent')
-            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(strval(time())), 1, 5))
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'analytics:test', 'email' => 'analytics@utopiaphp.com', 'tags' => ['test', 'test2']]);
 

@@ -156,6 +156,7 @@ class Plausible extends Adapter
             'filters' => json_encode(["goal" => $event->getName()]),
         ]);
 
+        /** @var string $checkCreated */
         $checkCreated = $this->call('GET', $validateURL, [
             'Content-Type' => '',
             'Authorization' => 'Bearer ' . $this->apiKey

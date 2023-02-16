@@ -54,6 +54,7 @@ class ActiveCampaign extends Adapter
     public function contactExists(string $email): bool|int
     {
         try {
+            
             $result = $this->call('GET', '/api/3/contacts', [], [
                 'email' => $email
             ]);

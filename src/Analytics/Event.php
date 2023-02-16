@@ -114,7 +114,7 @@ class Event {
      *
      * @return array<int|string,mixed>
      */
-    public function getProps(): array<int|string,mixed> {
+    public function getProps(): array {
         return $this->props;
     }
 

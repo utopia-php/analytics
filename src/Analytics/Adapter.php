@@ -139,7 +139,8 @@ abstract class Adapter
      * @param string $path
      * @param array<int|string,mixed> $params
      * @param array<int|string,mixed> $headers
-     * @return array<int|string,mixed>|string
+     * 
+     * @return array<string, mixed>
      * @throws \Exception
      */
     public function call(string $method, string $path = '', array $headers = array(), array $params = array()): array
@@ -226,9 +227,10 @@ abstract class Adapter
      *
      * @param array<int|string,mixed> $data
      * @param string $prefix
-     * @return array
+     * @return array<string, mixed>
      */
-    protected function flatten(array $data, string $prefix = ''): array<int|string,mixed> {
+    protected function flatten(array $data, string $prefix = ''): array 
+    {
         $output = [];
 
         foreach($data as $key => $value) {
