@@ -9,29 +9,21 @@ class Orbit extends Adapter
 {
     /**
      * Endpoint for Orbit Events
-     *
-     * @var string
      */
     public string $endpoint = 'https://app.orbit.love/api/v1/';
 
     /**
      * API Key
-     *
-     * @var string
      */
     private string $apiKey;
 
     /**
      * dataOrigin is where this analytic data originates from.
-     *
-     * @var string
      */
     private string $dataOrigin;
 
     /**
      * Gets the name of the adapter.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -39,9 +31,6 @@ class Orbit extends Adapter
     }
 
     /**
-     * @param  string  $workspaceId
-     * @param  string  $apiKey
-     * @param  string  $dataOrigin
      * @return Orbit
      */
     public function __construct(string $workspaceId, string $apiKey, string $dataOrigin)
@@ -53,9 +42,6 @@ class Orbit extends Adapter
 
     /**
      * Creates an Event on the remote analytics platform. Requires email prop.
-     *
-     * @param  Event  $event
-     * @return bool
      */
     public function send(Event $event): bool
     {
@@ -88,7 +74,7 @@ class Orbit extends Adapter
                 }
 
                 return $value;
-            }, array_filter($event->getProps(), fn ($value) => !is_null($value) && $value !== '')),
+            }, array_filter($event->getProps(), fn ($value) => ! is_null($value) && $value !== '')),
         ];
 
         unset($activity['properties']['email']);
@@ -110,7 +96,6 @@ class Orbit extends Adapter
      * Sets the client IP address.
      *
      * @param  string  $ip The IP address to use.
-     * @return self
      */
     public function setClientIP(string $clientIP): self
     {
@@ -121,7 +106,6 @@ class Orbit extends Adapter
      * Sets the client user agent.
      *
      * @param  string  $userAgent The user agent to use.
-     * @return self
      */
     public function setUserAgent(string $userAgent): self
     {
@@ -130,7 +114,7 @@ class Orbit extends Adapter
 
     public function validate(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -150,13 +134,13 @@ class Orbit extends Adapter
             throw new \Exception('Event email is required');
         }
 
-        if (!$this->send($event)) {
+        if (! $this->send($event)) {
             throw new \Exception('Failed to send event');
         }
 
         // Check if event made it.
         $listMembers = $this->call('GET', '/members/find', [
-            'Authorization' => 'Bearer '.$this->apiKey
+            'Authorization' => 'Bearer '.$this->apiKey,
         ], [
             'source' => 'email',
             'email' => $event->getProp('email'),
@@ -171,7 +155,7 @@ class Orbit extends Adapter
         $member = $listMembers['data'];
 
         $activities = $this->call('GET', '/members/'.$member['id'].'/activities', [
-            'Authorization' => 'Bearer '.$this->apiKey
+            'Authorization' => 'Bearer '.$this->apiKey,
         ], [
             'activity_type' => $event->getType(),
         ]);
@@ -190,12 +174,12 @@ class Orbit extends Adapter
             }
         }
 
-        if (!$foundActivity) {
+        if (! $foundActivity) {
             throw new \Exception('Failed to find event in Orbit');
         }
 
-        $this->call('DELETE',  '/members/'.$member['id'].'/activities/'.$foundActivity, [
-            'Authorization' => 'Bearer '.$this->apiKey
+        $this->call('DELETE', '/members/'.$member['id'].'/activities/'.$foundActivity, [
+            'Authorization' => 'Bearer '.$this->apiKey,
         ], []);
 
         return true;

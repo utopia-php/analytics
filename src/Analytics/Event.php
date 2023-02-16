@@ -19,9 +19,6 @@ class Event
      */
     private string $name = '';
 
-    /**
-     * @var string|null
-     */
     private ?string $value = null;
 
     /**
@@ -31,8 +28,6 @@ class Event
 
     /**
      * Get the type of event
-     *
-     * @return string
      */
     public function getType(): string
     {
@@ -41,9 +36,6 @@ class Event
 
     /**
      * Set the type of event
-     *
-     * @param  string  $type
-     * @return Event
      */
     public function setType(string $type): self
     {
@@ -54,8 +46,6 @@ class Event
 
     /**
      * Get the URL of the event
-     *
-     * @return string
      */
     public function getUrl(): string
     {
@@ -64,9 +54,6 @@ class Event
 
     /**
      * Set the URL of the event
-     *
-     * @param  string  $url
-     * @return Event
      */
     public function setUrl(string $url): self
     {
@@ -77,8 +64,6 @@ class Event
 
     /**
      * Get the name of the event
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -87,9 +72,6 @@ class Event
 
     /**
      * Set the name of the event
-     *
-     * @param  string  $name
-     * @return Event
      */
     public function setName(string $name): self
     {
@@ -100,8 +82,6 @@ class Event
 
     /**
      * Get the value of the event
-     *
-     * @return string|null
      */
     public function getValue(): ?string
     {
@@ -110,9 +90,6 @@ class Event
 
     /**
      * Set the value of the event
-     *
-     * @param  string|null  $value
-     * @return Event
      */
     public function setValue(?string $value): self
     {
@@ -133,10 +110,6 @@ class Event
 
     /**
      * Adds extra properties to the event
-     *
-     * @param  string  $key
-     * @param  string  $value
-     * @return Event
      */
     public function addProp(string $key, string $value): self
     {
@@ -147,9 +120,6 @@ class Event
 
     /**
      * Removes a property from the event
-     *
-     * @param  string  $key
-     * @return Event
      */
     public function removeProp(string $key): self
     {
@@ -162,12 +132,10 @@ class Event
 
     /**
      * Get a property from the event
-     * 
-     * @param string $key
-     * @return mixed
      */
-    public function getProp(string $key): mixed {
-        if (key_exists($key, $this->props)) {
+    public function getProp(string $key): mixed
+    {
+        if (array_key_exists($key, $this->props)) {
             return $this->props[$key];
         }
 
@@ -178,7 +146,6 @@ class Event
      * Set the properties of the event
      *
      * @param  array[]  $props
-     * @return Event
      */
     public function setProps(array $props): self
     {

@@ -21,9 +21,6 @@ class Plausible extends Adapter
 {
     /**
      *  Endpoint for Plausible
-
-     *
-     *  @var string
      */
     protected string $endpoint = 'https://plausible.io/api';
 
@@ -36,23 +33,16 @@ class Plausible extends Adapter
 
     /**
      * Plausible API key
-
-     *
-     * @var string
      */
     protected string $apiKey;
 
     /**
      * Domain to use for events
-     *
-     * @var string
      */
     protected string $domain;
 
     /**
      * Gets the name of the adapter.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -80,7 +70,6 @@ class Plausible extends Adapter
      * Sends an event to Plausible.
      *
      * @param  Event  $event The event to send.
-     * @return bool
      */
     public function send(Event $event): bool
     {
@@ -116,7 +105,6 @@ class Plausible extends Adapter
      * Provision a goal for the given event.
      *
      * @param  string  $eventName The name of the event.
-     * @return bool
      */
     private function provisionGoal(string $eventName): bool
     {
@@ -128,7 +116,7 @@ class Plausible extends Adapter
 
         $headers = [
             'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Bearer ' . $this->apiKey
+            'Authorization' => 'Bearer '.$this->apiKey,
         ];
 
         $this->call('PUT', '/v1/sites/goals', $headers, $params);
@@ -138,7 +126,7 @@ class Plausible extends Adapter
 
     public function validate(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -150,18 +138,18 @@ class Plausible extends Adapter
             throw new Exception('Event URL is required');
         }
 
-        $validateURL = $this->endpoint . '/v1/stats/aggregate?' . http_build_query([
+        $validateURL = $this->endpoint.'/v1/stats/aggregate?'.http_build_query([
             'site_id' => $this->domain,
-            'filters' => json_encode(["goal" => $event->getName()]),
+            'filters' => json_encode(['goal' => $event->getName()]),
         ]);
 
         $checkCreated = $this->call('GET', $validateURL, [
             'Content-Type' => '',
-            'Authorization' => 'Bearer ' . $this->apiKey
+            'Authorization' => 'Bearer '.$this->apiKey,
         ]);
         $checkCreated = json_decode($checkCreated, true);
 
-        if (!isset($checkCreated['results']['visitors']['value'])) {
+        if (! isset($checkCreated['results']['visitors']['value'])) {
             throw new Exception('Failed to validate event');
         }
 
