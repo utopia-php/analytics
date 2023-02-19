@@ -74,113 +74,113 @@ class AnalyticsTest extends TestCase
         $this->assertFalse($this->ga->validate($normalEvent));
     }
 
-    // public function testPlausible()
-    // {
-    //     $pageviewEvent = new Event();
-    //     $pageviewEvent
-    //         ->setType('pageview')
-    //         ->setUrl('https://www.appwrite.io/docs/pageview123');
+    public function testPlausible()
+    {
+        $pageviewEvent = new Event();
+        $pageviewEvent
+            ->setType('pageview')
+            ->setUrl('https://www.appwrite.io/docs/pageview123');
 
-    //     $normalEvent = new Event();
-    //     $normalEvent->setType('testEvent')
-    //         ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
-    //         ->setUrl('https://www.appwrite.io/docs/installation')
-    //         ->setProps(['category' => 'testEvent']);
+        $normalEvent = new Event();
+        $normalEvent->setType('testEvent')
+            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'testEvent']);
 
-    //     $this->assertTrue($this->pa->send($pageviewEvent));
-    //     $this->assertTrue($this->pa->send($normalEvent));
-    //     $this->assertTrue($this->pa->validate($normalEvent));
-    // }
+        $this->assertTrue($this->pa->send($pageviewEvent));
+        $this->assertTrue($this->pa->send($normalEvent));
+        $this->assertTrue($this->pa->validate($normalEvent));
+    }
 
-    // public function testActiveCampaignCreateContact()
-    // {
-    //     $this->assertTrue($this->ac->createContact('analytics2@utopiaphp.com', 'Analytics', 'Utopia'));
-    // }
+    public function testActiveCampaignCreateContact()
+    {
+        $this->assertTrue($this->ac->createContact('analytics2@utopiaphp.com', 'Analytics', 'Utopia'));
+    }
 
-    // public function testActiveCampaignGetContact()
-    // {
-    //     $contactID = $this->ac->contactExists('analytics2@utopiaphp.com');
-    //     $this->assertIsNumeric($contactID);
+    public function testActiveCampaignGetContact()
+    {
+        $contactID = $this->ac->contactExists('analytics2@utopiaphp.com');
+        $this->assertIsNumeric($contactID);
 
-    //     return [
-    //         'contactID' => $contactID,
-    //     ];
-    // }
+        return [
+            'contactID' => $contactID,
+        ];
+    }
 
-    // public function testActiveCampaignCreateAccount()
-    // {
-    //     $this->assertTrue($this->ac->createAccount('Example Account 1', 'https://example.com', '1234567890'));
-    // }
+    public function testActiveCampaignCreateAccount()
+    {
+        $this->assertTrue($this->ac->createAccount('Example Account 1', 'https://example.com', '1234567890'));
+    }
 
-    // /**
-    //  * @depends testActiveCampaignGetContact
-    //  */
-    // public function testActiveCampaignGetAccount($data)
-    // {
-    //     $accountID = $this->ac->accountExists('Example Account 1');
-    //     $this->assertIsNumeric($accountID);
+    /**
+     * @depends testActiveCampaignGetContact
+     */
+    public function testActiveCampaignGetAccount($data)
+    {
+        $accountID = $this->ac->accountExists('Example Account 1');
+        $this->assertIsNumeric($accountID);
 
-    //     return array_merge([
-    //         'accountID' => $accountID,
-    //     ], $data);
-    // }
+        return array_merge([
+            'accountID' => $accountID,
+        ], $data);
+    }
 
-    // /**
-    //  * @depends testActiveCampaignGetAccount
-    //  */
-    // public function testActiveCampaignSyncAsociation($data)
-    // {
-    //     $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Owner'));
-    //     $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Software Developer'));
-    // }
+    /**
+     * @depends testActiveCampaignGetAccount
+     */
+    public function testActiveCampaignSyncAsociation($data)
+    {
+        $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Owner'));
+        $this->assertTrue($this->ac->syncAssociation($data['accountID'], $data['contactID'], 'Software Developer'));
+    }
 
-    // /**
-    //  * @depends testActiveCampaignGetContact
-    //  */
-    // public function testActiveCampaignUpdateContact($data)
-    // {
-    //     $this->assertTrue($this->ac->updateContact($data['contactID'], 'analytics2@utopiaphp.com', '', '', '7223224241'));
-    // }
+    /**
+     * @depends testActiveCampaignGetContact
+     */
+    public function testActiveCampaignUpdateContact($data)
+    {
+        $this->assertTrue($this->ac->updateContact($data['contactID'], 'analytics2@utopiaphp.com', '', '', '7223224241'));
+    }
 
-    // public function testActiveCampaignDeleteContact()
-    // {
-    //     $this->assertTrue($this->ac->deleteContact('analytics2@utopiaphp.com'));
-    // }
+    public function testActiveCampaignDeleteContact()
+    {
+        $this->assertTrue($this->ac->deleteContact('analytics2@utopiaphp.com'));
+    }
 
-    // /**
-    //  * @depends testActiveCampaignGetAccount
-    //  */
-    // public function testActiveCampaignUpdateAccount($data)
-    // {
-    //     $this->assertTrue($this->ac->updateAccount(
-    //         $data['accountID'],
-    //         'Utopia',
-    //         'utopia.com',
-    //         1));
-    // }
+    /**
+     * @depends testActiveCampaignGetAccount
+     */
+    public function testActiveCampaignUpdateAccount($data)
+    {
+        $this->assertTrue($this->ac->updateAccount(
+            $data['accountID'],
+            'Utopia',
+            'utopia.com',
+            1));
+    }
 
-    // /**
-    //  * @depends testActiveCampaignGetAccount
-    //  */
-    // public function testActiveCampaignDeleteAccount($data)
-    // {
-    //     $this->assertTrue($this->ac->deleteAccount($data['accountID']));
-    // }
+    /**
+     * @depends testActiveCampaignGetAccount
+     */
+    public function testActiveCampaignDeleteAccount($data)
+    {
+        $this->assertTrue($this->ac->deleteAccount($data['accountID']));
+    }
 
-    // public function testActiveCampaign()
-    // {
-    //     $this->assertTrue($this->ac->createContact('analytics@utopiaphp.com', 'Analytics', 'Utopia'));
+    public function testActiveCampaign()
+    {
+        $this->assertTrue($this->ac->createContact('analytics@utopiaphp.com', 'Analytics', 'Utopia'));
 
-    //     $event = new Event();
-    //     $event->setType('testEvent')
-    //         ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
-    //         ->setUrl('https://www.appwrite.io/docs/installation')
-    //         ->setProps(['category' => 'analytics:test', 'email' => 'analytics@utopiaphp.com', 'tags' => ['test', 'test2']]);
+        $event = new Event();
+        $event->setType('testEvent')
+            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'analytics:test', 'email' => 'analytics@utopiaphp.com', 'tags' => ['test', 'test2']]);
 
-    //     $this->assertTrue($this->ac->send($event));
-    //     sleep(10);
-    //     $this->assertTrue($this->ac->validate($event));
-    // }
+        $this->assertTrue($this->ac->send($event));
+        sleep(10);
+        $this->assertTrue($this->ac->validate($event));
+    }
 
     public function testOrbit(): void
     {
