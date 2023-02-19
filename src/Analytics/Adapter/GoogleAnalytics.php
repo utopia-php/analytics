@@ -9,7 +9,6 @@ class GoogleAnalytics extends Adapter
 {
     /**
      *  Endpoint for Google Analytics
-     *  @var string
      */
     public string $endpoint = 'https://www.google-analytics.com/collect';
 
@@ -20,20 +19,16 @@ class GoogleAnalytics extends Adapter
 
     /**
      * Tracking ID for Google Analytics
-     * @var string
      */
     private string $tid;
 
     /**
      * A unique identifer for Google Analytics
-     * @var string
      */
     private string $cid;
 
     /**
      * Gets the name of the adapter.
-     * 
-     * @return string
      */
     public function getName(): string
     {
@@ -41,10 +36,8 @@ class GoogleAnalytics extends Adapter
     }
 
     /**
-     * @param string $tid 
-     * @param string $cid
+     * @param  string  $cid
      * Adapter configuration
-     * 
      * @return GoogleAnalytics
      */
     public function __construct(string $tid, string $cid)
@@ -55,7 +48,7 @@ class GoogleAnalytics extends Adapter
 
     public function validate(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -80,21 +73,21 @@ class GoogleAnalytics extends Adapter
             'dp' => parse_url($event->getUrl())['path'],
             'dt' => $event->getProp('documentTitle'),
             't' => ($event->getType() === 'pageview') ? 'pageview' : 'event',
-            'uip' => $this->clientIP ?? "",
-            'ua' => $this->userAgent ?? "",
+            'uip' => $this->clientIP ?? '',
+            'ua' => $this->userAgent ?? '',
             'sr' => $event->getProp('screenResolution'),
             'vp' => $event->getProp('viewportSize'),
             'dr' => $event->getProp('referrer'),
         ];
 
-        $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
+        $query = array_filter($query, fn ($value) => ! is_null($value) && $value !== '');
 
         $validateResponse = $this->call('POST', $this->debugEndpoint, [], array_merge(
             $query,
             [
                 'tid' => $this->tid,
                 'cid' => $this->cid,
-                'v' => 1
+                'v' => 1,
             ]
         ));
 
@@ -109,13 +102,10 @@ class GoogleAnalytics extends Adapter
 
     /**
      * Creates an Event on the remote analytics platform.
-     * 
-     * @param Event $event
-     * @return bool
      */
-    public function send(Event $event): bool 
+    public function send(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -125,7 +115,7 @@ class GoogleAnalytics extends Adapter
         }
 
         if ($event->getProp('screenWidth') && $event->getProp('screenHeight')) {
-            $event->setProps(array_merge($event->getProps(), ['screenResolution' => $event->getProp('screenWidth') . 'x' . $event->getProp('screenHeight')]));
+            $event->setProps(array_merge($event->getProps(), ['screenResolution' => $event->getProp('screenWidth').'x'.$event->getProp('screenHeight')]));
         }
 
         $query = [
@@ -137,8 +127,8 @@ class GoogleAnalytics extends Adapter
             'dp' => parse_url($event->getUrl())['path'],
             'dt' => $event->getProp('documentTitle'),
             't' => $event->getType(),
-            'uip' => $this->clientIP ?? "",
-            'ua' => $this->userAgent ?? "",
+            'uip' => $this->clientIP ?? '',
+            'ua' => $this->userAgent ?? '',
             'sr' => $event->getProp('screenResolution'),
             'vp' => $event->getProp('viewportSize'),
             'dr' => $event->getProp('referrer'),
@@ -147,18 +137,18 @@ class GoogleAnalytics extends Adapter
         if ($event->getProp('account')) {
             $query['cd1'] = $event->getProp('account');
         }
-        
-        $query = array_filter($query, fn($value) => !is_null($value) && $value !== '');
+
+        $query = array_filter($query, fn ($value) => ! is_null($value) && $value !== '');
 
         $result = $this->call('POST', $this->endpoint, [], array_merge([
             'tid' => $this->tid,
             'cid' => $this->cid,
-            'v' => 1
+            'v' => 1,
         ], $query));
 
         // Parse Debug data
-        if ($this->endpoint == "https://www.google-analytics.com/debug/collect") {
-            return json_decode($result, true)["hitParsingResult"][0]["valid"];
+        if ($this->endpoint == 'https://www.google-analytics.com/debug/collect') {
+            return json_decode($result, true)['hitParsingResult'][0]['valid'];
         }
 
         return true;
