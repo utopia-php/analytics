@@ -51,28 +51,28 @@ class AnalyticsTest extends TestCase
         $this->orbit = new Orbit(App::getEnv('OR_WORKSPACEID'), App::getEnv('OR_APIKEY'), 'Utopia Testing Suite');
     }
 
-    // public function testGoogleAnalytics(): void
-    // {
-    //     // Use Measurement Protocol Validation Server for testing.
-    //     $pageviewEvent = new Event();
-    //     $pageviewEvent
-    //         ->setType('pageview')
-    //         ->setName('pageview')
-    //         ->setUrl('https://www.appwrite.io/docs/installation');
+    public function testGoogleAnalytics(): void
+    {
+        // Use Measurement Protocol Validation Server for testing.
+        $pageviewEvent = new Event();
+        $pageviewEvent
+            ->setType('pageview')
+            ->setName('pageview')
+            ->setUrl('https://www.appwrite.io/docs/installation');
 
-    //     $normalEvent = new Event();
-    //     $normalEvent->setType('testEvent')
-    //         ->setName('testEvent')
-    //         ->setUrl('https://www.appwrite.io/docs/installation')
-    //         ->setProps(['category' => 'testEvent']);
+        $normalEvent = new Event();
+        $normalEvent->setType('testEvent')
+            ->setName('testEvent')
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'testEvent']);
 
-    //     $this->assertTrue($this->ga->validate($pageviewEvent));
-    //     $this->assertTrue($this->ga->validate($normalEvent));
+        $this->assertTrue($this->ga->validate($pageviewEvent));
+        $this->assertTrue($this->ga->validate($normalEvent));
 
-    //     $this->ga->disable();
-    //     $this->assertFalse($this->ga->validate($pageviewEvent));
-    //     $this->assertFalse($this->ga->validate($normalEvent));
-    // }
+        $this->ga->disable();
+        $this->assertFalse($this->ga->validate($pageviewEvent));
+        $this->assertFalse($this->ga->validate($normalEvent));
+    }
 
     // public function testPlausible()
     // {
@@ -182,17 +182,17 @@ class AnalyticsTest extends TestCase
     //     $this->assertTrue($this->ac->validate($event));
     // }
 
-    // public function testOrbit(): void
-    // {
-    //     $event = new Event();
-    //     $event->setType('testEvent')
-    //         ->setName('testEvent')
-    //         ->setUrl('https://www.appwrite.io/docs/installation')
-    //         ->setProps(['category' => 'testEvent', 'email' => 'analytics@utopiaphp.com', 'tags' => ['test', 'test2']]);
+    public function testOrbit(): void
+    {
+        $event = new Event();
+        $event->setType('testEvent')
+            ->setName('testEvent')
+            ->setUrl('https://www.appwrite.io/docs/installation')
+            ->setProps(['category' => 'testEvent', 'email' => 'analytics@utopiaphp.com', 'tags' => ['test', 'test2']]);
 
-    //     $this->assertTrue($this->orbit->send($event));
-    //     $this->assertTrue($this->orbit->validate($event));
-    // }
+        $this->assertTrue($this->orbit->send($event));
+        $this->assertTrue($this->orbit->validate($event));
+    }
 
     public function testCleanup(): void
     {
