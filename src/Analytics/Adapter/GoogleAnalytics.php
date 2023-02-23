@@ -89,11 +89,9 @@ class GoogleAnalytics extends Adapter
                 'cid' => $this->cid,
                 'v' => 1,
             ]
-        ));
+            ));
 
-        $validateResponse = json_decode($validateResponse, true);
-
-        if ($validateResponse['hitParsingResult'][0]['valid'] !== true) {
+        if (!isset($validateResponse) || $validateResponse['hitParsingResult'][0]['valid'] !== true) {
             throw new \Exception('Invalid event');
         }
 
@@ -147,8 +145,8 @@ class GoogleAnalytics extends Adapter
         ], $query));
 
         // Parse Debug data
-        if ($this->endpoint == 'https://www.google-analytics.com/debug/collect') {
-            return json_decode($result, true)['hitParsingResult'][0]['valid'];
+        if ($this->endpoint == "https://www.google-analytics.com/debug/collect") {
+            return $result["hitParsingResult"][0]["valid"];
         }
 
         return true;

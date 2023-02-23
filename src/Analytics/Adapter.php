@@ -35,7 +35,7 @@ abstract class Adapter
      * @var array
      */
     protected $headers = [
-        'Content-Type' => '',
+        'content-type' => '',
     ];
 
     /**
@@ -124,7 +124,10 @@ abstract class Adapter
         $responseType = '';
         $responseBody = '';
 
-        switch ($headers['Content-Type']) {
+        $contentType   = $headers['content-type'] ?? '';
+        $contentType   = $headers['Content-Type'] ?? '';
+
+        switch ($contentType) {
             case 'application/json':
                 $query = json_encode($params);
                 break;
@@ -167,13 +170,10 @@ abstract class Adapter
 
         $responseBody = curl_exec($ch);
 
-        $responseType = $responseHeaders['Content-Type'] ?? '';
-        $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        switch(substr($responseType, 0, strpos($responseType, ';'))) {
-            case 'application/json':
-                $responseBody = json_decode($responseBody, true);
-                break;
+        try {
+            $responseBody = json_decode($responseBody, true) ?? $responseBody;
+        } catch (\Exception $e) {
+            // Ignore
         }
 
         if (curl_errno($ch)) {

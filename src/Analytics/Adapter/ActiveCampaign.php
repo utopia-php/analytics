@@ -48,8 +48,6 @@ class ActiveCampaign extends Adapter
                 'email' => $email,
             ]);
 
-            $result = json_decode($result, true);
-
             if ($result && $result['meta']['total'] > 0) {
                 return $result['contacts'][0]['id'];
             } else {
@@ -144,8 +142,8 @@ class ActiveCampaign extends Adapter
                 'search' => $name,
             ]);
 
-            if (intval(json_decode($result, true)['meta']['total']) > 0) {
-                return intval((json_decode($result, true))['accounts'][0]['id']);
+            if (intval($result['meta']['total']) > 0) {
+                return intval($result['accounts'][0]['id']);
             } else {
                 return false;
             }
@@ -246,9 +244,9 @@ class ActiveCampaign extends Adapter
             return false;
         }
 
-        if (intval(json_decode($result, true)['meta']['total']) > 0) {
+        if (intval($result['meta']['total']) > 0) {
             // Update the association
-            $associationId = intval((json_decode($result, true))['accountContacts'][0]['id']);
+            $associationId = intval($result['accountContacts'][0]['id']);
 
             try {
                 $result = $this->call('PUT', '/api/3/accountContacts/'.$associationId, [
@@ -314,7 +312,7 @@ class ActiveCampaign extends Adapter
         $query = array_filter($query, fn ($value) => ! is_null($value) && $value !== '');
 
         $res = $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
-        if (json_decode($res, true)['success'] === 1) {
+        if ($res['success'] === 1) {
             return true;
         } else {
             return false;
@@ -390,8 +388,6 @@ class ActiveCampaign extends Adapter
             'contact' => $contactID,
             'orders[tstamp]' => 'DESC',
         ]);
-
-        $response = json_decode($response, true);
 
         if (empty($response['trackingLogs'])) {
             throw new \Exception('Failed to find event on ActiveCampaign side.');

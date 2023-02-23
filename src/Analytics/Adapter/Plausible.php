@@ -93,7 +93,7 @@ class Plausible extends Adapter
         $headers = [
             'X-Forwarded-For' => $this->clientIP,
             'User-Agent' => $this->userAgent,
-            'Content-Type' => 'application/json',
+            'content-type' => 'application/json'
         ];
 
         $this->call('POST', '/event', $headers, $params);
@@ -115,8 +115,8 @@ class Plausible extends Adapter
         ];
 
         $headers = [
-            'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Bearer '.$this->apiKey,
+            'content-type' => 'application/x-www-form-urlencoded',
+            'Authorization' => 'Bearer ' . $this->apiKey
         ];
 
         $this->call('PUT', '/v1/sites/goals', $headers, $params);
@@ -144,12 +144,11 @@ class Plausible extends Adapter
         ]);
 
         $checkCreated = $this->call('GET', $validateURL, [
-            'Content-Type' => '',
-            'Authorization' => 'Bearer '.$this->apiKey,
+            'content-type' => '',
+            'Authorization' => 'Bearer ' . $this->apiKey
         ]);
-        $checkCreated = json_decode($checkCreated, true);
 
-        if (! isset($checkCreated['results']['visitors']['value'])) {
+        if (!isset($checkCreated['results']['visitors']['value'])) {
             throw new Exception('Failed to validate event');
         }
 

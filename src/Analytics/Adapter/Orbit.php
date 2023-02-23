@@ -82,9 +82,9 @@ class Orbit extends Adapter
 
         $activity = array_filter($activity, fn ($value) => ! is_null($value) && $value !== '');
 
-        $this->call('POST', $this->endpoint.'/activities', [
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer '.$this->apiKey,
+        $this->call('POST', $this->endpoint . '/activities', [
+            'content-type' => 'application/json',
+            'Authorization' => 'Bearer ' . $this->apiKey
         ], [
             'activity' => $activity,
         ]);
@@ -146,8 +146,6 @@ class Orbit extends Adapter
             'email' => $event->getProp('email'),
         ]);
 
-        $listMembers = json_decode($listMembers, true);
-
         if (empty($listMembers['data'])) {
             return false;
         }
@@ -159,8 +157,6 @@ class Orbit extends Adapter
         ], [
             'activity_type' => $event->getType(),
         ]);
-
-        $activities = json_decode($activities, true);
 
         if (empty($activities['data'])) {
             throw new \Exception('Failed to find event in Orbit');
