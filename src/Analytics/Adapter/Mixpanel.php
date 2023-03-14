@@ -12,7 +12,7 @@ class Mixpanel extends Adapter
     /**
      * Endpoint for MixPanel Events
      */
-    public string $endpoint = 'https://api.mixpanel.com/';
+    public string $endpoint = 'https://api.mixpanel.com';
 
     /**
      * API Key
@@ -26,10 +26,6 @@ class Mixpanel extends Adapter
     public function __construct(string $token)
     {
         $this->token = $token;
-        $this->headers = [
-            'content-type' => 'application/json',
-            'accept' => 'text/plain'
-        ];
     }
 
     /**
@@ -51,24 +47,33 @@ class Mixpanel extends Adapter
 
         $properties = [
             'token' => $this->token,
-            'time' => $event->getProp('time'),
+            'time' => $event->getProp('time') ?? microtime(true),
             'distinct_id' => $event->getProp('distinct_id'),
         ];
 
         foreach ($event->getProps() as $key => $value) {
-            if (! isset($properties[$key])) {
+            if (!isset($properties[$key])) {
                 $properties[$key] = $value;
             }
         }
 
-        $payload = [
+        $payload = array([
             'event' => $event->getName(),
             'properties' => $properties,
+        ]);
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'accept' => 'text/plain',
         ];
 
-        $this->call('POST', '/track', [], $payload);
+        $res = $this->call('POST', '/track', $headers, $payload);
 
-        return true;
+        if ($res === '1') {
+            return true;
+        } else {
+            return false;
+        }
     }
     
     /**
