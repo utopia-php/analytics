@@ -228,10 +228,7 @@ class AnalyticsTest extends TestCase
         $this->assertTrue($res);
 
         /** Append properties to the user profile */
-        $res = $this->mp->appendProperty('analytics@utopiaphp.com', 'union_field', [
-            'value2',
-            'value3',
-        ]);
+        $res = $this->mp->appendProperties('analytics@utopiaphp.com', ['union_field' => ['value2', 'value3']]);
         $this->assertTrue($res);
     }
 }
