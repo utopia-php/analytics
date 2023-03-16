@@ -76,13 +76,17 @@ class Mixpanel extends Adapter
         return true;
     }
 
-    public function createProfile(string $distinctId, array $properties = []): bool
+    public function createProfile(string $distinctId, string $ip, array $properties = []): bool
     {
         $payload = [[
             '$token' => $this->token,
             '$distinct_id' => $distinctId,
             '$set' => $properties,
         ]];
+
+        if (! empty($ip)) {
+            $payload[0]['$ip'] = $ip;
+        }
 
         $headers = [
             'Content-Type' => 'application/json',
