@@ -98,14 +98,12 @@ class Mixpanel extends Adapter
         return true;
     }
 
-    public function appendProperty(string $distinctId, string $key, array $values): bool
+    public function appendProperties(string $distinctId, array $properties): bool
     {
         $payload = array([
             '$token' => $this->token,
             '$distinct_id' => $distinctId,
-            '$union' => [
-                $key => $values,
-            ],
+            '$union' => $properties,
         ]);
 
         $headers = [
