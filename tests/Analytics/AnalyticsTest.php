@@ -219,7 +219,7 @@ class AnalyticsTest extends TestCase
         $this->assertTrue($this->mp->send($event));
 
         /** Create a user profile */
-        $res = $this->mp->createProfile('analytics@utopiaphp.com', [
+        $res = $this->mp->createProfile('analytics@utopiaphp.com', '132.154.23.14', [
             'email' => 'analytics@utopiaphp.com',
             'name' => 'Utopia Analytics',
             'tags' => ['tag1', 'tag2'],
