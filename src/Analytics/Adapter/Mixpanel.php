@@ -8,7 +8,6 @@ use Utopia\Analytics\Event;
 
 class Mixpanel extends Adapter
 {
-
     /**
      * Endpoint for MixPanel Events
      */
@@ -21,7 +20,6 @@ class Mixpanel extends Adapter
 
     /**
      * Mixpanel constructor.
-     * @param string $token
      */
     public function __construct(string $token)
     {
@@ -52,15 +50,15 @@ class Mixpanel extends Adapter
         ];
 
         foreach ($event->getProps() as $key => $value) {
-            if (!isset($properties[$key])) {
+            if (! isset($properties[$key])) {
                 $properties[$key] = $value;
             }
         }
 
-        $payload = array([
+        $payload = [[
             'event' => $event->getName(),
             'properties' => $properties,
-        ]);
+        ]];
 
         $headers = [
             'Content-Type' => 'application/json',
@@ -69,13 +67,59 @@ class Mixpanel extends Adapter
 
         $res = $this->call('POST', '/track', $headers, $payload);
 
-        if ($res === '1') {
-            return true;
-        } else {
+        if ($res !== '1') {
             return false;
         }
+
+        return true;
     }
-    
+
+    public function createProfile(string $distinctId, array $properties = []): bool
+    {
+        $payload = [[
+            '$token' => $this->token,
+            '$distinct_id' => $distinctId,
+            '$set' => $properties,
+        ]];
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'accept' => 'text/plain',
+        ];
+
+        $res = $this->call('POST', '/engage#profile-set', $headers, $payload);
+
+        if ($res !== '1') {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function appendProperty(string $distinctId, string $key, array $values): bool
+    {
+        $payload = [[
+            '$token' => $this->token,
+            '$distinct_id' => $distinctId,
+            '$union' => [
+                $key => $values,
+            ],
+        ]];
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'accept' => 'text/plain',
+        ];
+
+        $res = $this->call('POST', '/engage#profile-union', $headers, $payload);
+
+        if ($res !== '1') {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Sets the client IP address.
      *
