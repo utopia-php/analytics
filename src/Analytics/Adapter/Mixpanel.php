@@ -39,18 +39,20 @@ class Mixpanel extends Adapter
      */
     public function send(Event $event): bool
     {
-        if (! $event->getProp('distinct_id')) {
+        if (!$event->getProp('email')) {
             return false;
         }
 
         $properties = [
             'token' => $this->token,
             'time' => $event->getProp('time') ?? microtime(true),
-            'distinct_id' => $event->getProp('distinct_id'),
+            'distinct_id' => $event->getProp('email'),
+            'type' => $event->getType(),
+            'url' => $event->getUrl()
         ];
 
         foreach ($event->getProps() as $key => $value) {
-            if (! isset($properties[$key])) {
+            if (!isset($properties[$key])) {
                 $properties[$key] = $value;
             }
         }
@@ -76,11 +78,11 @@ class Mixpanel extends Adapter
 
     public function createProfile(string $distinctId, array $properties = []): bool
     {
-        $payload = [[
+        $payload = array([
             '$token' => $this->token,
             '$distinct_id' => $distinctId,
             '$set' => $properties,
-        ]];
+        ]);
 
         $headers = [
             'Content-Type' => 'application/json',
@@ -98,13 +100,13 @@ class Mixpanel extends Adapter
 
     public function appendProperty(string $distinctId, string $key, array $values): bool
     {
-        $payload = [[
+        $payload = array([
             '$token' => $this->token,
             '$distinct_id' => $distinctId,
             '$union' => [
                 $key => $values,
             ],
-        ]];
+        ]);
 
         $headers = [
             'Content-Type' => 'application/json',

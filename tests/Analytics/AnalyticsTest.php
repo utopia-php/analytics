@@ -206,9 +206,11 @@ class AnalyticsTest extends TestCase
         $event = new Event();
         $event
             ->setName('testEvent')
+            ->setType('click')
+            ->setUrl('https://utopia-php.com/docs/installation')
             ->setProps([
                 'time' => time(),
-                'distinct_id' => 'analytics@utopiaphp.com',
+                'email' => 'analytics@utopiaphp.com',
                 'custom_prop1' => 'custom_value1',
                 'custom_prop2' => 'custom_value2',
                 'custom_prop3' => 'custom_value3',
