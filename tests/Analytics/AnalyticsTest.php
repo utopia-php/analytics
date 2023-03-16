@@ -5,6 +5,7 @@ namespace Utopia\Tests;
 use PHPUnit\Framework\TestCase;
 use Utopia\Analytics\Adapter\ActiveCampaign;
 use Utopia\Analytics\Adapter\GoogleAnalytics;
+use Utopia\Analytics\Adapter\Mixpanel;
 use Utopia\Analytics\Adapter\Orbit;
 use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Event;
@@ -24,19 +25,8 @@ class AnalyticsTest extends TestCase
     /** @var \Utopia\Analytics\Adapter\Orbit */
     public $orbit;
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->ga = new GoogleAnalytics(App::getEnv('GA_TID'), App::getEnv('GA_CID'));
-        $this->ac = new ActiveCampaign(
-            App::getEnv('AC_KEY'),
-            App::getEnv('AC_ACTID'),
-            App::getEnv('AC_APIKEY'),
-            App::getEnv('AC_ORGID')
-        );
-        $this->pa = new Plausible(App::getEnv('PA_DOMAIN'), App::getEnv('PA_APIKEY'), 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
-        $this->orbit = new Orbit(App::getEnv('OR_WORKSPACEID'), App::getEnv('OR_APIKEY'), 'Utopia Testing Suite');
-    }
+    /** @var \Utopia\Analytics\Adapter\Mixpanel */
+    public $mp;
 
     public function setUp(): void
     {
@@ -49,6 +39,7 @@ class AnalyticsTest extends TestCase
         );
         $this->pa = new Plausible(App::getEnv('PA_DOMAIN'), App::getEnv('PA_APIKEY'), 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
         $this->orbit = new Orbit(App::getEnv('OR_WORKSPACEID'), App::getEnv('OR_APIKEY'), 'Utopia Testing Suite');
+        $this->mp = new Mixpanel(App::getEnv('MP_PROJECT_TOKEN'));
     }
 
     public function testGoogleAnalytics(): void
@@ -207,5 +198,37 @@ class AnalyticsTest extends TestCase
         if ($this->ac->accountExists('Example Account 1')) {
             $this->assertTrue($this->ac->deleteAccount($this->ac->accountExists('Example Account 1')));
         }
+    }
+
+    public function testMixpanel()
+    {
+        /** Create a simple track event */
+        $event = new Event();
+        $event
+            ->setName('testEvent')
+            ->setType('click')
+            ->setUrl('https://utopia-php.com/docs/installation')
+            ->setProps([
+                'time' => time(),
+                'email' => 'analytics@utopiaphp.com',
+                'custom_prop1' => 'custom_value1',
+                'custom_prop2' => 'custom_value2',
+                'custom_prop3' => 'custom_value3',
+            ]);
+
+        $this->assertTrue($this->mp->send($event));
+
+        /** Create a user profile */
+        $res = $this->mp->createProfile('analytics@utopiaphp.com', [
+            'email' => 'analytics@utopiaphp.com',
+            'name' => 'Utopia Analytics',
+            'tags' => ['tag1', 'tag2'],
+            'union_field' => ['value1'],
+        ]);
+        $this->assertTrue($res);
+
+        /** Append properties to the user profile */
+        $res = $this->mp->appendProperties('analytics@utopiaphp.com', ['union_field' => ['value2', 'value3']]);
+        $this->assertTrue($res);
     }
 }
