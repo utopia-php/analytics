@@ -84,7 +84,7 @@ class Mixpanel extends Adapter
             '$set' => $properties,
         ]];
 
-        if (! empty($ip)) {
+        if (!empty($ip)) {
             $payload[0]['$ip'] = $ip;
         }
 
