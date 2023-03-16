@@ -92,7 +92,7 @@ class Mixpanel extends Adapter
         $res = $this->call('POST', '/engage#profile-set', $headers, $payload);
 
         if ($res !== '1') {
-            throw new Exception('Failed to create Mixpanel profile for '.$distinctId);
+            return false;
         }
 
         return true;
@@ -114,7 +114,7 @@ class Mixpanel extends Adapter
         $res = $this->call('POST', '/engage#profile-union', $headers, $payload);
 
         if ($res !== '1') {
-            throw new Exception('Failed to append properties for '.$distinctId);
+            return false;
         }
 
         return true;
