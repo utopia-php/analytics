@@ -81,7 +81,7 @@ class Mixpanel extends Adapter
         if (empty($properties)) {
             return false;
         }
-        
+
         $payload = [[
             '$token' => $this->token,
             '$distinct_id' => $distinctId,
