@@ -47,13 +47,14 @@ class Mixpanel extends Adapter
             'token' => $this->token,
             'time' => $event->getProp('time') ?? microtime(true),
             'distinct_id' => $event->getProp('email'),
-            'type' => $event->getType() ?? '',
-            'url' => $event->getUrl() ?? '',
+            'type' => $event->getType(),
+            'url' => $event->getUrl(),
         ];
 
         $properties = array_filter($properties, function ($value) {
-            if (is_array($value))
-                return !empty($value);
+            if (is_array($value)) {
+                return ! empty($value);
+            }
 
             return ! is_null($value) && $value !== '';
         });
