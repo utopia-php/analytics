@@ -60,7 +60,7 @@ class Mixpanel extends Adapter
         });
 
         foreach ($event->getProps() as $key => $value) {
-            if (! isset($properties[$key]) && ! is_null($value) && $value !== '') {
+            if (! isset($properties[$key]) && ! is_null($value) && $value !== '' && ! empty($value)) {
                 $properties[$key] = $value;
             }
         }
