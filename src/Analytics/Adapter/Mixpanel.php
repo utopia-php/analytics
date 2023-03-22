@@ -55,6 +55,7 @@ class Mixpanel extends Adapter
             if (is_array($value)) {
                 return ! empty($value);
             }
+
             return ! is_null($value) && $value !== '';
         });
 
