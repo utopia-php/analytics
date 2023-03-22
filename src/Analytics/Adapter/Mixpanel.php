@@ -51,8 +51,16 @@ class Mixpanel extends Adapter
             'url' => $event->getUrl(),
         ];
 
+        $properties = array_filter($properties, function ($value) {
+            if (is_array($value)) {
+                return ! empty($value);
+            }
+
+            return ! is_null($value) && $value !== '';
+        });
+
         foreach ($event->getProps() as $key => $value) {
-            if (! isset($properties[$key])) {
+            if (! isset($properties[$key]) && ! is_null($value) && $value !== '' && ! empty($value)) {
                 $properties[$key] = $value;
             }
         }

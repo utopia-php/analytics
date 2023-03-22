@@ -214,6 +214,9 @@ class AnalyticsTest extends TestCase
                 'custom_prop1' => 'custom_value1',
                 'custom_prop2' => 'custom_value2',
                 'custom_prop3' => 'custom_value3',
+                'custom_prop4' => '',
+                'custom_prop5' => null,
+                'custom_prop6' => [],
             ]);
 
         $this->assertTrue($this->mp->send($event));
