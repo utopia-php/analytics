@@ -7,6 +7,7 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
+use Sahils\UtopiaFetch\Client;
 
 class ActiveCampaign extends Adapter
 {
@@ -44,9 +45,13 @@ class ActiveCampaign extends Adapter
     public function contactExists(string $email): bool|int
     {
         try {
-            $result = $this->call('GET', '/api/3/contacts', [], [
-                'email' => $email,
-            ]);
+            $result = Client::fetch(
+                url: $this->endpoint.'/api/3/contacts',
+                method: 'GET',
+                query: [
+                    'email' => $email,
+                ],
+            )->getBody();
 
             $result = json_decode($result, true);
 
@@ -75,9 +80,11 @@ class ActiveCampaign extends Adapter
         ]];
 
         try {
-            $this->call('POST', '/api/3/contacts', [
-                'Content-Type' => 'application/json',
-            ], $body);
+            Client::fetch(
+                url: $this->endpoint.'/api/3/contacts',
+                method: 'POST',
+                body: $body,
+            );
 
             return true;
         } catch (\Exception $e) {
@@ -100,9 +107,11 @@ class ActiveCampaign extends Adapter
         ]];
 
         try {
-            $this->call('PUT', '/api/3/contacts/'.$contactId, [
-                'Content-Type' => 'application/json',
-            ], $body);
+            Client::fetch(
+                url: $this->endpoint.'/api/3/contacts'.$contactId,
+                method: 'PUT',
+                body: $body,
+            );
 
             return true;
         } catch (\Exception $e) {
@@ -124,7 +133,10 @@ class ActiveCampaign extends Adapter
         }
 
         try {
-            $this->call('DELETE', '/api/3/contacts/'.$contact);
+            Client::fetch(
+                url: $this->endpoint.'/api/3/contacts'.$contact,
+                method: 'DELETE'
+            );
 
             return true;
         } catch (\Exception $e) {
@@ -140,9 +152,13 @@ class ActiveCampaign extends Adapter
     public function accountExists(string $name): bool|int
     {
         try {
-            $result = $this->call('GET', '/api/3/accounts', [], [
-                'search' => $name,
-            ]);
+            $result = Client::fetch(
+                url: $this->endpoint.'/api/3/accounts',
+                method: 'GET',
+                query: [
+                    'search' => $name
+                ]
+            )->getBody();
 
             if (intval(json_decode($result, true)['meta']['total']) > 0) {
                 return intval((json_decode($result, true))['accounts'][0]['id']);
@@ -171,9 +187,11 @@ class ActiveCampaign extends Adapter
         ]];
 
         try {
-            $this->call('POST', '/api/3/accounts', [
-                'Content-Type' => 'application/json',
-            ], $body);
+            Client::fetch(
+                url: $this->endpoint.'/api/3/accounts',
+                method: 'POST',
+                body: $body,
+            );
 
             return true;
         } catch (\Exception $e) {
@@ -198,9 +216,11 @@ class ActiveCampaign extends Adapter
         ]];
 
         try {
-            $this->call('PUT', '/api/3/accounts/'.$accountId, [
-                'Content-Type' => 'application/json',
-            ], array_filter($body));
+            Client::fetch(
+                url: $this->endpoint.'/api/3/accounts/'.$accountId,
+                method: 'PUT',
+                body: array_filter($body),
+            );
 
             return true;
         } catch (\Exception $e) {
@@ -216,7 +236,10 @@ class ActiveCampaign extends Adapter
     public function deleteAccount(string $accountId): bool
     {
         try {
-            $this->call('DELETE', '/api/3/accounts/'.$accountId);
+            Client::fetch(
+                url: $this->endpoint.'/api/3/accounts/'.$accountId,
+                method: 'DELETE'
+            );
 
             return true;
         } catch (\Exception $e) {
@@ -236,10 +259,14 @@ class ActiveCampaign extends Adapter
         // See if the association already exists
 
         try {
-            $result = $this->call('GET', '/api/3/accountContacts', [], [
-                'filters[account]' => $accountId,
-                'filters[contact]' => $contactId,
-            ]);
+            $result = Client::fetch(
+                url: $this->endpoint.'/api/3/accountContacts',
+                method: 'GET',
+                query: [
+                    'filters[account]' => $accountId,
+                    'filters[contact]' => $contactId,
+                ]
+            )->getBody();
         } catch (\Exception $e) {
             $this->logError($e);
 
@@ -251,13 +278,15 @@ class ActiveCampaign extends Adapter
             $associationId = intval((json_decode($result, true))['accountContacts'][0]['id']);
 
             try {
-                $result = $this->call('PUT', '/api/3/accountContacts/'.$associationId, [
-                    'Content-Type' => 'application/json',
-                ], [
-                    'accountContact' => [
-                        'jobTitle' => $role,
-                    ],
-                ]);
+                $result = Client::fetch(
+                    url: $this->endpoint.'/api/3/accountContacts/'.$associationId,
+                    method: 'PUT',
+                    body: [
+                        'accountContact' => [
+                            'jobTitle' => $role,
+                        ],
+                    ]
+                )->getBody();
 
                 return true;
             } catch (\Exception $e) {
@@ -267,13 +296,17 @@ class ActiveCampaign extends Adapter
             }
         } else {
             // Create the association
-            $result = $this->call('POST', '/api/3/accountContacts', [
-                'Content-Type' => 'application/json',
-            ], ['accountContact' => [
-                'account' => $accountId,
-                'contact' => $contactId,
-                'jobTitle' => $role,
-            ]]);
+            $result = Client::fetch(
+                url: $this->endpoint.'/api/3/accountContacts',
+                method: 'POST',
+                body: [
+                    'accountContact' => [
+                        'account' => $accountId,
+                        'contact' => $contactId,
+                        'jobTitle' => $role,
+                    ],
+                ]
+            )->getBody();
 
             return true;
         }
@@ -312,8 +345,11 @@ class ActiveCampaign extends Adapter
         ];
 
         $query = array_filter($query, fn ($value) => ! is_null($value) && $value !== '');
-
-        $res = $this->call('POST', 'https://trackcmp.net/event', [], $query); // Active Campaign event URL, Refer to https://developers.activecampaign.com/reference/track-event/ for more details
+        $res = Client::fetch(
+            url: 'https://trackcmp.net/event',
+            method: 'POST',
+            body: $query
+        )->getBody();
         if (json_decode($res, true)['success'] === 1) {
             return true;
         } else {
@@ -348,14 +384,16 @@ class ActiveCampaign extends Adapter
     {
         foreach ($tags as $tag) {
             try {
-                $this->call('POST', '/api/3/contactTags', [
-                    'Content-Type' => 'application/json',
-                ], [
-                    'contactTag' => [
-                        'contact' => $contactId,
-                        'tag' => $tag,
-                    ],
-                ]);
+                Client::fetch(
+                    url: $this->endpoint.'/api/3/contactTags',
+                    method: 'POST',
+                    body: [
+                        'contactTag' => [
+                            'contact' => $contactId,
+                            'tag' => $tag,
+                        ],
+                    ]
+                );
             } catch (\Exception $e) {
                 $this->logError($e);
 
@@ -386,10 +424,14 @@ class ActiveCampaign extends Adapter
         $foundLog = false;
 
         // Get contact again, since AC doesn't refresh logs immediately
-        $response = $this->call('GET', '/api/3/activities', [], [
-            'contact' => $contactID,
-            'orders[tstamp]' => 'DESC',
-        ]);
+        $response = Client::fetch(
+            url: $this->endpoint.'/api/3/activities',
+            method: 'GET',
+            query: [
+                'contact' => $contactID,
+                'orders[tstamp]' => 'DESC',
+            ]
+        )->getBody();
 
         $response = json_decode($response, true);
 

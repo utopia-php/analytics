@@ -4,6 +4,7 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
+use Sahils\UtopiaFetch\Client;
 
 class Orbit extends Adapter
 {
@@ -81,13 +82,17 @@ class Orbit extends Adapter
         unset($activity['properties']['name']);
 
         $activity = array_filter($activity, fn ($value) => ! is_null($value) && $value !== '');
-
-        $this->call('POST', $this->endpoint.'/activities', [
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer '.$this->apiKey,
-        ], [
-            'activity' => $activity,
-        ]);
+        Client::fetch(
+            url: $this->endpoint.'/activities',
+            method: 'POST',
+            headers: [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer '.$this->apiKey,
+            ],
+            body: [
+                'activity' => $activity,
+            ],
+        );
 
         return true;
     }
@@ -139,12 +144,17 @@ class Orbit extends Adapter
         }
 
         // Check if event made it.
-        $listMembers = $this->call('GET', '/members/find', [
+        $listMembers = Client::fetch(
+            url: $this->endpoint.'/members/find',
+            method: 'GET',
+            headers: [
             'Authorization' => 'Bearer '.$this->apiKey,
-        ], [
-            'source' => 'email',
-            'email' => $event->getProp('email'),
-        ]);
+            ],
+            query: [
+                'source' => 'email',
+                'email' => $event->getProp('email'),
+            ],
+        )->getBody();
 
         $listMembers = json_decode($listMembers, true);
 
@@ -154,11 +164,16 @@ class Orbit extends Adapter
 
         $member = $listMembers['data'];
 
-        $activities = $this->call('GET', '/members/'.$member['id'].'/activities', [
+        $activities = Client::fetch(
+            url: $this->endpoint.'/members/'.$member['id'].'/activities',
+            method: 'GET',
+            headers: [
             'Authorization' => 'Bearer '.$this->apiKey,
-        ], [
-            'activity_type' => $event->getType(),
-        ]);
+            ],
+            query: [
+                'activity_type' => $event->getType(),
+            ],
+        )->getBody();
 
         $activities = json_decode($activities, true);
 
@@ -177,10 +192,13 @@ class Orbit extends Adapter
         if (! $foundActivity) {
             throw new \Exception('Failed to find event in Orbit');
         }
-
-        $this->call('DELETE', '/members/'.$member['id'].'/activities/'.$foundActivity, [
-            'Authorization' => 'Bearer '.$this->apiKey,
-        ], []);
+        Client::fetch(
+            url: $this->endpoint.'/members/'.$member['id'].'/activities/'.$foundActivity,
+            method: 'DELETE',
+            headers: [
+                'Authorization' => 'Bearer '.$this->apiKey,
+            ]
+        );
 
         return true;
     }
