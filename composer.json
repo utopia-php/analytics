@@ -14,7 +14,8 @@
 	},
     "require": {
         "php": ">=8.0",
-        "utopia-php/cli": "^0.15.0"
+        "utopia-php/cli": "^0.15.0",
+		"sahils/utopia-fetch": "dev-main"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.3",

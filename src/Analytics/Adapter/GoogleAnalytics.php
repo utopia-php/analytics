@@ -4,6 +4,7 @@ namespace Utopia\Analytics\Adapter;
 
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
+use Sahils\UtopiaFetch\Client;
 
 class GoogleAnalytics extends Adapter
 {
@@ -81,15 +82,18 @@ class GoogleAnalytics extends Adapter
         ];
 
         $query = array_filter($query, fn ($value) => ! is_null($value) && $value !== '');
-
-        $validateResponse = $this->call('POST', $this->debugEndpoint, [], array_merge(
-            $query,
-            [
-                'tid' => $this->tid,
-                'cid' => $this->cid,
-                'v' => 1,
-            ]
-        ));
+        $validateResponse = Client::fetch(
+            url: $this->debugEndpoint,
+            method: 'POST',
+            body: array_merge(
+                $query,
+                [
+                    'tid' => $this->tid,
+                    'cid' => $this->cid,
+                    'v' => 1,
+                ]
+            )
+        )->getBody();
 
         $validateResponse = json_decode($validateResponse, true);
 
@@ -140,11 +144,18 @@ class GoogleAnalytics extends Adapter
 
         $query = array_filter($query, fn ($value) => ! is_null($value) && $value !== '');
 
-        $result = $this->call('POST', $this->endpoint, [], array_merge([
-            'tid' => $this->tid,
-            'cid' => $this->cid,
-            'v' => 1,
-        ], $query));
+        $result = Client::fetch(
+            url: $this->endpoint,
+            method: 'POST',
+            body: array_merge(
+                $query,
+                [
+                    'tid' => $this->tid,
+                    'cid' => $this->cid,
+                    'v' => 1,
+                ]
+            )
+        )->getBody();
 
         // Parse Debug data
         if ($this->endpoint == 'https://www.google-analytics.com/debug/collect') {

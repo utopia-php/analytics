@@ -16,6 +16,7 @@ namespace Utopia\Analytics\Adapter;
 use Exception;
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
+use Sahils\UtopiaFetch\Client;
 
 class Plausible extends Adapter
 {
@@ -96,7 +97,12 @@ class Plausible extends Adapter
             'Content-Type' => 'application/json',
         ];
 
-        $this->call('POST', '/event', $headers, $params);
+        Client::fetch(
+            url: $this->endpoint.'/event',
+            method: 'POST',
+            headers: $headers,
+            body: $params
+        );
 
         return true;
     }
@@ -119,7 +125,12 @@ class Plausible extends Adapter
             'Authorization' => 'Bearer '.$this->apiKey,
         ];
 
-        $this->call('PUT', '/v1/sites/goals', $headers, $params);
+        Client::fetch(
+            url: $this->endpoint.'/v1/sites/goals',
+            method: 'PUT',
+            headers: $headers,
+            body: $params
+        );
 
         return true;
     }
@@ -142,11 +153,13 @@ class Plausible extends Adapter
             'site_id' => $this->domain,
             'filters' => json_encode(['goal' => $event->getName()]),
         ]);
-
-        $checkCreated = $this->call('GET', $validateURL, [
-            'Content-Type' => '',
-            'Authorization' => 'Bearer '.$this->apiKey,
-        ]);
+        $checkCreated = Client::fetch(
+            url: $validateURL,
+            headers: [
+                'Content-Type' => '',
+                'Authorization' => 'Bearer '.$this->apiKey,
+            ]
+        )->getBody();
         $checkCreated = json_decode($checkCreated, true);
 
         if (! isset($checkCreated['results']['visitors']['value'])) {

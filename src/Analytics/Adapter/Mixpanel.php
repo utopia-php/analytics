@@ -5,6 +5,7 @@ namespace Utopia\Analytics\Adapter;
 use Exception;
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
+use Sahils\UtopiaFetch\Client;
 
 class Mixpanel extends Adapter
 {
@@ -74,8 +75,12 @@ class Mixpanel extends Adapter
             'Content-Type' => 'application/json',
             'accept' => 'text/plain',
         ];
-
-        $res = $this->call('POST', '/track', $headers, $payload);
+        $res = Client::fetch(
+            url: $this->endpoint.'/track',
+            method: 'POST',
+            headers: $headers,
+            body: $payload
+        )->getBody();
 
         if ($res !== '1') {
             throw new Exception('Failed to send event for '.$event->getProp('email'));
@@ -105,7 +110,12 @@ class Mixpanel extends Adapter
             'accept' => 'text/plain',
         ];
 
-        $res = $this->call('POST', '/engage#profile-set', $headers, $payload);
+        $res = Client::fetch(
+            method: 'POST',
+            url: $this->endpoint.'/engage#profile-set',
+            headers: $headers,
+            body: $payload
+        );
 
         if ($res !== '1') {
             return false;
@@ -131,7 +141,12 @@ class Mixpanel extends Adapter
             'accept' => 'text/plain',
         ];
 
-        $res = $this->call('POST', '/engage#profile-union', $headers, $payload);
+        $res = Client::fetch(
+            method: 'POST',
+            url: $this->endpoint.'/engage#profile-union',
+            headers: $headers,
+            body: $payload
+        );
 
         if ($res !== '1') {
             return false;

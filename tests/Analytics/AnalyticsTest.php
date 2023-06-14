@@ -147,7 +147,8 @@ class AnalyticsTest extends TestCase
             $data['accountID'],
             'Utopia',
             'utopia.com',
-            1));
+            1
+        ));
     }
 
     /**
