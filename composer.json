@@ -9,6 +9,7 @@
         "psr-4": {"Utopia\\Analytics\\": "src/Analytics"}
     },
 	"scripts": {
+        "test": "vendor/bin/phpunit --configuration phpunit.xml",
 		"lint": "./vendor/bin/pint --test",
 		"format": "./vendor/bin/pint"
 	},
