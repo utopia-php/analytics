@@ -2,8 +2,8 @@ name: "Tests"
 
 on: [pull_request]
 jobs:
-  lint:
-    name: Linter
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
 
     steps:
