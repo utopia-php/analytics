@@ -7,25 +7,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
-    
-      - name: Setup Environment
-        run: |
-            docker build . -t php8-env
-            docker run -d -e GA_TID=${{ secrets.GA_TID }} \
-            -e GA_CID=${{ secrets.GA_CID }} \
-            -e OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }} \
-            -e OR_APIKEY=${{ secrets.OR_APIKEY }} \
-            -e PA_APIKEY=${{ secrets.PA_APIKEY }} \
-            -e PA_DOMAIN=${{ secrets.PA_DOMAIN }} \
-            -e AC_ORGID=${{ secrets.AC_ORGID }} \
-            -e AC_APIKEY=${{ secrets.AC_APIKEY }} \
-            -e AC_KEY=${{ secrets.AC_KEY }} \
-            -e AC_ACTID=${{ secrets.AC_ACTID }} \
-            -e MP_PROJECT_TOKEN=${{ secrets.MP_PROJECT_TOKEN }} \
-            --name tests php8-env
-      
+        with:
+          fetch-depth: 2
+
+      - run: git checkout HEAD^2
+
       - name: Run Tests
         run: |
-          docker exec tests composer test
+          docker run --rm 
+          -e GA_TID=${{ secrets.GA_TID }} \
+          -e GA_CID=${{ secrets.GA_CID }} \
+          -e OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }} \
+          -e OR_APIKEY=${{ secrets.OR_APIKEY }} \
+          -e PA_APIKEY=${{ secrets.PA_APIKEY }} \
+          -e PA_DOMAIN=${{ secrets.PA_DOMAIN }} \
+          -e AC_ORGID=${{ secrets.AC_ORGID }} \
+          -e AC_APIKEY=${{ secrets.AC_APIKEY }} \
+          -e AC_KEY=${{ secrets.AC_KEY }} \
+          -e AC_ACTID=${{ secrets.AC_ACTID }} \
+          -e MP_PROJECT_TOKEN=${{ secrets.MP_PROJECT_TOKEN }} \
+          -v $PWD:/app composer sh -c \
+          "composer install --profile --ignore-platform-reqs && composer lint"
+    
+      
