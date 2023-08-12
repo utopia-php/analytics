@@ -16,7 +16,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          docker run --rm 
+          docker run --rm \
           -e GA_TID=${{ secrets.GA_TID }} \
           -e GA_CID=${{ secrets.GA_CID }} \
           -e OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }} \
@@ -29,6 +29,6 @@ jobs:
           -e AC_ACTID=${{ secrets.AC_ACTID }} \
           -e MP_PROJECT_TOKEN=${{ secrets.MP_PROJECT_TOKEN }} \
           -v $PWD:/app composer sh -c \
-          "composer install --profile --ignore-platform-reqs && composer lint"
+          "composer install --profile --ignore-platform-reqs && composer test"
     
       
