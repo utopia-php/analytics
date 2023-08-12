@@ -10,27 +10,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
     
-      - name: Setup PHP Action
-        uses: shivammathur/setup-php@2.25.5 
-        with:
-            php-version: '8.0'
-            
-      - name: Install Dependencies
-        run: composer install --ignore-platform-reqs
-
-      - name: Setup Environment Variables
+      - name: Setup Environment
         run: |
-          export GA_TID= ${{ secrets.GA_TID }}}
-          export GA_CID= ${{ secrets.GA_CID }}}
-          export OR_WORKSPACEID= ${{ secrets.OR_WORKSPACEID }}}
-          export OR_APIKEY= ${{ secrets.OR_APIKEY }}}
-          export PA_APIKEY= ${{ secrets.PA_APIKEY }}
-          export PA_DOMAIN= ${{ secrets.PA_DOMAIN }}
-          export AC_ORGID= ${{ secrets.AC_ORGID }}
-          export AC_APIKEY= ${{ secrets.AC_APIKEY }}
-          export AC_KEY= ${{ secrets.AC_KEY }}
-          export AC_ACTID= ${{ secrets.AC_ACTID }}
-          export MP_PROJECT_TOKEN= ${{ secrets.MP_PROJECT_TOKEN }}
+            docker build . -t php8-env
+            docker run -d --name tests
+            -e GA_TID=${{ secrets.GA_TID }}
+            -e GA_CID=${{ secrets.GA_CID }}
+            -e OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }}
+            -e OR_APIKEY=${{ secrets.OR_APIKEY }}
+            -e PA_APIKEY=${{ secrets.PA_APIKEY }}
+            -e PA_DOMAIN=${{ secrets.PA_DOMAIN }}
+            -e AC_ORGID=${{ secrets.AC_ORGID }}
+            -e AC_APIKEY=${{ secrets.AC_APIKEY }}
+            -e AC_KEY=${{ secrets.AC_KEY }}
+            -e AC_ACTID=${{ secrets.AC_ACTID }}
+            -e MP_PROJECT_TOKEN=${{ secrets.MP_PROJECT_TOKEN }}
+            php8-env
       
       - name: Run Tests
-        run: composer test
+        run: |
+          docker exec tests composer test
