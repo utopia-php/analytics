@@ -14,15 +14,12 @@ class Event
      */
     private string $url = '';
 
-    /**
-     * @var string (required)
-     */
     private string $name = '';
 
     private ?string $value = null;
 
     /**
-     * @var array[]
+     * @var array<string, mixed>
      */
     private array $props = [];
 
@@ -101,7 +98,7 @@ class Event
     /**
      * Get the properties of the event
      *
-     * @return array[]
+     * @return array<string, mixed>
      */
     public function getProps(): array
     {
@@ -145,7 +142,7 @@ class Event
     /**
      * Set the properties of the event
      *
-     * @param  array[]  $props
+     * @param  array<string, mixed>  $props
      */
     public function setProps(array $props): self
     {

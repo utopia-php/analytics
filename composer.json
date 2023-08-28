@@ -13,6 +13,7 @@
 		"format": "./vendor/bin/pint"
 	},
     "require": {
+        "ext-curl": "*",
         "php": ">=8.0",
         "utopia-php/cli": "^0.15.0"
     },
