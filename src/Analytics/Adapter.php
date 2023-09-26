@@ -170,23 +170,23 @@ abstract class Adapter
         $responseType = $responseHeaders['Content-Type'] ?? '';
         $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        switch(substr($responseType, 0, strpos($responseType, ';'))) {
+        switch (substr($responseType, 0, strpos($responseType, ';'))) {
             case 'application/json':
                 $responseBody = json_decode($responseBody, true);
                 break;
         }
 
         if (curl_errno($ch)) {
-            throw new \Exception(curl_error($ch));
+            throw new \Exception(curl_error($ch), $responseStatus);
         }
 
         curl_close($ch);
 
         if ($responseStatus >= 400) {
             if (is_array($responseBody)) {
-                throw new \Exception(json_encode($responseBody));
+                throw new \Exception(json_encode($responseBody), $responseStatus);
             } else {
-                throw new \Exception($responseStatus.': '.$responseBody);
+                throw new \Exception($responseStatus.': '.$responseBody, $responseStatus);
             }
         }
 
@@ -225,5 +225,7 @@ abstract class Adapter
         Console::error('[Error] Message: '.$e->getMessage());
         Console::error('[Error] File: '.$e->getFile());
         Console::error('[Error] Line: '.$e->getLine());
+        Console::error('[Error] Trace: ');
+        Console::error($e->getTraceAsString());
     }
 }
