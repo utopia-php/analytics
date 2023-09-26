@@ -16,7 +16,7 @@ class HubSpot extends Adapter
     {
         $this->headers = [
             'Authorization' => 'Bearer '.$token,
-            'Content-Type' => ''
+            'Content-Type' => '',
         ];
     }
 
