@@ -124,7 +124,7 @@ abstract class Adapter
         $responseType = '';
         $responseBody = '';
 
-        switch ($headers['Content-Type'] ?? '') {
+        switch ($headers['Content-Type']) {
             case 'application/json':
                 $query = json_encode($params);
                 break;

@@ -16,6 +16,7 @@ class HubSpot extends Adapter
     {
         $this->headers = [
             'Authorization' => 'Bearer '.$token,
+            'Content-Type' => ''
         ];
     }
 
@@ -29,7 +30,7 @@ class HubSpot extends Adapter
         }
 
         // HubSpot event tracking isn't possible due to their chrome based extention system
-        return true;
+        return false;
     }
 
     public function validate(Event $event): bool
@@ -39,7 +40,7 @@ class HubSpot extends Adapter
         }
 
         // HubSpot event tracking isn't possible due to their chrome based extention system
-        return true;
+        return false;
     }
 
     /**
@@ -312,7 +313,10 @@ class HubSpot extends Adapter
         return true;
     }
 
-    public function addToList(int $listId, int $contactId)
+    /**
+     * Add a contact to a list
+     */
+    public function addToList(int $listId, int $contactId): bool
     {
         try {
             $this->call('POST', '/contacts/v1/lists/'.$listId.'/add', [
