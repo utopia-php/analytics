@@ -311,4 +311,21 @@ class HubSpot extends Adapter
 
         return true;
     }
+
+    public function addToList(int $listId, int $contactId)
+    {
+        try {
+            $this->call('POST', '/contacts/v1/lists/'.$listId.'/add', [
+                'Content-Type' => 'application/json',
+            ], [
+                'vids' => [$contactId],
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            $this->logError($e);
+
+            return false;
+        }
+    }
 }
