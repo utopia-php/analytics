@@ -234,7 +234,6 @@ class ActiveCampaign extends Adapter
     public function syncAssociation(string $accountId, string $contactId, string $role = ''): bool
     {
         // See if the association already exists
-
         try {
             $result = $this->call('GET', '/api/3/accountContacts', [], [
                 'filters[account]' => $accountId,
