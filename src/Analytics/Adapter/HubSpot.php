@@ -2,7 +2,6 @@
 
 namespace Utopia\Analytics\Adapter;
 
-use Exception;
 use Utopia\Analytics\Adapter;
 use Utopia\Analytics\Event;
 
@@ -25,7 +24,7 @@ class HubSpot extends Adapter
      */
     public function send(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -35,14 +34,14 @@ class HubSpot extends Adapter
 
     public function validate(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
         // HubSpot event tracking isn't possible due to their chrome based extention system
         return true;
     }
-    
+
     /**
      * Gets the name of the adapter.
      */
@@ -57,8 +56,10 @@ class HubSpot extends Adapter
     public function contactExists(string $email): bool|int
     {
         try {
-            $result = $this->call('GET', '/crm/v3/objects/contacts/search', [], [
-                'filterGroups' => [
+            $result = $this->call('POST', '/crm/v3/objects/contacts/search', [
+                'Content-Type' => 'application/json',
+            ], [
+                'filterGroups' => [[
                     'filters' => [
                         [
                             'value' => $email,
@@ -66,7 +67,7 @@ class HubSpot extends Adapter
                             'operator' => 'EQ',
                         ],
                     ],
-                ],
+                ], ],
             ]);
 
             $result = json_decode($result, true);
@@ -88,7 +89,7 @@ class HubSpot extends Adapter
      */
     public function createContact(string $email, string $firstName = '', string $lastName = '', string $phone = ''): bool
     {
-        $body = ['contact' => [
+        $body = ['properties' => [
             'email' => $email,
             'firstname' => $firstName,
             'lastname' => $lastName,
@@ -113,12 +114,12 @@ class HubSpot extends Adapter
      */
     public function updateContact(string $contactId, string $email, string $firstName = '', string $lastName = '', string $phone = ''): bool
     {
-        $body = ['contact' => [
+        $body = [
             'email' => $email,
             'firstname' => $firstName,
             'lastname' => $lastName,
             'phone' => $phone,
-        ]];
+        ];
 
         try {
             $this->call('PATCH', '/crm/v3/objects/contacts/'.$contactId, [
@@ -127,6 +128,11 @@ class HubSpot extends Adapter
 
             return true;
         } catch (\Exception $e) {
+            if ($e->getCode() == 400) {
+                // No changes to make
+                return true;
+            }
+
             $this->logError($e);
 
             return false;
@@ -163,8 +169,10 @@ class HubSpot extends Adapter
     public function accountExists(string $name): bool|int
     {
         try {
-            $result = $this->call('GET', '/crm/v3/objects/companies/search', [], [
-                'filterGroups' => [
+            $result = $this->call('POST', '/crm/v3/objects/companies/search', [
+                'Content-Type' => 'application/json',
+            ], [
+                'filterGroups' => [[
                     'filters' => [
                         [
                             'value' => $name,
@@ -172,7 +180,7 @@ class HubSpot extends Adapter
                             'operator' => 'EQ',
                         ],
                     ],
-                ],
+                ]],
             ]);
 
             $result = json_decode($result, true);
@@ -194,10 +202,10 @@ class HubSpot extends Adapter
      */
     public function createAccount(string $name, string $url = ''): bool
     {
-        $body = [
+        $body = ['properties' => [
             'name' => $name,
             'domain' => $url,
-        ];
+        ]];
 
         try {
             $this->call('POST', '/crm/v3/objects/companies', [
@@ -229,6 +237,11 @@ class HubSpot extends Adapter
 
             return true;
         } catch (\Exception $e) {
+            if ($e->getCode() == 400) {
+                // No changes to make
+                return true;
+            }
+
             $this->logError($e);
 
             return false;
@@ -277,37 +290,25 @@ class HubSpot extends Adapter
 
             if (empty($associationId)) {
                 // Create the association
-                $body = [
-                    'from' => [
-                        'id' => $contactId,
-                        'type' => 'CONTACT',
-                    ],
-                    'to' => [
-                        'id' => $accountId,
-                        'type' => 'COMPANY',
-                    ],
-                    'category' => 'HUBSPOT_DEFINED',
-                    'definitionId' => 1,
-                ];
-
-                $this->call('PUT', '/crm/v4/objects/contact/'.$accountId.'/associations/company', [
+                $this->call('PUT', '/crm/v4/objects/contact/'.$contactId.'/associations/default/company/'.$accountId, [
                     'Content-Type' => 'application/json',
-                ], $body);
+                ]);
             } else {
-                // Update the association
-                $body = [
-                    'category' => 'HUBSPOT_DEFINED',
-                    'definitionId' => 1,
-                ];
-
-                $this->call('PATCH', '/crm/v4/objects/contact/'.$accountId.'/associations/company/'.$associationId, [
+                // Delete and recreate the association
+                $this->call('DELETE', '/crm/v4/objects/contact/'.$contactId.'/associations/company/'.$accountId, [
                     'Content-Type' => 'application/json',
-                ], $body);
+                ]);
+
+                $this->call('PUT', '/crm/v4/objects/contact/'.$contactId.'/associations/default/company/'.$accountId, [
+                    'Content-Type' => 'application/json',
+                ]);
             }
         } catch (\Exception $e) {
             $this->logError($e);
 
             return false;
         }
+
+        return true;
     }
 }

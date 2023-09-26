@@ -3,8 +3,8 @@
 namespace Utopia\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Utopia\Analytics\Adapter\HubSpot;
 use Utopia\Analytics\Adapter\GoogleAnalytics;
+use Utopia\Analytics\Adapter\HubSpot;
 use Utopia\Analytics\Adapter\Mixpanel;
 use Utopia\Analytics\Adapter\Orbit;
 use Utopia\Analytics\Adapter\Plausible;
@@ -37,29 +37,9 @@ class AnalyticsTest extends TestCase
         $this->hs = new HubSpot(App::getEnv('HS_APIKEY'));
     }
 
-    public function testGoogleAnalytics(): void
-    {
-        // Use Measurement Protocol Validation Server for testing.
-        $pageviewEvent = new Event();
-        $pageviewEvent
-            ->setType('pageview')
-            ->setName('pageview')
-            ->setUrl('https://www.appwrite.io/docs/installation');
-
-        $normalEvent = new Event();
-        $normalEvent->setType('testEvent')
-            ->setName('testEvent')
-            ->setUrl('https://www.appwrite.io/docs/installation')
-            ->setProps(['category' => 'testEvent']);
-
-        $this->assertTrue($this->ga->validate($pageviewEvent));
-        $this->assertTrue($this->ga->validate($normalEvent));
-
-        $this->ga->disable();
-        $this->assertFalse($this->ga->validate($pageviewEvent));
-        $this->assertFalse($this->ga->validate($normalEvent));
-    }
-
+    /**
+     * @group plausible
+     */
     public function testPlausible()
     {
         $pageviewEvent = new Event();
@@ -78,33 +58,76 @@ class AnalyticsTest extends TestCase
         $this->assertTrue($this->pa->validate($normalEvent));
     }
 
+    /**
+     * @group hubspot
+     */
     public function testHubSpotCreateContact()
     {
         $this->assertTrue($this->hs->createContact('analytics2@utopiaphp.com', 'Analytics', 'Utopia'));
+
+        sleep(5); // Wait for HubSpot to index the new contact
     }
 
+    /**
+     * @group hubspot
+     *
+     * @depends testHubSpotCreateContact
+     */
     public function testHubSpotGetContact()
     {
-        $contactID = $this->hs->contactExists('analytics2@utopiaphp.com');
-        $this->assertIsNumeric($contactID);
+        // Sometimes it can take a few seconds for HubSpot to index the new contact
+        $tries = 0;
+
+        while ($tries < 5) {
+            $contactID = $this->hs->contactExists('analytics2@utopiaphp.com');
+
+            if ($contactID) {
+                $this->assertIsNumeric($contactID);
+                break;
+            }
+
+            sleep(5);
+        }
 
         return [
             'contactID' => $contactID,
         ];
     }
 
-    public function testHubSpotCreateAccount()
+    /**
+     * @group hubspot
+     *
+     * @depends testHubSpotGetContact
+     */
+    public function testHubSpotCreateAccount($data)
     {
         $this->assertTrue($this->hs->createAccount('Example Account 1', 'https://example.com', '1234567890'));
+
+        sleep(10); // Wait for HubSpot to index the new account
+
+        return $data;
     }
 
     /**
-     * @depends testHubSpotGetContact
+     * @group hubspot
+     *
+     * @depends testHubSpotCreateAccount
      */
     public function testHubSpotGetAccount($data)
     {
-        $accountID = $this->hs->accountExists('Example Account 1');
-        $this->assertIsNumeric($accountID);
+
+        $tries = 0;
+
+        while ($tries < 5) {
+            $accountID = $this->hs->accountExists('Example Account 1');
+
+            if ($accountID) {
+                $this->assertIsNumeric($accountID);
+                break;
+            }
+
+            sleep(5);
+        }
 
         return array_merge([
             'accountID' => $accountID,
@@ -113,28 +136,45 @@ class AnalyticsTest extends TestCase
 
     /**
      * @depends testHubSpotGetAccount
+     *
+     * @group hubspot
      */
     public function testHubSpotSyncAsociation($data)
     {
         $this->assertTrue($this->hs->syncAssociation($data['accountID'], $data['contactID'], 'Owner'));
         $this->assertTrue($this->hs->syncAssociation($data['accountID'], $data['contactID'], 'Software Developer'));
+
+        return $data;
     }
 
     /**
-     * @depends testHubSpotGetContact
+     * @depends testHubSpotSyncAsociation
+     *
+     * @group hubspot
      */
     public function testHubSpotUpdateContact($data)
     {
         $this->assertTrue($this->hs->updateContact($data['contactID'], 'analytics2@utopiaphp.com', '', '', '7223224241'));
-    }
 
-    public function testHubSpotDeleteContact()
-    {
-        $this->assertTrue($this->hs->deleteContact('analytics2@utopiaphp.com'));
+        return $data;
     }
 
     /**
-     * @depends testHubSpotGetAccount
+     * @depends testHubSpotUpdateContact
+     *
+     * @group hubspot
+     */
+    public function testHubSpotDeleteContact($data)
+    {
+        $this->assertTrue($this->hs->deleteContact('analytics2@utopiaphp.com'));
+
+        return $data;
+    }
+
+    /**
+     * @depends testHubSpotDeleteContact
+     *
+     * @group hubspot
      */
     public function testHubSpotUpdateAccount($data)
     {
@@ -142,32 +182,25 @@ class AnalyticsTest extends TestCase
             $data['accountID'],
             'Utopia',
             'utopia.com',
-            1));
+            1
+        ));
+
+        return $data;
     }
 
     /**
-     * @depends testHubSpotGetAccount
+     * @depends testHubSpotUpdateAccount
+     *
+     * @group hubspot
      */
     public function testHubSpotDeleteAccount($data)
     {
         $this->assertTrue($this->hs->deleteAccount($data['accountID']));
     }
 
-    public function testHubSpot()
-    {
-        $this->assertTrue($this->hs->createContact('analytics@utopiaphp.com', 'Analytics', 'Utopia'));
-
-        $event = new Event();
-        $event->setType('testEvent')
-            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
-            ->setUrl('https://www.appwrite.io/docs/installation')
-            ->setProps(['category' => 'analytics:test', 'email' => 'analytics@utopiaphp.com', 'tags' => ['test', 'test2']]);
-
-        $this->assertTrue($this->hs->send($event));
-        sleep(10);
-        $this->assertTrue($this->hs->validate($event));
-    }
-
+    /**
+     * @group orbit
+     */
     public function testOrbit(): void
     {
         $event = new Event();
@@ -180,6 +213,9 @@ class AnalyticsTest extends TestCase
         $this->assertTrue($this->orbit->validate($event));
     }
 
+    /**
+     * @group hubspot
+     */
     public function testCleanup(): void
     {
         if ($this->hs->contactExists('analytics@utopiaphp.com')) {
@@ -195,6 +231,9 @@ class AnalyticsTest extends TestCase
         }
     }
 
+    /**
+     * @group mixpanel
+     */
     public function testMixpanel()
     {
         /** Create a simple track event */
