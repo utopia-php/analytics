@@ -225,7 +225,6 @@ abstract class Adapter
         Console::error('[Error] Message: '.$e->getMessage());
         Console::error('[Error] File: '.$e->getFile());
         Console::error('[Error] Line: '.$e->getLine());
-
         Console::error('[Error] Trace: ');
         Console::error($e->getTraceAsString());
     }
