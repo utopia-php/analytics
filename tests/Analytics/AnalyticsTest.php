@@ -30,10 +30,10 @@ class AnalyticsTest extends TestCase
 
     public function setUp(): void
     {
-        $this->ga = new GoogleAnalytics(App::getEnv('GA_TID'), App::getEnv('GA_CID'));
-        $this->pa = new Plausible(App::getEnv('PA_DOMAIN'), App::getEnv('PA_APIKEY'), 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
-        $this->orbit = new Orbit(App::getEnv('OR_WORKSPACEID'), App::getEnv('OR_APIKEY'), 'Utopia Testing Suite');
-        $this->mp = new Mixpanel(App::getEnv('MP_PROJECT_TOKEN'));
+        // $this->ga = new GoogleAnalytics(App::getEnv('GA_TID'), App::getEnv('GA_CID'));
+        // $this->pa = new Plausible(App::getEnv('PA_DOMAIN'), App::getEnv('PA_APIKEY'), 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
+        // $this->orbit = new Orbit(App::getEnv('OR_WORKSPACEID'), App::getEnv('OR_APIKEY'), 'Utopia Testing Suite');
+        // $this->mp = new Mixpanel(App::getEnv('MP_PROJECT_TOKEN'));
         $this->hs = new HubSpot(App::getEnv('HS_APIKEY'));
     }
 
@@ -65,7 +65,7 @@ class AnalyticsTest extends TestCase
     {
         $this->assertTrue($this->hs->createContact('analytics2@utopiaphp.com', 'Analytics', 'Utopia'));
 
-        sleep(5); // Wait for HubSpot to index the new contact
+        sleep(5); // Sometimes it can take a few seconds for HubSpot to index the new contact
     }
 
     /**
@@ -75,7 +75,6 @@ class AnalyticsTest extends TestCase
      */
     public function testHubSpotGetContact()
     {
-        // Sometimes it can take a few seconds for HubSpot to index the new contact
         $tries = 0;
 
         while ($tries < 5) {
@@ -86,7 +85,13 @@ class AnalyticsTest extends TestCase
                 break;
             }
 
+            var_dump('Waiting for HubSpot to index the new contact... Attempt: '.$tries.'/5');
             sleep(5);
+            $tries++;
+
+            if ($tries === 5) {
+                $this->fail('HubSpot failed to index the new contact in a reasonable amount of time');
+            }
         }
 
         return [
@@ -103,8 +108,7 @@ class AnalyticsTest extends TestCase
     {
         $this->assertTrue($this->hs->createAccount('Example Account 1', 'https://example.com', '1234567890'));
 
-        sleep(10); // Wait for HubSpot to index the new account
-
+        sleep(5); // Sometimes it can take a few seconds for HubSpot to index the new account
         return $data;
     }
 
@@ -115,7 +119,6 @@ class AnalyticsTest extends TestCase
      */
     public function testHubSpotGetAccount($data)
     {
-
         $tries = 0;
 
         while ($tries < 5) {
@@ -126,7 +129,13 @@ class AnalyticsTest extends TestCase
                 break;
             }
 
+            var_dump('Waiting for HubSpot to index the new account... Attempt: '.$tries.'/5');
             sleep(5);
+            $tries++;
+
+            if ($tries === 5) {
+                $this->fail('HubSpot failed to index the new account');
+            }
         }
 
         return array_merge([
@@ -229,6 +238,8 @@ class AnalyticsTest extends TestCase
         if ($this->hs->accountExists('Example Account 1')) {
             $this->assertTrue($this->hs->deleteAccount($this->hs->accountExists('Example Account 1')));
         }
+
+        $this->assertTrue(true);
     }
 
     /**

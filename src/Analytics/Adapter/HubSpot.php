@@ -72,7 +72,7 @@ class HubSpot extends Adapter
 
             $result = json_decode($result, true);
 
-            if ($result && $result['total'] > 0 && array_sum($result['results']) > 0) {
+            if ($result && $result['total'] > 0 && sizeof($result['results']) > 0) {
                 return $result['results'][0]['id'];
             } else {
                 return false;
@@ -185,7 +185,7 @@ class HubSpot extends Adapter
 
             $result = json_decode($result, true);
 
-            if ($result && $result['total'] > 0 && array_sum($result['results']) > 0) {
+            if ($result && $result['total'] > 0 && sizeof($result['results']) > 0) {
                 return $result['results'][0]['id'];
             } else {
                 return false;
