@@ -15,10 +15,10 @@
     "require": {
         "ext-curl": "*",
         "php": ">=8.0",
-        "utopia-php/cli": "^0.15.0"
+        "utopia-php/cli": "0.16.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.3",
-		"laravel/pint": "dev-main"
+        "phpunit/phpunit": "9.6.*",
+		"laravel/pint": "1.10.*"
     }
 }
