@@ -170,7 +170,7 @@ abstract class Adapter
         $responseType = $responseHeaders['Content-Type'] ?? '';
         $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        switch(substr($responseType, 0, strpos($responseType, ';'))) {
+        switch (substr($responseType, 0, strpos($responseType, ';'))) {
             case 'application/json':
                 $responseBody = json_decode($responseBody, true);
                 break;
