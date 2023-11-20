@@ -86,6 +86,24 @@ class HubSpot extends Adapter
     }
 
     /**
+     * Get Contact
+     */
+    public function getContact(string $contactId)
+    {
+        try {
+            $result = $this->call('GET', '/crm/v3/objects/contacts/'.$contactId, [
+                'Content-Type' => 'application/json',
+            ]);
+
+            return json_decode($result, true);
+        } catch (\Exception $e) {
+            $this->logError($e);
+
+            return false;
+        }
+    }
+
+    /**
      * Create a contact
      */
     public function createContact(string $email, string $firstName = '', string $lastName = '', string $phone = ''): bool
@@ -164,6 +182,26 @@ class HubSpot extends Adapter
         }
     }
 
+    /** 
+     * Get Property
+     */
+    public function getContactProperty(string $contactId, string $property)
+    {
+        try {
+            $result = $this->call('GET', '/crm/v3/objects/contacts/'.$contactId.'?properties='.urlencode($property), [
+                'Content-Type' => 'application/json',
+            ]);
+
+            $data = json_decode($result, true);
+
+            return $data['properties'][$property] ?? [];
+        } catch (\Exception $e) {
+            $this->logError($e);
+
+            return false;
+        }
+    }
+
     /**
      * Account Exists
      */
@@ -224,15 +262,18 @@ class HubSpot extends Adapter
     /**
      * Update an account
      */
-    public function updateAccount(string $accountId, string $name, string $url = '', int $ownerId = 1, array $fields = []): bool
+    public function updateAccount(string $accountId, array $fields): bool
     {
         $body = [
-            'name' => $name,
-            'domain' => $url,
+            'properties' => [],
         ];
 
+        foreach ($fields as $key => $value) {
+            $body['properties'][$key] = $value;
+        }
+
         try {
-            $this->call('PATCH', '/crm/v3/objects/companies/'.$accountId, [
+            $this->call('PATCH', '/crm/v3/objects/contacts/'.$accountId, [
                 'Content-Type' => 'application/json',
             ], $body);
 
