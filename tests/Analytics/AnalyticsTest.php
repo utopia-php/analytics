@@ -190,9 +190,10 @@ class AnalyticsTest extends TestCase
     {
         $this->assertTrue($this->hs->updateAccount(
             $data['accountID'],
-            'Utopia',
-            'utopia.com',
-            1
+            [
+                'name' => 'Utopia',
+                'website' => 'utopia.com',
+            ]
         ));
 
         return $data;
