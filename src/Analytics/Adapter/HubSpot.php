@@ -262,13 +262,19 @@ class HubSpot extends Adapter
     /**
      * Update an account
      */
-    public function updateAccount(string $accountId, string $name, string $url = '', array $fields = []): bool
+    public function updateAccount(string $accountId, string $name = '', string $url = '', array $fields = []): bool
     {
         $body = [
-            'name' => $name,
-            'domain' => $url,
             'properties' => [],
         ];
+
+        if ($name) {
+            $body['name'] = $name;
+        }
+
+        if ($url) {
+            $body['domain'] = $url;
+        }
 
         foreach ($fields as $key => $value) {
             $body['properties'][$key] = $value;
