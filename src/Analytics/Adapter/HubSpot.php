@@ -182,7 +182,7 @@ class HubSpot extends Adapter
         }
     }
 
-    /** 
+    /**
      * Get Property
      */
     public function getContactProperty(string $contactId, string $property)
