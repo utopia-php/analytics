@@ -319,7 +319,7 @@ class HubSpot extends Adapter
     public function addToList(int $listId, int $contactId): bool
     {
         try {
-            $this->call('PUT', '/crm/v3/lists/' . $listId . '/memberships/add', [
+            $this->call('PUT', '/crm/v3/lists/'.$listId.'/memberships/add', [
                 'Content-Type' => 'application/json',
             ], [$contactId]);
 
