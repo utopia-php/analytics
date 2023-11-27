@@ -3,7 +3,6 @@
 namespace Utopia\Analytics;
 
 use Exception;
-use Utopia\CLI\Console;
 
 abstract class Adapter
 {
@@ -95,7 +94,7 @@ abstract class Adapter
 
     /**
      * Creates an Event on the remote analytics platform.
-     * 
+     *
      * @throws Exception
      */
     public function createEvent(Event $event): bool

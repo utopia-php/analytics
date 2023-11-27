@@ -15,7 +15,7 @@ class HubSpot extends Adapter
     public function __construct(string $token)
     {
         $this->headers = [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
             'Content-Type' => '',
         ];
     }
@@ -25,7 +25,7 @@ class HubSpot extends Adapter
      */
     public function send(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -35,7 +35,7 @@ class HubSpot extends Adapter
 
     public function validate(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -67,7 +67,7 @@ class HubSpot extends Adapter
                         'operator' => 'EQ',
                     ],
                 ],
-            ],],
+            ], ],
         ]);
 
         $result = json_decode($result, true);
@@ -111,7 +111,7 @@ class HubSpot extends Adapter
         ];
 
         try {
-            $this->call('PATCH', '/crm/v3/objects/contacts/' . $contactId, [
+            $this->call('PATCH', '/crm/v3/objects/contacts/'.$contactId, [
                 'Content-Type' => 'application/json',
             ], $body);
 
@@ -133,11 +133,11 @@ class HubSpot extends Adapter
     {
         $contact = $this->contactExists($email);
 
-        if (!$contact) {
+        if (! $contact) {
             return false;
         }
 
-        $this->call('DELETE', '/crm/v3/objects/contacts/' . $contact, [
+        $this->call('DELETE', '/crm/v3/objects/contacts/'.$contact, [
             'Content-Type' => 'application/json',
         ]);
 
@@ -200,7 +200,7 @@ class HubSpot extends Adapter
         ];
 
         try {
-            $this->call('PATCH', '/crm/v3/objects/companies/' . $accountId, [
+            $this->call('PATCH', '/crm/v3/objects/companies/'.$accountId, [
                 'Content-Type' => 'application/json',
             ], $body);
 
@@ -220,7 +220,7 @@ class HubSpot extends Adapter
      */
     public function deleteAccount(string $accountId): bool
     {
-        $this->call('DELETE', '/crm/v3/objects/companies/' . $accountId, [
+        $this->call('DELETE', '/crm/v3/objects/companies/'.$accountId, [
             'Content-Type' => 'application/json',
         ]);
 
@@ -235,7 +235,7 @@ class HubSpot extends Adapter
     public function syncAssociation(string $accountId, string $contactId, string $role = ''): bool
     {
         // See if the association already exists
-        $response = $this->call('GET', '/crm/v4/objects/contact/' . $accountId . '/associations/company');
+        $response = $this->call('GET', '/crm/v4/objects/contact/'.$accountId.'/associations/company');
 
         $response = json_decode($response, true);
 
@@ -249,16 +249,16 @@ class HubSpot extends Adapter
 
         if (empty($associationId)) {
             // Create the association
-            $this->call('PUT', '/crm/v4/objects/contact/' . $contactId . '/associations/default/company/' . $accountId, [
+            $this->call('PUT', '/crm/v4/objects/contact/'.$contactId.'/associations/default/company/'.$accountId, [
                 'Content-Type' => 'application/json',
             ]);
         } else {
             // Delete and recreate the association
-            $this->call('DELETE', '/crm/v4/objects/contact/' . $contactId . '/associations/company/' . $accountId, [
+            $this->call('DELETE', '/crm/v4/objects/contact/'.$contactId.'/associations/company/'.$accountId, [
                 'Content-Type' => 'application/json',
             ]);
 
-            $this->call('PUT', '/crm/v4/objects/contact/' . $contactId . '/associations/default/company/' . $accountId, [
+            $this->call('PUT', '/crm/v4/objects/contact/'.$contactId.'/associations/default/company/'.$accountId, [
                 'Content-Type' => 'application/json',
             ]);
         }
@@ -271,7 +271,7 @@ class HubSpot extends Adapter
      */
     public function addToList(int $listId, int $contactId): bool
     {
-        $this->call('PUT', '/crm/v3/lists/' . $listId . '/memberships/add', [
+        $this->call('PUT', '/crm/v3/lists/'.$listId.'/memberships/add', [
             'Content-Type' => 'application/json',
         ], [$contactId]);
 
