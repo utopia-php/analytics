@@ -110,9 +110,16 @@ class HubSpot extends Adapter
             'phone' => $phone,
         ];
 
-        $this->call('PATCH', '/crm/v3/objects/contacts/'.$contactId, [
-            'Content-Type' => 'application/json',
-        ], $body);
+        try {
+            $this->call('PATCH', '/crm/v3/objects/contacts/'.$contactId, [
+                'Content-Type' => 'application/json',
+            ], $body);
+        } catch (\Exception $e) {
+            if ($e->getCode() == 400) {
+                // No changes to make
+                return true;
+            }
+        }
 
         return true;
     }
@@ -190,9 +197,16 @@ class HubSpot extends Adapter
             'domain' => $url,
         ];
 
-        $this->call('PATCH', '/crm/v3/objects/companies/'.$accountId, [
-            'Content-Type' => 'application/json',
-        ], $body);
+        try {
+            $this->call('PATCH', '/crm/v3/objects/companies/'.$accountId, [
+                'Content-Type' => 'application/json',
+            ], $body);
+        } catch (\Exception $e) {
+            if ($e->getCode() == 400) {
+                // No changes to make
+                return true;
+            }
+        }
 
         return true;
     }
