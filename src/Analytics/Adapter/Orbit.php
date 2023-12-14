@@ -35,15 +35,14 @@ class Orbit extends Adapter
      */
     public function __construct(string $workspaceId, string $apiKey, string $dataOrigin)
     {
-        $this->endpoint = $this->endpoint . $workspaceId;
+        $this->endpoint = $this->endpoint.$workspaceId;
         $this->apiKey = $apiKey;
         $this->dataOrigin = $dataOrigin;
     }
 
-
-    function cleanup(array $props): array
+    public function cleanup(array $props): array
     {
-        $props = array_filter($props, fn ($value) => !is_null($value) && $value !== '');
+        $props = array_filter($props, fn ($value) => ! is_null($value) && $value !== '');
 
         // Flatten arrays
         $flatten = function ($array) use (&$flatten) {
@@ -61,7 +60,7 @@ class Orbit extends Adapter
         };
 
         $props = $flatten($props);
-        
+
         return $props;
     }
 
@@ -70,7 +69,7 @@ class Orbit extends Adapter
      */
     public function send(Event $event): bool
     {
-        if (!$event->getProp('email')) {
+        if (! $event->getProp('email')) {
             return false;
         }
 
@@ -113,11 +112,11 @@ class Orbit extends Adapter
             'properties' => $properties ?? [],
         ];
 
-        $activity = array_filter($activity, fn ($value) => !is_null($value) && $value !== '');
+        $activity = array_filter($activity, fn ($value) => ! is_null($value) && $value !== '');
 
-        $this->call('POST', $this->endpoint . '/activities', [
+        $this->call('POST', $this->endpoint.'/activities', [
             'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $this->apiKey,
+            'Authorization' => 'Bearer '.$this->apiKey,
         ], [
             'activity' => $activity,
         ]);
@@ -147,7 +146,7 @@ class Orbit extends Adapter
 
     public function validate(Event $event): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -167,13 +166,13 @@ class Orbit extends Adapter
             throw new \Exception('Event email is required');
         }
 
-        if (!$this->send($event)) {
+        if (! $this->send($event)) {
             throw new \Exception('Failed to send event');
         }
 
         // Check if event made it.
         $listMembers = $this->call('GET', '/members/find', [
-            'Authorization' => 'Bearer ' . $this->apiKey,
+            'Authorization' => 'Bearer '.$this->apiKey,
         ], [
             'source' => 'email',
             'email' => $event->getProp('email'),
@@ -187,8 +186,8 @@ class Orbit extends Adapter
 
         $member = $listMembers['data'];
 
-        $activities = $this->call('GET', '/members/' . $member['id'] . '/activities', [
-            'Authorization' => 'Bearer ' . $this->apiKey,
+        $activities = $this->call('GET', '/members/'.$member['id'].'/activities', [
+            'Authorization' => 'Bearer '.$this->apiKey,
         ], [
             'activity_type' => $event->getType(),
         ]);
@@ -207,12 +206,12 @@ class Orbit extends Adapter
             }
         }
 
-        if (!$foundActivity) {
+        if (! $foundActivity) {
             throw new \Exception('Failed to find event in Orbit');
         }
 
-        $this->call('DELETE', '/members/' . $member['id'] . '/activities/' . $foundActivity, [
-            'Authorization' => 'Bearer ' . $this->apiKey,
+        $this->call('DELETE', '/members/'.$member['id'].'/activities/'.$foundActivity, [
+            'Authorization' => 'Bearer '.$this->apiKey,
         ], []);
 
         return true;
