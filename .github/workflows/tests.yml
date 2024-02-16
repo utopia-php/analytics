@@ -1,0 +1,30 @@
+name: "Tests"
+
+on: [push, pull_request]
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Tests
+        run: |
+          docker run --rm \
+          -e GA_TID=${{ secrets.GA_TID }} \
+          -e GA_CID=${{ secrets.GA_CID }} \
+          -e OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }} \
+          -e OR_APIKEY=${{ secrets.OR_APIKEY }} \
+          -e PA_APIKEY=${{ secrets.PA_APIKEY }} \
+          -e PA_DOMAIN=${{ secrets.PA_DOMAIN }} \
+          -e AC_ORGID=${{ secrets.AC_ORGID }} \
+          -e AC_APIKEY=${{ secrets.AC_APIKEY }} \
+          -e AC_KEY=${{ secrets.AC_KEY }} \
+          -e AC_ACTID=${{ secrets.AC_ACTID }} \
+          -e MP_PROJECT_TOKEN=${{ secrets.MP_PROJECT_TOKEN }} \
+          -v $PWD:/app composer sh -c \
+          "composer install --profile --ignore-platform-reqs && composer test"
+    
+      
