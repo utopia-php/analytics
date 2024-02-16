@@ -27,4 +27,4 @@ jobs:
       - name: Run ${{matrix.services}} Tests
         run: |
           docker run --rm -v $PWD:/app composer sh -c \
-          "composer install --ignore-platform-reqs && composer test -- --filter ${{matrix.services}}"
+          "composer install --ignore-platform-reqs && ./vendor/bin/phpunit -- --filter ${{matrix.services}}"
