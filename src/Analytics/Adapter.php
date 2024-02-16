@@ -3,7 +3,6 @@
 namespace Utopia\Analytics;
 
 use Exception;
-use Utopia\CLI\Console;
 
 abstract class Adapter
 {
