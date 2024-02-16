@@ -37,7 +37,7 @@ class GoogleAnalytics extends Adapter
 
     /**
      * @param  string  $cid
-     * Adapter configuration
+     *                       Adapter configuration
      * @return GoogleAnalytics
      */
     public function __construct(string $tid, string $cid)

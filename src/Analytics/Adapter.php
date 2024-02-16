@@ -71,7 +71,7 @@ abstract class Adapter
     /**
      * Sets the client IP address.
      *
-     * @param  string  $clientIP The IP address to use.
+     * @param  string  $clientIP  The IP address to use.
      */
     public function setClientIP(string $clientIP): self
     {
@@ -83,7 +83,7 @@ abstract class Adapter
     /**
      * Sets the client user agent.
      *
-     * @param  string  $userAgent The user agent to use.
+     * @param  string  $userAgent  The user agent to use.
      */
     public function setUserAgent(string $userAgent): self
     {
