@@ -140,7 +140,7 @@ class Plausible extends Adapter
 
         $validateURL = $this->endpoint.'/v1/stats/aggregate?'.http_build_query([
             'site_id' => $this->domain,
-            'filters' => json_encode(['goal' => $event->getName()]),
+            'filters' => json_encode(['goal' => $event->getType()]),
         ]);
 
         $checkCreated = $this->call('GET', $validateURL, [

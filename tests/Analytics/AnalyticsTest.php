@@ -47,13 +47,15 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/pageview123');
 
         $normalEvent = new Event();
-        $normalEvent->setType('testEvent')
-            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+        $normalEvent->setType('testEvent-'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+            ->setName('testEvent')
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent']);
 
         $this->assertTrue($this->pa->send($pageviewEvent));
         $this->assertTrue($this->pa->send($normalEvent));
+
+        sleep(5); // Sometimes it can take a few seconds for Plausible to index the new event
         $this->assertTrue($this->pa->validate($normalEvent));
     }
 
