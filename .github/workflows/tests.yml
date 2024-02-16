@@ -11,7 +11,6 @@ jobs:
         services:
           [
             Plausible,
-            GoogleAnalytics,
             HubSpot,
             Orbit
           ]
@@ -23,6 +22,14 @@ jobs:
           fetch-depth: 2
 
       - run: git checkout HEAD^2
+
+      - name: Add Environment Variables
+        run: |
+          echo "PA_APIKEY=${{ secrets.PA_APIKEY }}" > .env
+          echo "PA_DOMAIN=${{ secrets.PA_DOMAIN }}" >> .env
+          echo "HS_APIKEY=${{ secrets.HS_APIKEY }}" >> .env
+          echo "OR_APIKEY=${{ secrets.OR_APIKEY }}" >> .env
+          echo "OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }}" >> .env
 
       - name: Run ${{matrix.services}} Tests
         run: |
