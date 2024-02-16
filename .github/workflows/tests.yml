@@ -33,5 +33,5 @@ jobs:
 
       - name: Run ${{matrix.services}} Tests
         run: |
-          docker run --rm -v $PWD:/app composer sh -c \
+          docker run --env-file .env --rm -v $PWD:/app composer sh -c \
           "composer install --ignore-platform-reqs && ./vendor/bin/phpunit --configuration phpunit.xml --filter ${{matrix.services}}"
