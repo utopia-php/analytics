@@ -29,11 +29,11 @@ class AnalyticsTest extends TestCase
 
     public function setUp(): void
     {
-        $this->ga = new GoogleAnalytics(getEnv('GA_TID') ?? '', getEnv('GA_CID') ?? '');
-        $this->pa = new Plausible(getEnv('PA_DOMAIN') ?? '', getEnv('PA_APIKEY') ?? '', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
-        $this->orbit = new Orbit(getEnv('OR_WORKSPACEID') ?? '', getEnv('OR_APIKEY') ?? '', 'Utopia Testing Suite');
-        $this->mp = new Mixpanel(getEnv('MP_PROJECT_TOKEN') ?? '');
-        $this->hs = new HubSpot(getEnv('HS_APIKEY') ?? '');
+        $this->ga = new GoogleAnalytics(getenv('GA_TID') ?? '', getenv('GA_CID') ?? '');
+        $this->pa = new Plausible(getenv('PA_DOMAIN') ?? '', getenv('PA_APIKEY') ?? '', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
+        $this->orbit = new Orbit(getenv('OR_WORKSPACEID') ?? '', getenv('OR_APIKEY') ?? '', 'Utopia Testing Suite');
+        $this->mp = new Mixpanel(getenv('MP_PROJECT_TOKEN') ?? '');
+        $this->hs = new HubSpot(getenv('HS_APIKEY') ?? '');
     }
 
     /**
