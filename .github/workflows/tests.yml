@@ -1,0 +1,30 @@
+name: "Tests"
+
+on: [pull_request]
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        services:
+          [
+            Plausible,
+            GoogleAnalytics,
+            HubSpot,
+            Orbit
+          ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - run: git checkout HEAD^2
+
+      - name: Run ${{matrix.services}} Tests
+        run: |
+          docker run --rm -v $PWD:/app composer sh -c \
+          "composer install --ignore-platform-reqs && composer test -- --filter ${{matrix.services}}"

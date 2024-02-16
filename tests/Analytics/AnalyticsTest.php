@@ -37,7 +37,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group plausible
+     * @group Plausible
      */
     public function testPlausible()
     {
@@ -58,7 +58,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotCreateContact()
     {
@@ -68,7 +68,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      *
      * @depends testHubSpotCreateContact
      */
@@ -99,7 +99,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      *
      * @depends testHubSpotGetContact
      */
@@ -113,7 +113,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      *
      * @depends testHubSpotCreateAccount
      */
@@ -146,7 +146,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotGetAccount
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotSyncAsociation($data)
     {
@@ -159,7 +159,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotSyncAsociation
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotUpdateContact($data)
     {
@@ -171,7 +171,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotUpdateContact
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotDeleteContact($data)
     {
@@ -183,7 +183,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotDeleteContact
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotUpdateAccount($data)
     {
@@ -200,7 +200,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotUpdateAccount
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotDeleteAccount($data)
     {
@@ -208,7 +208,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group orbit
+     * @group Orbit
      */
     public function testOrbit(): void
     {
@@ -223,7 +223,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      */
     public function testCleanup(): void
     {
