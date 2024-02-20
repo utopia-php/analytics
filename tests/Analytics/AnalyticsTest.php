@@ -9,7 +9,7 @@ use Utopia\Analytics\Adapter\Mixpanel;
 use Utopia\Analytics\Adapter\Orbit;
 use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Event;
-use Utopia\App;
+use Utopia\Http\Http;
 
 class AnalyticsTest extends TestCase
 {
@@ -30,15 +30,15 @@ class AnalyticsTest extends TestCase
 
     public function setUp(): void
     {
-        $this->ga = new GoogleAnalytics(App::getEnv('GA_TID'), App::getEnv('GA_CID'));
-        $this->pa = new Plausible(App::getEnv('PA_DOMAIN'), App::getEnv('PA_APIKEY'), 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
-        $this->orbit = new Orbit(App::getEnv('OR_WORKSPACEID'), App::getEnv('OR_APIKEY'), 'Utopia Testing Suite');
-        $this->mp = new Mixpanel(App::getEnv('MP_PROJECT_TOKEN'));
-        $this->hs = new HubSpot(App::getEnv('HS_APIKEY'));
+        $this->ga = new GoogleAnalytics(Http::getEnv('GA_TID') ?? '', Http::getEnv('GA_CID') ?? '');
+        $this->pa = new Plausible(Http::getEnv('PA_DOMAIN') ?? '', Http::getEnv('PA_APIKEY') ?? '', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
+        $this->orbit = new Orbit(Http::getEnv('OR_WORKSPACEID') ?? '', Http::getEnv('OR_APIKEY') ?? '', 'Utopia Testing Suite');
+        $this->mp = new Mixpanel(Http::getEnv('MP_PROJECT_TOKEN') ?? '');
+        $this->hs = new HubSpot(Http::getEnv('HS_APIKEY') ?? '');
     }
 
     /**
-     * @group plausible
+     * @group Plausible
      */
     public function testPlausible()
     {
@@ -48,18 +48,20 @@ class AnalyticsTest extends TestCase
             ->setUrl('https://www.appwrite.io/docs/pageview123');
 
         $normalEvent = new Event();
-        $normalEvent->setType('testEvent')
-            ->setName('testEvent'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+        $normalEvent->setType('testEvent-'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
+            ->setName('testEvent')
             ->setUrl('https://www.appwrite.io/docs/installation')
             ->setProps(['category' => 'testEvent']);
 
         $this->assertTrue($this->pa->send($pageviewEvent));
         $this->assertTrue($this->pa->send($normalEvent));
+
+        sleep(5); // Sometimes it can take a few seconds for Plausible to index the new event
         $this->assertTrue($this->pa->validate($normalEvent));
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotCreateContact()
     {
@@ -69,7 +71,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      *
      * @depends testHubSpotCreateContact
      */
@@ -100,7 +102,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      *
      * @depends testHubSpotGetContact
      */
@@ -114,7 +116,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      *
      * @depends testHubSpotCreateAccount
      */
@@ -147,7 +149,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotGetAccount
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotSyncAsociation($data)
     {
@@ -160,7 +162,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotSyncAsociation
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotUpdateContact($data)
     {
@@ -172,7 +174,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotUpdateContact
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotDeleteContact($data)
     {
@@ -184,7 +186,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotDeleteContact
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotUpdateAccount($data)
     {
@@ -201,7 +203,7 @@ class AnalyticsTest extends TestCase
     /**
      * @depends testHubSpotUpdateAccount
      *
-     * @group hubspot
+     * @group HubSpot
      */
     public function testHubSpotDeleteAccount($data)
     {
@@ -209,7 +211,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group orbit
+     * @group Orbit
      */
     public function testOrbit(): void
     {
@@ -224,7 +226,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group hubspot
+     * @group HubSpot
      */
     public function testCleanup(): void
     {

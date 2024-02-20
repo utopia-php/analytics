@@ -3,7 +3,6 @@
 namespace Utopia\Analytics;
 
 use Exception;
-use Utopia\CLI\Console;
 
 abstract class Adapter
 {
@@ -72,7 +71,7 @@ abstract class Adapter
     /**
      * Sets the client IP address.
      *
-     * @param  string  $clientIP The IP address to use.
+     * @param  string  $clientIP  The IP address to use.
      */
     public function setClientIP(string $clientIP): self
     {
@@ -84,7 +83,7 @@ abstract class Adapter
     /**
      * Sets the client user agent.
      *
-     * @param  string  $userAgent The user agent to use.
+     * @param  string  $userAgent  The user agent to use.
      */
     public function setUserAgent(string $userAgent): self
     {
@@ -98,13 +97,7 @@ abstract class Adapter
      */
     public function createEvent(Event $event): bool
     {
-        try {
-            return $this->send($event);
-        } catch (\Exception $e) {
-            $this->logError($e);
-
-            return false;
-        }
+        return $this->send($event);
     }
 
     /**
@@ -211,21 +204,5 @@ abstract class Adapter
         }
 
         return $output;
-    }
-
-    /**
-     * Log Error
-     *
-     * @return void
-     */
-    protected function logError(Exception $e)
-    {
-        Console::error('[Error] '.$this->getName().' Error: ');
-        Console::error('[Error] Type: '.get_class($e));
-        Console::error('[Error] Message: '.$e->getMessage());
-        Console::error('[Error] File: '.$e->getFile());
-        Console::error('[Error] Line: '.$e->getLine());
-        Console::error('[Error] Trace: ');
-        Console::error($e->getTraceAsString());
     }
 }

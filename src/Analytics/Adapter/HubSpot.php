@@ -57,30 +57,19 @@ class HubSpot extends Adapter
     public function contactExists(string $email): bool|int
     {
         try {
-            $result = $this->call('POST', '/crm/v3/objects/contacts/search', [
-                'Content-Type' => 'application/json',
-            ], [
-                'filterGroups' => [[
-                    'filters' => [
-                        [
-                            'value' => $email,
-                            'propertyName' => 'email',
-                            'operator' => 'EQ',
-                        ],
-                    ],
-                ], ],
-            ]);
-
-            $result = json_decode($result, true);
-
-            if ($result && $result['total'] > 0 && count($result['results']) > 0) {
-                return $result['results'][0]['id'];
-            } else {
+            $result = $this->call('GET', '/crm/v3/objects/contacts/'.urlencode($email).'?idProperty=email');
+        } catch (\Throwable $e) {
+            if ($e->getCode() == 404) {
                 return false;
             }
-        } catch (\Exception $e) {
-            $this->logError($e);
+            throw $e;
+        }
 
+        $result = json_decode($result, true);
+
+        if ($result && $result['id']) {
+            return $result['id'];
+        } else {
             return false;
         }
     }
@@ -97,17 +86,11 @@ class HubSpot extends Adapter
             'phone' => $phone,
         ]];
 
-        try {
-            $this->call('POST', '/crm/v3/objects/contacts', [
-                'Content-Type' => 'application/json',
-            ], $body);
+        $this->call('POST', '/crm/v3/objects/contacts', [
+            'Content-Type' => 'application/json',
+        ], $body);
 
-            return true;
-        } catch (\Exception $e) {
-            $this->logError($e);
-
-            return false;
-        }
+        return true;
     }
 
     /**
@@ -134,9 +117,7 @@ class HubSpot extends Adapter
                 return true;
             }
 
-            $this->logError($e);
-
-            return false;
+            throw $e;
         }
     }
 
@@ -151,17 +132,11 @@ class HubSpot extends Adapter
             return false;
         }
 
-        try {
-            $this->call('DELETE', '/crm/v3/objects/contacts/'.$contact, [
-                'Content-Type' => 'application/json',
-            ]);
+        $this->call('DELETE', '/crm/v3/objects/contacts/'.$contact, [
+            'Content-Type' => 'application/json',
+        ]);
 
-            return true;
-        } catch (\Exception $e) {
-            $this->logError($e);
-
-            return false;
-        }
+        return true;
     }
 
     /**
@@ -169,31 +144,25 @@ class HubSpot extends Adapter
      */
     public function accountExists(string $name): bool|int
     {
-        try {
-            $result = $this->call('POST', '/crm/v3/objects/companies/search', [
-                'Content-Type' => 'application/json',
-            ], [
-                'filterGroups' => [[
-                    'filters' => [
-                        [
-                            'value' => $name,
-                            'propertyName' => 'name',
-                            'operator' => 'EQ',
-                        ],
+        $result = $this->call('POST', '/crm/v3/objects/companies/search', [
+            'Content-Type' => 'application/json',
+        ], [
+            'filterGroups' => [[
+                'filters' => [
+                    [
+                        'value' => $name,
+                        'propertyName' => 'name',
+                        'operator' => 'EQ',
                     ],
-                ]],
-            ]);
+                ],
+            ]],
+        ]);
 
-            $result = json_decode($result, true);
+        $result = json_decode($result, true);
 
-            if ($result && $result['total'] > 0 && count($result['results']) > 0) {
-                return $result['results'][0]['id'];
-            } else {
-                return false;
-            }
-        } catch (\Exception $e) {
-            $this->logError($e);
-
+        if ($result && $result['total'] > 0 && count($result['results']) > 0) {
+            return $result['results'][0]['id'];
+        } else {
             return false;
         }
     }
@@ -208,17 +177,11 @@ class HubSpot extends Adapter
             'domain' => $url,
         ]];
 
-        try {
-            $this->call('POST', '/crm/v3/objects/companies', [
-                'Content-Type' => 'application/json',
-            ], $body);
+        $this->call('POST', '/crm/v3/objects/companies', [
+            'Content-Type' => 'application/json',
+        ], $body);
 
-            return true;
-        } catch (\Exception $e) {
-            $this->logError($e);
-
-            return false;
-        }
+        return true;
     }
 
     /**
@@ -243,9 +206,7 @@ class HubSpot extends Adapter
                 return true;
             }
 
-            $this->logError($e);
-
-            return false;
+            throw $e;
         }
     }
 
@@ -254,17 +215,11 @@ class HubSpot extends Adapter
      */
     public function deleteAccount(string $accountId): bool
     {
-        try {
-            $this->call('DELETE', '/crm/v3/objects/companies/'.$accountId, [
-                'Content-Type' => 'application/json',
-            ]);
+        $this->call('DELETE', '/crm/v3/objects/companies/'.$accountId, [
+            'Content-Type' => 'application/json',
+        ]);
 
-            return true;
-        } catch (\Exception $e) {
-            $this->logError($e);
-
-            return false;
-        }
+        return true;
     }
 
     /**
@@ -276,38 +231,32 @@ class HubSpot extends Adapter
     {
         // See if the association already exists
 
-        try {
-            $response = $this->call('GET', '/crm/v4/objects/contact/'.$accountId.'/associations/company');
+        $response = $this->call('GET', '/crm/v4/objects/contact/'.$accountId.'/associations/company');
 
-            $response = json_decode($response, true);
+        $response = json_decode($response, true);
 
-            $associationId = null;
+        $associationId = null;
 
-            foreach ($response['results'] as $association) {
-                if ($association['from']['id'] == $contactId) {
-                    $associationId = $association['id'];
-                }
+        foreach ($response['results'] as $association) {
+            if ($association['from']['id'] == $contactId) {
+                $associationId = $association['id'];
             }
+        }
 
-            if (empty($associationId)) {
-                // Create the association
-                $this->call('PUT', '/crm/v4/objects/contact/'.$contactId.'/associations/default/company/'.$accountId, [
-                    'Content-Type' => 'application/json',
-                ]);
-            } else {
-                // Delete and recreate the association
-                $this->call('DELETE', '/crm/v4/objects/contact/'.$contactId.'/associations/company/'.$accountId, [
-                    'Content-Type' => 'application/json',
-                ]);
+        if (empty($associationId)) {
+            // Create the association
+            $this->call('PUT', '/crm/v4/objects/contact/'.$contactId.'/associations/default/company/'.$accountId, [
+                'Content-Type' => 'application/json',
+            ]);
+        } else {
+            // Delete and recreate the association
+            $this->call('DELETE', '/crm/v4/objects/contact/'.$contactId.'/associations/company/'.$accountId, [
+                'Content-Type' => 'application/json',
+            ]);
 
-                $this->call('PUT', '/crm/v4/objects/contact/'.$contactId.'/associations/default/company/'.$accountId, [
-                    'Content-Type' => 'application/json',
-                ]);
-            }
-        } catch (\Exception $e) {
-            $this->logError($e);
-
-            return false;
+            $this->call('PUT', '/crm/v4/objects/contact/'.$contactId.'/associations/default/company/'.$accountId, [
+                'Content-Type' => 'application/json',
+            ]);
         }
 
         return true;
@@ -318,16 +267,10 @@ class HubSpot extends Adapter
      */
     public function addToList(int $listId, int $contactId): bool
     {
-        try {
-            $this->call('PUT', '/crm/v3/lists/'.$listId.'/memberships/add', [
-                'Content-Type' => 'application/json',
-            ], [$contactId]);
+        $this->call('PUT', '/crm/v3/lists/'.$listId.'/memberships/add', [
+            'Content-Type' => 'application/json',
+        ], [$contactId]);
 
-            return true;
-        } catch (\Exception $e) {
-            $this->logError($e);
-
-            return false;
-        }
+        return true;
     }
 }
