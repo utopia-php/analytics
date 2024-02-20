@@ -73,7 +73,7 @@ class Orbit extends Adapter
                     return json_encode($value);
                 }
 
-                return $value;
+                return strval($value);
             }, array_filter($event->getProps(), fn ($value) => ! is_null($value) && $value !== '')),
         ];
 
