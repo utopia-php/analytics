@@ -1,0 +1,37 @@
+name: "Tests"
+
+on: [pull_request]
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        services:
+          [
+            Plausible,
+            HubSpot,
+            Orbit
+          ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - run: git checkout HEAD^2
+
+      - name: Add Environment Variables
+        run: |
+          echo "PA_APIKEY=${{ secrets.PA_APIKEY }}" > .env
+          echo "PA_DOMAIN=${{ secrets.PA_DOMAIN }}" >> .env
+          echo "HS_APIKEY=${{ secrets.HS_APIKEY }}" >> .env
+          echo "OR_APIKEY=${{ secrets.OR_APIKEY }}" >> .env
+          echo "OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }}" >> .env
+
+      - name: Run ${{matrix.services}} Tests
+        run: |
+          docker run --env-file .env --rm -v $PWD:/app composer sh -c \
+          "composer install --ignore-platform-reqs && ./vendor/bin/phpunit --configuration phpunit.xml --filter ${{matrix.services}}"

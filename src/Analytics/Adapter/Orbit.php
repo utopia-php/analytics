@@ -95,7 +95,7 @@ class Orbit extends Adapter
     /**
      * Sets the client IP address.
      *
-     * @param  string  $ip The IP address to use.
+     * @param  string  $ip  The IP address to use.
      */
     public function setClientIP(string $clientIP): self
     {
@@ -105,7 +105,7 @@ class Orbit extends Adapter
     /**
      * Sets the client user agent.
      *
-     * @param  string  $userAgent The user agent to use.
+     * @param  string  $userAgent  The user agent to use.
      */
     public function setUserAgent(string $userAgent): self
     {
