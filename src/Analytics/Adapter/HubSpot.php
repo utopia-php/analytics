@@ -56,24 +56,19 @@ class HubSpot extends Adapter
      */
     public function contactExists(string $email): bool|int
     {
-        $result = $this->call('POST', '/crm/v3/objects/contacts/search', [
-            'Content-Type' => 'application/json',
-        ], [
-            'filterGroups' => [[
-                'filters' => [
-                    [
-                        'value' => $email,
-                        'propertyName' => 'email',
-                        'operator' => 'EQ',
-                    ],
-                ],
-            ], ],
-        ]);
+        try {
+            $result = $this->call('GET', '/crm/v3/objects/contacts/'.urlencode($email).'?idProperty=email');
+        } catch (\Exception $e) {
+            if ($e->getCode() == 404) {
+                return false;
+            }
+            throw $e;
+        }
 
         $result = json_decode($result, true);
 
-        if ($result && $result['total'] > 0 && count($result['results']) > 0) {
-            return $result['results'][0]['id'];
+        if ($result && $result['id']) {
+            return $result['id'];
         } else {
             return false;
         }
