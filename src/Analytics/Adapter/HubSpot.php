@@ -58,7 +58,7 @@ class HubSpot extends Adapter
     {
         try {
             $result = $this->call('GET', '/crm/v3/objects/contacts/'.urlencode($email).'?idProperty=email');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             if ($e->getCode() == 404) {
                 return false;
             }
