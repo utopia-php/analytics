@@ -1,5 +1,5 @@
 {
-	"name": "utopia-php/analytics",
+    "name": "utopia-php/analytics",
     "description": "A simple library to track events & users.",
     "type": "library",
     "keywords": ["php","framework", "upf", "utopia", "analytics"],
@@ -14,10 +14,10 @@
 	},
     "require": {
         "php": ">=8.0",
-        "utopia-php/cli": "^0.15.0"
+        "utopia-php/cli": "0.17.*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.3",
-		"laravel/pint": "dev-main"
+        "laravel/pint": "dev-main"
     }
 }
