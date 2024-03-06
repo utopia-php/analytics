@@ -31,9 +31,9 @@ abstract class Adapter
     /**
      * Global Headers
      *
-     * @var array
+     * @var array<string, string>
      */
-    protected $headers = [
+    protected array $headers = [
         'Content-Type' => '',
     ];
 

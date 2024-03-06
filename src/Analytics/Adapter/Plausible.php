@@ -27,9 +27,9 @@ class Plausible extends Adapter
     /**
      * Global Headers
      *
-     * @var array
+     * @var array<string, string>
      */
-    protected $headers = [];
+    protected array $headers = [];
 
     /**
      * Plausible API key
