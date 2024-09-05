@@ -9,7 +9,6 @@ use Utopia\Analytics\Adapter\Mixpanel;
 use Utopia\Analytics\Adapter\Orbit;
 use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Event;
-use Utopia\Http\Http;
 use Utopia\System\System;
 
 class AnalyticsTest extends TestCase
