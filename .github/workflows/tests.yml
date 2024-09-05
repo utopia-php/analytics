@@ -11,8 +11,7 @@ jobs:
         services:
           [
             Plausible,
-            HubSpot,
-            Orbit
+            HubSpot
           ]
 
     steps:
