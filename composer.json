@@ -4,7 +4,7 @@
     "type": "library",
     "keywords": ["php","framework", "upf", "utopia", "analytics"],
     "license": "MIT",
-    "minimum-stability": "RC",
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {"Utopia\\Analytics\\": "src/Analytics"}
     },
@@ -14,7 +14,7 @@
 	},
     "require": {
         "php": ">=8.0",
-        "utopia-php/cli": "1.0.*",
+        "utopia-php/cli": "0.19.*",
         "utopia-php/system": "0.8.*"
     },
     "require-dev": {
