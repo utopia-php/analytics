@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "454089f8dfd4d61ee166147fb84566b1",
+    "content-hash": "a3abb512a4bb6894345bf1e5fb1b8413",
     "packages": [
         {
             "name": "utopia-php/cli",
@@ -207,6 +207,62 @@
                 "source": "https://github.com/utopia-php/servers/tree/0.1.0"
             },
             "time": "2024-08-08T14:31:39+00:00"
+        },
+        {
+            "name": "utopia-php/system",
+            "version": "0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/utopia-php/system.git",
+                "reference": "a2cbfb3c69b9ecb8b6f06c5774f3cf279ea7665e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/utopia-php/system/zipball/a2cbfb3c69b9ecb8b6f06c5774f3cf279ea7665e",
+                "reference": "a2cbfb3c69b9ecb8b6f06c5774f3cf279ea7665e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "require-dev": {
+                "laravel/pint": "1.13.*",
+                "phpstan/phpstan": "1.10.*",
+                "phpunit/phpunit": "9.6.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Utopia\\System\\": "src/System"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eldad Fux",
+                    "email": "eldad@appwrite.io"
+                },
+                {
+                    "name": "Torsten Dittmann",
+                    "email": "torsten@appwrite.io"
+                }
+            ],
+            "description": "A simple library for obtaining information about the host's system.",
+            "keywords": [
+                "framework",
+                "php",
+                "system",
+                "upf",
+                "utopia"
+            ],
+            "support": {
+                "issues": "https://github.com/utopia-php/system/issues",
+                "source": "https://github.com/utopia-php/system/tree/0.8.0"
+            },
+            "time": "2024-04-01T10:22:28+00:00"
         }
     ],
     "packages-dev": [
@@ -286,12 +342,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "e24a6aa83b23c0b64ab3486d68fbc88ab266e03f"
+                "reference": "10350dca845f61353c5ef97b601b99f1be6ddd88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/e24a6aa83b23c0b64ab3486d68fbc88ab266e03f",
-                "reference": "e24a6aa83b23c0b64ab3486d68fbc88ab266e03f",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/10350dca845f61353c5ef97b601b99f1be6ddd88",
+                "reference": "10350dca845f61353c5ef97b601b99f1be6ddd88",
                 "shasum": ""
             },
             "require": {
@@ -302,13 +358,13 @@
                 "php": "^8.1.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.61.1",
-                "illuminate/view": "^10.48.18",
+                "friendsofphp/php-cs-fixer": "^3.64.0",
+                "illuminate/view": "^10.48.20",
                 "larastan/larastan": "^2.9.8",
                 "laravel-zero/framework": "^10.4.0",
                 "mockery/mockery": "^1.6.12",
                 "nunomaduro/termwind": "^1.15.1",
-                "pestphp/pest": "^2.35.0"
+                "pestphp/pest": "^2.35.1"
             },
             "default-branch": true,
             "bin": [
@@ -345,7 +401,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2024-08-06T15:12:57+00:00"
+            "time": "2024-09-03T15:02:10+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -585,35 +641,35 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.31",
+            "version": "9.2.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "48c34b5d8d983006bd2adc2d0de92963b9155965"
+                "reference": "85402a822d1ecf1db1096959413d35e1c37cf1a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/48c34b5d8d983006bd2adc2d0de92963b9155965",
-                "reference": "48c34b5d8d983006bd2adc2d0de92963b9155965",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/85402a822d1ecf1db1096959413d35e1c37cf1a5",
+                "reference": "85402a822d1ecf1db1096959413d35e1c37cf1a5",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
                 "ext-xmlwriter": "*",
-                "nikic/php-parser": "^4.18 || ^5.0",
+                "nikic/php-parser": "^4.19.1 || ^5.1.0",
                 "php": ">=7.3",
-                "phpunit/php-file-iterator": "^3.0.3",
-                "phpunit/php-text-template": "^2.0.2",
-                "sebastian/code-unit-reverse-lookup": "^2.0.2",
-                "sebastian/complexity": "^2.0",
-                "sebastian/environment": "^5.1.2",
-                "sebastian/lines-of-code": "^1.0.3",
-                "sebastian/version": "^3.0.1",
-                "theseer/tokenizer": "^1.2.0"
+                "phpunit/php-file-iterator": "^3.0.6",
+                "phpunit/php-text-template": "^2.0.4",
+                "sebastian/code-unit-reverse-lookup": "^2.0.3",
+                "sebastian/complexity": "^2.0.3",
+                "sebastian/environment": "^5.1.5",
+                "sebastian/lines-of-code": "^1.0.4",
+                "sebastian/version": "^3.0.2",
+                "theseer/tokenizer": "^1.2.3"
             },
             "require-dev": {
-                "phpunit/phpunit": "^9.3"
+                "phpunit/phpunit": "^9.6"
             },
             "suggest": {
                 "ext-pcov": "PHP extension that provides line coverage",
@@ -622,7 +678,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "9.2-dev"
+                    "dev-main": "9.2.x-dev"
                 }
             },
             "autoload": {
@@ -651,7 +707,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.31"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.32"
             },
             "funding": [
                 {
@@ -659,7 +715,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-02T06:37:42+00:00"
+            "time": "2024-08-22T04:23:01+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",

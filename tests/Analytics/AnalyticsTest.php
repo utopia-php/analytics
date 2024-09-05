@@ -10,6 +10,7 @@ use Utopia\Analytics\Adapter\Orbit;
 use Utopia\Analytics\Adapter\Plausible;
 use Utopia\Analytics\Event;
 use Utopia\Http\Http;
+use Utopia\System\System;
 
 class AnalyticsTest extends TestCase
 {
@@ -30,11 +31,11 @@ class AnalyticsTest extends TestCase
 
     public function setUp(): void
     {
-        $this->ga = new GoogleAnalytics(Http::getEnv('GA_TID') ?? '', Http::getEnv('GA_CID') ?? '');
-        $this->pa = new Plausible(Http::getEnv('PA_DOMAIN') ?? '', Http::getEnv('PA_APIKEY') ?? '', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
-        $this->orbit = new Orbit(Http::getEnv('OR_WORKSPACEID') ?? '', Http::getEnv('OR_APIKEY') ?? '', 'Utopia Testing Suite');
-        $this->mp = new Mixpanel(Http::getEnv('MP_PROJECT_TOKEN') ?? '');
-        $this->hs = new HubSpot(Http::getEnv('HS_APIKEY') ?? '');
+        $this->ga = new GoogleAnalytics(System::getEnv('GA_TID') ?? '', System::getEnv('GA_CID') ?? '');
+        $this->pa = new Plausible(System::getEnv('PA_DOMAIN') ?? '', System::getEnv('PA_APIKEY') ?? '', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
+        $this->orbit = new Orbit(System::getEnv('OR_WORKSPACEID') ?? '', System::getEnv('OR_APIKEY') ?? '', 'Utopia Testing Suite');
+        $this->mp = new Mixpanel(System::getEnv('MP_PROJECT_TOKEN') ?? '');
+        $this->hs = new HubSpot(System::getEnv('HS_APIKEY') ?? '');
     }
 
     /**
@@ -42,12 +43,12 @@ class AnalyticsTest extends TestCase
      */
     public function testPlausible()
     {
-        $pageviewEvent = new Event();
+        $pageviewEvent = new Event;
         $pageviewEvent
             ->setType('pageview')
             ->setUrl('https://www.appwrite.io/docs/pageview123');
 
-        $normalEvent = new Event();
+        $normalEvent = new Event;
         $normalEvent->setType('testEvent-'.chr(mt_rand(97, 122)).substr(md5(time()), 1, 5))
             ->setName('testEvent')
             ->setUrl('https://www.appwrite.io/docs/installation')
@@ -215,7 +216,7 @@ class AnalyticsTest extends TestCase
      */
     public function testOrbit(): void
     {
-        $event = new Event();
+        $event = new Event;
         $event->setType('testEvent')
             ->setName('testEvent')
             ->setUrl('https://www.appwrite.io/docs/installation')
@@ -251,7 +252,7 @@ class AnalyticsTest extends TestCase
     public function testMixpanel()
     {
         /** Create a simple track event */
-        $event = new Event();
+        $event = new Event;
         $event
             ->setName('testEvent')
             ->setType('click')
