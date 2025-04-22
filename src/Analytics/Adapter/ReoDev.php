@@ -13,6 +13,11 @@ class ReoDev extends Adapter
     public string $endpoint = 'https://integration.reo.dev/api/';
 
     /**
+     * Email of the reodev account
+     */
+    private string $email;
+
+    /**
      * API Key
      */
     private string $apiKey;
@@ -33,8 +38,9 @@ class ReoDev extends Adapter
     /**
      * @return ReoDev
      */
-    public function __construct(string $apiKey, string $listId)
+    public function __construct(string $email, string $apiKey, string $listId)
     {
+        $this->email = $email;
         $this->apiKey = $apiKey;
         $this->listId = $listId;
     }
@@ -48,15 +54,12 @@ class ReoDev extends Adapter
             return false;
         }
 
-        $tags = is_array($event->getProp('tags')) ? $event->getProp('tags') : [];
+        $data = $event->getProps();
+        unset($data['email']);
+        unset($data['name']);
+        unset($data['account']);
 
-        if ($event->getProp('account')) {
-            $tags[] = $event->getProp('account');
-        }
-
-        if ($event->getProp('code')) {
-            $tags[] = $event->getProp('code');
-        }
+        $data = json_encode($data);
 
         $entities = [
             'primaryKey' => $event->getProp('email'),
@@ -64,14 +67,20 @@ class ReoDev extends Adapter
             'fieldType' => 'String',
             'companyData' => [
                 'name' => $event->getProp('name'),
-                'tags' => $tags,
+                'action' => $event->getType(),
+                'label' => $event->getName(),
+                'url' => $event->getUrl(),
+                'account' => $event->getProp('account'),
+                'data' => $data,
             ],
         ];
 
-        $this->call('POST', $this->endpoint.'/product/list/'.$this->listId, [
+        $this->call('PUT', $this->endpoint.'/product/list/'.$this->listId, [
             'Content-Type' => 'application/json',
             'x-api-key' => $this->apiKey,
+            'user' => $this->email,
         ], [
+            'type' => 'DEVELOPER',
             'entities' => $entities,
         ]);
 
@@ -98,76 +107,13 @@ class ReoDev extends Adapter
         throw new \Exception('Not implemented');
     }
 
+    /**
+     * Validates the event.
+     *
+     * @param  Event  $event  The event to validate.
+     */
     public function validate(Event $event): bool
     {
-        if (! $this->enabled) {
-            return false;
-        }
-
-        if (empty($event->getType())) {
-            throw new \Exception('Event type is required');
-        }
-
-        if (empty($event->getUrl())) {
-            throw new \Exception('Event URL is required');
-        }
-
-        if (empty($event->getName())) {
-            throw new \Exception('Event name is required');
-        }
-
-        if (empty($event->getProp('email'))) {
-            throw new \Exception('Event email is required');
-        }
-
-        if (! $this->send($event)) {
-            throw new \Exception('Failed to send event');
-        }
-
-        // Check if event made it.
-        $listMembers = $this->call('GET', '/members/find', [
-            'Authorization' => 'Bearer '.$this->apiKey,
-        ], [
-            'source' => 'email',
-            'email' => $event->getProp('email'),
-        ]);
-
-        $listMembers = json_decode($listMembers, true);
-
-        if (empty($listMembers['data'])) {
-            return false;
-        }
-
-        $member = $listMembers['data'];
-
-        $activities = $this->call('GET', '/members/'.$member['id'].'/activities', [
-            'Authorization' => 'Bearer '.$this->apiKey,
-        ], [
-            'activity_type' => $event->getType(),
-        ]);
-
-        $activities = json_decode($activities, true);
-
-        if (empty($activities['data'])) {
-            throw new \Exception('Failed to find event in Orbit');
-        }
-
-        $foundActivity = false;
-
-        foreach ($activities['data'] as $activity) {
-            if ($activity['attributes']['custom_title'] === $event->getName()) {
-                $foundActivity = $activity['id'];
-            }
-        }
-
-        if (! $foundActivity) {
-            throw new \Exception('Failed to find event in Orbit');
-        }
-
-        $this->call('DELETE', '/members/'.$member['id'].'/activities/'.$foundActivity, [
-            'Authorization' => 'Bearer '.$this->apiKey,
-        ], []);
-
-        return true;
+        throw new \Exception('Not implemented');
     }
 }
