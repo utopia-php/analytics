@@ -30,6 +30,9 @@ jobs:
           echo "HS_APIKEY=${{ secrets.HS_APIKEY }}" >> .env
           echo "OR_APIKEY=${{ secrets.OR_APIKEY }}" >> .env
           echo "OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }}" >> .env
+          echo "REODEV_EMAIL=${{ secrets.REODEV_EMAIL }}" >> .env
+          echo "REODEV_APIKEY=${{ secrets.REODEV_APIKEY }}" >> .env
+          echo "REODEV_LISTID=${{ secrets.REODEV_LISTID }}" >> .env
 
       - name: Run ${{matrix.services}} Tests
         run: |
