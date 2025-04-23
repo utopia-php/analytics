@@ -10,7 +10,7 @@ class ReoDev extends Adapter
     /**
      * Endpoint for ReoDev API
      */
-    public string $endpoint = 'https://ingest.reo.dev/api/';
+    public string $endpoint = 'https://ingest.reo.dev/api';
 
     /**
      * Email of the reodev account
