@@ -8,6 +8,7 @@ use Utopia\Analytics\Adapter\HubSpot;
 use Utopia\Analytics\Adapter\Mixpanel;
 use Utopia\Analytics\Adapter\Orbit;
 use Utopia\Analytics\Adapter\Plausible;
+use Utopia\Analytics\Adapter\ReoDev;
 use Utopia\Analytics\Event;
 use Utopia\System\System;
 
@@ -28,6 +29,9 @@ class AnalyticsTest extends TestCase
     /** @var \Utopia\Analytics\Adapter\HubSpot */
     public $hs;
 
+    /** @var \Utopia\Analytics\Adapter\ReoDev */
+    public $reodev;
+
     public function setUp(): void
     {
         $this->ga = new GoogleAnalytics(System::getEnv('GA_TID') ?? '', System::getEnv('GA_CID') ?? '');
@@ -35,6 +39,7 @@ class AnalyticsTest extends TestCase
         $this->orbit = new Orbit(System::getEnv('OR_WORKSPACEID') ?? '', System::getEnv('OR_APIKEY') ?? '', 'Utopia Testing Suite');
         $this->mp = new Mixpanel(System::getEnv('MP_PROJECT_TOKEN') ?? '');
         $this->hs = new HubSpot(System::getEnv('HS_APIKEY') ?? '');
+        $this->reodev = new ReoDev(System::getEnv('REODEV_EMAIL') ?? '', System::getEnv('REODEV_APIKEY') ?? '', System::getEnv('REODEV_LISTID') ?? '');
     }
 
     /**
@@ -281,5 +286,40 @@ class AnalyticsTest extends TestCase
         /** Append properties to the user profile */
         $res = $this->mp->appendProperties('analytics@utopiaphp.com', ['union_field' => ['value2', 'value3']]);
         $this->assertTrue($res);
+    }
+
+    /**
+     * @group reodev
+     */
+    public function testReoDev()
+    {
+        // Test successful event with all required fields
+        $event = new Event;
+        $event
+            ->setName('appwrite_docs')
+            ->setType('button_click')
+            ->setUrl('appwrite.io/docs')
+            ->setProps([
+                'email' => 'developer@utopiaphp.com',
+                'name' => 'Test Developer',
+                'account' => 'cloud',
+                'custom_prop1' => 'value1',
+                'custom_prop2' => 'value2',
+            ]);
+
+        $this->assertTrue($this->reodev->send($event));
+
+        // Test event without email (should fail)
+        $invalidEvent = new Event;
+        $invalidEvent
+            ->setName('appwrite_docs')
+            ->setType('button_click')
+            ->setUrl('appwrite.io/docs')
+            ->setProps([
+                'name' => 'Test Developer',
+                'account' => 'cloud',
+            ]);
+
+        $this->assertFalse($this->reodev->send($invalidEvent));
     }
 }

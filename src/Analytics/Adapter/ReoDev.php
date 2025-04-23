@@ -61,17 +61,22 @@ class ReoDev extends Adapter
 
         $data = json_encode($data);
 
-        $entities = [
-            'primaryKey' => $event->getProp('email'),
-            'clientKey' => 'email',
-            'fieldType' => 'String',
-            'companyData' => [
-                'name' => $event->getProp('name'),
-                'action' => $event->getType(),
-                'label' => $event->getName(),
-                'url' => $event->getUrl(),
-                'account' => $event->getProp('account'),
-                'data' => $data,
+        $body = [
+            'type' => 'DEVELOPER',
+            'entities' => [
+                [
+                    'primaryKey' => $event->getProp('email'),
+                    'clientKey' => 'email',
+                    'fieldType' => 'String',
+                    'companyData' => [
+                        'name' => $event->getProp('name'),
+                        'action' => $event->getType(),
+                        'label' => $event->getName(),
+                        'url' => $event->getUrl(),
+                        'account' => $event->getProp('account'),
+                        'data' => $data,
+                    ],
+                ],
             ],
         ];
 
@@ -79,10 +84,7 @@ class ReoDev extends Adapter
             'Content-Type' => 'application/json',
             'x-api-key' => $this->apiKey,
             'user' => $this->email,
-        ], [
-            'type' => 'DEVELOPER',
-            'entities' => $entities,
-        ]);
+        ], $body);
 
         return true;
     }
