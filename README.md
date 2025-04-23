@@ -1,6 +1,5 @@
 # Utopia Analytics
 
-[![Build Status](https://travis-ci.com/utopia-php/analytics.svg?branch=main)](https://travis-ci.com/utopia-php/analytics)
 ![Total Downloads](https://img.shields.io/packagist/dt/utopia-php/analytics.svg)
 [![Discord](https://img.shields.io/discord/564160730845151244?label=discord)](https://appwrite.io/discord)
 
@@ -11,11 +10,13 @@ Although this library is part of the [Utopia Framework](https://github.com/utopi
 ## Getting Started
 
 Install using composer:
+
 ```bash
 composer require utopia-php/analytics
 ```
 
 Init in your application:
+
 ```php
 <?php
 
@@ -30,6 +31,7 @@ $ga->createPageView("appwrite.io", "/docs/installation");
 
 // Sends an event indicating an installation.
 $ga->createEvent("Installation", "setup.cli");
+
 // Sends an event indicating that the fall campaign promotional video was played.
 $ga->createEvent("Videos", "play", "Fall Campaign");
 
