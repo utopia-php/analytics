@@ -11,7 +11,8 @@ jobs:
         services:
           [
             Plausible,
-            HubSpot
+            HubSpot,
+            ReoDev
           ]
 
     steps:

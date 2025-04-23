@@ -251,7 +251,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group mixpanel
+     * @group Mixpanel
      */
     public function testMixpanel()
     {
@@ -289,7 +289,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group reodev
+     * @group ReoDev
      */
     public function testReoDev()
     {
