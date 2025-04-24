@@ -39,7 +39,7 @@ class AnalyticsTest extends TestCase
         $this->orbit = new Orbit(System::getEnv('OR_WORKSPACEID') ?? '', System::getEnv('OR_APIKEY') ?? '', 'Utopia Testing Suite');
         $this->mp = new Mixpanel(System::getEnv('MP_PROJECT_TOKEN') ?? '');
         $this->hs = new HubSpot(System::getEnv('HS_APIKEY') ?? '');
-        $this->reodev = new ReoDev(System::getEnv('REODEV_EMAIL') ?? '', System::getEnv('REODEV_APIKEY') ?? '', System::getEnv('REODEV_LISTID') ?? '');
+        $this->reodev = new ReoDev(System::getEnv('REO_APIKEY') ?? '');
     }
 
     /**
@@ -293,6 +293,10 @@ class AnalyticsTest extends TestCase
      */
     public function testReoDev()
     {
+        $this->reodev
+            ->setClientIP('127.0.0.1')
+            ->setUserAgent('Utopia Test Suite');
+
         // Test successful event with all required fields
         $event = new Event;
         $event
@@ -307,6 +311,7 @@ class AnalyticsTest extends TestCase
                 'custom_prop2' => 'value2',
             ]);
 
+        $this->assertTrue($this->reodev->validate($event));
         $this->assertTrue($this->reodev->send($event));
 
         // Test event without email (should fail)
@@ -320,6 +325,7 @@ class AnalyticsTest extends TestCase
                 'account' => 'cloud',
             ]);
 
+        $this->assertFalse($this->reodev->validate($invalidEvent));
         $this->assertFalse($this->reodev->send($invalidEvent));
     }
 }

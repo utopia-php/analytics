@@ -8,24 +8,14 @@ use Utopia\Analytics\Event;
 class ReoDev extends Adapter
 {
     /**
-     * Endpoint for ReoDev API
+     * Endpoint for ReoDev Product API
      */
-    public string $endpoint = 'https://ingest.reo.dev/api';
-
-    /**
-     * Email of the reodev account
-     */
-    private string $email;
+    protected string $endpoint = 'https://ingest.reo.dev/api/product/usage';
 
     /**
      * API Key
      */
-    private string $apiKey;
-
-    /**
-     * List ID
-     */
-    private string $listId;
+    protected string $apiKey;
 
     /**
      * Gets the name of the adapter.
@@ -38,15 +28,13 @@ class ReoDev extends Adapter
     /**
      * @return ReoDev
      */
-    public function __construct(string $email, string $apiKey, string $listId)
+    public function __construct(string $apiKey)
     {
-        $this->email = $email;
         $this->apiKey = $apiKey;
-        $this->listId = $listId;
     }
 
     /**
-     * Adds a new developer on the remote analytics platform. Requires email prop.
+     * Sends an event to the ReoDev Product API. Requires 'email' prop.
      */
     public function send(Event $event): bool
     {
@@ -54,59 +42,31 @@ class ReoDev extends Adapter
             return false;
         }
 
-        $data = $event->getProps();
-        unset($data['email']);
-        unset($data['name']);
-        unset($data['account']);
-
-        $data = json_encode($data);
-
-        $body = [
-            'type' => 'DEVELOPER',
-            'entities' => [
-                [
-                    'primaryKey' => $event->getProp('email'),
-                    'clientKey' => 'email',
-                    'fieldType' => 'String',
-                    'companyData' => [
-                        'name' => $event->getProp('name'),
-                        'action' => $event->getType(),
-                        'label' => $event->getName(),
-                        'url' => $event->getUrl(),
-                        'account' => $event->getProp('account'),
-                        'data' => $data,
-                    ],
-                ],
-            ],
+        $meta = $event->getProps();
+        unset($meta['email']);
+        unset($meta['account']);
+        $payload = [
+            'activity_type' => $event->getType(),
+            'source' => 'PRODUCT_CLOUD',
+            'user_id' => $event->getProp('email'),
+            'user_id_type' => 'EMAIL',
+            'ip_addr' => $this->clientIP,
+            'event_at' => time(),
+            'product_id' => $event->getProp('account'),
+            'user_agent' => $this->userAgent,
+            'meta' => $meta,
         ];
 
-        $this->call('PUT', $this->endpoint.'/product/list/'.$this->listId, [
+        $payload = array_filter($payload, fn ($value) => ! is_null($value));
+
+        $body = ['payload' => $payload];
+
+        $this->call('POST', $this->endpoint, [
             'Content-Type' => 'application/json',
-            'x-api-key' => $this->apiKey,
-            'user' => $this->email,
+            'X-API-KEY' => $this->apiKey,
         ], $body);
 
         return true;
-    }
-
-    /**
-     * Sets the client IP address.
-     *
-     * @param  string  $ip  The IP address to use.
-     */
-    public function setClientIP(string $clientIP): self
-    {
-        throw new \Exception('Not implemented');
-    }
-
-    /**
-     * Sets the client user agent.
-     *
-     * @param  string  $userAgent  The user agent to use.
-     */
-    public function setUserAgent(string $userAgent): self
-    {
-        throw new \Exception('Not implemented');
     }
 
     /**
@@ -116,6 +76,6 @@ class ReoDev extends Adapter
      */
     public function validate(Event $event): bool
     {
-        throw new \Exception('Not implemented');
+        return ! empty($event->getProp('email'));
     }
 }
