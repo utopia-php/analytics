@@ -18,6 +18,11 @@ class ReoDev extends Adapter
     protected string $apiKey;
 
     /**
+     * Allowed event types to send. If empty, all types are allowed.
+     */
+    private array $allowedEventTypes = [];
+
+    /**
      * Gets the name of the adapter.
      */
     public function getName(): string
@@ -34,11 +39,23 @@ class ReoDev extends Adapter
     }
 
     /**
-     * Sends an event to the ReoDev Product API. Requires 'email' prop.
+     * Set the event types that should be sent.
+     *
+     * @param  array  $types  An array of event type strings.
+     */
+    public function setAllowedEventTypes(array $types): self
+    {
+        $this->allowedEventTypes = $types;
+
+        return $this;
+    }
+
+    /**
+     * Sends an event to the ReoDev Product API. Requires 'email' prop and checks against allowed types.
      */
     public function send(Event $event): bool
     {
-        if (! $event->getProp('email')) {
+        if (! $this->validate($event)) {
             return false;
         }
 
@@ -72,10 +89,20 @@ class ReoDev extends Adapter
     /**
      * Validates the event.
      *
+     * Checks if the event has an 'email' property and if the event type is allowed (if a filter is set).
+     *
      * @param  Event  $event  The event to validate.
      */
     public function validate(Event $event): bool
     {
-        return ! empty($event->getProp('email'));
+        if (empty($event->getProp('email'))) {
+            return false;
+        }
+
+        if (! empty($this->allowedEventTypes) && ! in_array($event->getType(), $this->allowedEventTypes)) {
+            return false;
+        }
+
+        return true;
     }
 }

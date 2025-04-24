@@ -297,7 +297,7 @@ class AnalyticsTest extends TestCase
             ->setClientIP('127.0.0.1')
             ->setUserAgent('Utopia Test Suite');
 
-        // Test successful event with all required fields
+        // Test successful event with all required fields and no filter
         $event = new Event;
         $event
             ->setName('appwrite_docs')
@@ -314,11 +314,11 @@ class AnalyticsTest extends TestCase
         $this->assertTrue($this->reodev->validate($event));
         $this->assertTrue($this->reodev->send($event));
 
-        // Test event without email (should fail)
+        // Test event without email (should fail validation and send)
         $invalidEvent = new Event;
         $invalidEvent
             ->setName('appwrite_docs')
-            ->setType('button_click')
+            ->setType('page_view') // Use a different type for clarity
             ->setUrl('appwrite.io/docs')
             ->setProps([
                 'name' => 'Test Developer',
@@ -327,5 +327,23 @@ class AnalyticsTest extends TestCase
 
         $this->assertFalse($this->reodev->validate($invalidEvent));
         $this->assertFalse($this->reodev->send($invalidEvent));
+
+        // Test event type filtering
+        $allowedTypes = ['submit_account_login'];
+        $this->reodev->setAllowedEventTypes($allowedTypes);
+
+        // Disallowed event
+        $disallowedEvent = new Event;
+        $disallowedEvent
+            ->setName('signup')
+            ->setType('submit_signup')
+            ->setUrl('appwrite.io/signup')
+            ->setProps([
+                'email' => 'dev3@utopiaphp.com',
+                'account' => 'cloud',
+            ]);
+
+        $this->assertFalse($this->reodev->validate($disallowedEvent));
+        $this->assertFalse($this->reodev->send($disallowedEvent));
     }
 }
