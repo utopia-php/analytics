@@ -11,7 +11,7 @@ jobs:
         services:
           [
             Plausible,
-            HubSpot
+            ReoDev
           ]
 
     steps:
@@ -29,6 +29,7 @@ jobs:
           echo "HS_APIKEY=${{ secrets.HS_APIKEY }}" >> .env
           echo "OR_APIKEY=${{ secrets.OR_APIKEY }}" >> .env
           echo "OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }}" >> .env
+          echo "REO_APIKEY=${{ secrets.REO_APIKEY }}" >> .env
 
       - name: Run ${{matrix.services}} Tests
         run: |

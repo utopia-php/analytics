@@ -8,6 +8,7 @@ use Utopia\Analytics\Adapter\HubSpot;
 use Utopia\Analytics\Adapter\Mixpanel;
 use Utopia\Analytics\Adapter\Orbit;
 use Utopia\Analytics\Adapter\Plausible;
+use Utopia\Analytics\Adapter\ReoDev;
 use Utopia\Analytics\Event;
 use Utopia\System\System;
 
@@ -28,6 +29,9 @@ class AnalyticsTest extends TestCase
     /** @var \Utopia\Analytics\Adapter\HubSpot */
     public $hs;
 
+    /** @var \Utopia\Analytics\Adapter\ReoDev */
+    public $reodev;
+
     public function setUp(): void
     {
         $this->ga = new GoogleAnalytics(System::getEnv('GA_TID') ?? '', System::getEnv('GA_CID') ?? '');
@@ -35,6 +39,7 @@ class AnalyticsTest extends TestCase
         $this->orbit = new Orbit(System::getEnv('OR_WORKSPACEID') ?? '', System::getEnv('OR_APIKEY') ?? '', 'Utopia Testing Suite');
         $this->mp = new Mixpanel(System::getEnv('MP_PROJECT_TOKEN') ?? '');
         $this->hs = new HubSpot(System::getEnv('HS_APIKEY') ?? '');
+        $this->reodev = new ReoDev(System::getEnv('REO_APIKEY') ?? '');
     }
 
     /**
@@ -246,7 +251,7 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @group mixpanel
+     * @group Mixpanel
      */
     public function testMixpanel()
     {
@@ -281,5 +286,67 @@ class AnalyticsTest extends TestCase
         /** Append properties to the user profile */
         $res = $this->mp->appendProperties('analytics@utopiaphp.com', ['union_field' => ['value2', 'value3']]);
         $this->assertTrue($res);
+    }
+
+    /**
+     * @group ReoDev
+     */
+    public function testReoDev()
+    {
+        $this->reodev
+            ->setClientIP('127.0.0.1')
+            ->setUserAgent('Utopia Test Suite');
+
+        // Test successful event with all required fields and no filter
+        $event = new Event;
+        $event
+            ->setName('appwrite_docs')
+            ->setType('button_click')
+            ->setUrl('appwrite.io/docs')
+            ->setProps([
+                'email' => 'developer@utopiaphp.com',
+                'name' => 'Test Developer',
+                'account' => 'cloud',
+                'environment' => 'DEVELOPMENT',
+                'custom_prop1' => 'value1',
+                'custom_prop2' => 'value2',
+            ]);
+
+        $this->assertTrue($this->reodev->validate($event));
+        $this->assertTrue($this->reodev->send($event));
+
+        // Test event without email (should fail validation and send)
+        $invalidEvent = new Event;
+        $invalidEvent
+            ->setName('appwrite_docs')
+            ->setType('page_view') // Use a different type for clarity
+            ->setUrl('appwrite.io/docs')
+            ->setProps([
+                'name' => 'Test Developer',
+                'account' => 'cloud',
+                'environment' => 'DEVELOPMENT',
+            ]);
+
+        $this->assertFalse($this->reodev->validate($invalidEvent));
+        $this->assertFalse($this->reodev->send($invalidEvent));
+
+        // Test event type filtering
+        $allowedTypes = ['submit_account_login'];
+        $this->reodev->setAllowedEventTypes($allowedTypes);
+
+        // Disallowed event
+        $disallowedEvent = new Event;
+        $disallowedEvent
+            ->setName('signup')
+            ->setType('submit_signup')
+            ->setUrl('appwrite.io/signup')
+            ->setProps([
+                'email' => 'dev3@utopiaphp.com',
+                'account' => 'cloud',
+                'environment' => 'DEVELOPMENT',
+            ]);
+
+        $this->assertFalse($this->reodev->validate($disallowedEvent));
+        $this->assertFalse($this->reodev->send($disallowedEvent));
     }
 }
