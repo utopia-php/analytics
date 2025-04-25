@@ -307,6 +307,7 @@ class AnalyticsTest extends TestCase
                 'email' => 'developer@utopiaphp.com',
                 'name' => 'Test Developer',
                 'account' => 'cloud',
+                'environment' => 'DEVELOPMENT',
                 'custom_prop1' => 'value1',
                 'custom_prop2' => 'value2',
             ]);
