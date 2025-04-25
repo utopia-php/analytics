@@ -323,6 +323,7 @@ class AnalyticsTest extends TestCase
             ->setProps([
                 'name' => 'Test Developer',
                 'account' => 'cloud',
+                'environment' => 'DEVELOPMENT',
             ]);
 
         $this->assertFalse($this->reodev->validate($invalidEvent));
@@ -341,6 +342,7 @@ class AnalyticsTest extends TestCase
             ->setProps([
                 'email' => 'dev3@utopiaphp.com',
                 'account' => 'cloud',
+                'environment' => 'DEVELOPMENT',
             ]);
 
         $this->assertFalse($this->reodev->validate($disallowedEvent));

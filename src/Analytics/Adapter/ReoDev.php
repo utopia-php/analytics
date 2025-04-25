@@ -65,6 +65,7 @@ class ReoDev extends Adapter
         $payload = [
             'activity_type' => $event->getType(),
             'source' => 'PRODUCT_CLOUD',
+            'environment' => $event->getProp('environment'),
             'user_id' => $event->getProp('email'),
             'user_id_type' => 'EMAIL',
             'ip_addr' => $this->clientIP,
@@ -89,7 +90,10 @@ class ReoDev extends Adapter
     /**
      * Validates the event.
      *
-     * Checks if the event has an 'email' property and if the event type is allowed (if a filter is set).
+     * Checks if:
+     * - the event has an 'email' property
+     * - the event type is allowed (if a filter is set)
+     * - the environment is either PRODUCTION or DEVELOPMENT
      *
      * @param  Event  $event  The event to validate.
      */
@@ -100,6 +104,11 @@ class ReoDev extends Adapter
         }
 
         if (! empty($this->allowedEventTypes) && ! in_array($event->getType(), $this->allowedEventTypes)) {
+            return false;
+        }
+
+        $environment = $event->getProp('environment');
+        if (! in_array($environment, ['PRODUCTION', 'DEVELOPMENT'])) {
             return false;
         }
 
