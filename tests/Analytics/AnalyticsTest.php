@@ -32,7 +32,7 @@ class AnalyticsTest extends TestCase
     /** @var \Utopia\Analytics\Adapter\ReoDev */
     public $reodev;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->ga = new GoogleAnalytics(System::getEnv('GA_TID') ?? '', System::getEnv('GA_CID') ?? '');
         $this->pa = new Plausible(System::getEnv('PA_DOMAIN') ?? '', System::getEnv('PA_APIKEY') ?? '', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36', '192.168.0.1');
@@ -45,7 +45,7 @@ class AnalyticsTest extends TestCase
     /**
      * @group Plausible
      */
-    public function testPlausible()
+    public function test_plausible()
     {
         $pageviewEvent = new Event;
         $pageviewEvent
@@ -68,7 +68,7 @@ class AnalyticsTest extends TestCase
     /**
      * @group HubSpot
      */
-    public function testHubSpotCreateContact()
+    public function test_hub_spot_create_contact()
     {
         $this->assertTrue($this->hs->createContact('analytics2@utopiaphp.com', 'Analytics', 'Utopia'));
 
@@ -78,9 +78,9 @@ class AnalyticsTest extends TestCase
     /**
      * @group HubSpot
      *
-     * @depends testHubSpotCreateContact
+     * @depends test_hub_spot_create_contact
      */
-    public function testHubSpotGetContact()
+    public function test_hub_spot_get_contact()
     {
         $tries = 0;
 
@@ -109,9 +109,9 @@ class AnalyticsTest extends TestCase
     /**
      * @group HubSpot
      *
-     * @depends testHubSpotGetContact
+     * @depends test_hub_spot_get_contact
      */
-    public function testHubSpotCreateAccount($data)
+    public function test_hub_spot_create_account($data)
     {
         $this->assertTrue($this->hs->createAccount('Example Account 1', 'https://example.com', '1234567890'));
 
@@ -123,9 +123,9 @@ class AnalyticsTest extends TestCase
     /**
      * @group HubSpot
      *
-     * @depends testHubSpotCreateAccount
+     * @depends test_hub_spot_create_account
      */
-    public function testHubSpotGetAccount($data)
+    public function test_hub_spot_get_account($data)
     {
         $tries = 0;
 
@@ -152,11 +152,11 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @depends testHubSpotGetAccount
+     * @depends test_hub_spot_get_account
      *
      * @group HubSpot
      */
-    public function testHubSpotSyncAsociation($data)
+    public function test_hub_spot_sync_asociation($data)
     {
         $this->assertTrue($this->hs->syncAssociation($data['accountID'], $data['contactID'], 'Owner'));
         $this->assertTrue($this->hs->syncAssociation($data['accountID'], $data['contactID'], 'Software Developer'));
@@ -165,11 +165,11 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @depends testHubSpotSyncAsociation
+     * @depends test_hub_spot_sync_asociation
      *
      * @group HubSpot
      */
-    public function testHubSpotUpdateContact($data)
+    public function test_hub_spot_update_contact($data)
     {
         $this->assertTrue($this->hs->updateContact($data['contactID'], 'analytics2@utopiaphp.com', '', '', '7223224241'));
 
@@ -177,11 +177,11 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @depends testHubSpotUpdateContact
+     * @depends test_hub_spot_update_contact
      *
      * @group HubSpot
      */
-    public function testHubSpotDeleteContact($data)
+    public function test_hub_spot_delete_contact($data)
     {
         $this->assertTrue($this->hs->deleteContact('analytics2@utopiaphp.com'));
 
@@ -189,11 +189,11 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @depends testHubSpotDeleteContact
+     * @depends test_hub_spot_delete_contact
      *
      * @group HubSpot
      */
-    public function testHubSpotUpdateAccount($data)
+    public function test_hub_spot_update_account($data)
     {
         $this->assertTrue($this->hs->updateAccount(
             $data['accountID'],
@@ -206,11 +206,11 @@ class AnalyticsTest extends TestCase
     }
 
     /**
-     * @depends testHubSpotUpdateAccount
+     * @depends test_hub_spot_update_account
      *
      * @group HubSpot
      */
-    public function testHubSpotDeleteAccount($data)
+    public function test_hub_spot_delete_account($data)
     {
         $this->assertTrue($this->hs->deleteAccount($data['accountID']));
     }
@@ -218,7 +218,7 @@ class AnalyticsTest extends TestCase
     /**
      * @group Orbit
      */
-    public function testOrbit(): void
+    public function test_orbit(): void
     {
         $event = new Event;
         $event->setType('testEvent')
@@ -233,7 +233,7 @@ class AnalyticsTest extends TestCase
     /**
      * @group HubSpot
      */
-    public function testCleanup(): void
+    public function test_cleanup(): void
     {
         if ($this->hs->contactExists('analytics@utopiaphp.com')) {
             $this->assertTrue($this->hs->deleteContact('analytics@utopiaphp.com'));
@@ -253,7 +253,7 @@ class AnalyticsTest extends TestCase
     /**
      * @group Mixpanel
      */
-    public function testMixpanel()
+    public function test_mixpanel()
     {
         /** Create a simple track event */
         $event = new Event;
@@ -291,7 +291,7 @@ class AnalyticsTest extends TestCase
     /**
      * @group ReoDev
      */
-    public function testReoDev()
+    public function test_reo_dev()
     {
         $this->reodev
             ->setClientIP('127.0.0.1')
