@@ -136,54 +136,56 @@ abstract class Adapter
             unset($headers[$i]);
         }
 
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, php_uname('s').'-'.php_uname('r').':php-'.phpversion());
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($curl, $header) use (&$responseHeaders) {
-            $len = strlen($header);
-            $header = explode(':', strtolower($header), 2);
+        try {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_USERAGENT, php_uname('s').'-'.php_uname('r').':php-'.phpversion());
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($curl, $header) use (&$responseHeaders) {
+                $len = strlen($header);
+                $header = explode(':', strtolower($header), 2);
 
-            if (count($header) < 2) { // ignore invalid headers
+                if (count($header) < 2) { // ignore invalid headers
+                    return $len;
+                }
+
+                $responseHeaders[strtolower(trim($header[0]))] = trim($header[1]);
+
                 return $len;
+            });
+
+            if ($method != 'GET') {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
             }
 
-            $responseHeaders[strtolower(trim($header[0]))] = trim($header[1]);
+            $responseBody = curl_exec($ch);
 
-            return $len;
-        });
+            $responseType = $responseHeaders['Content-Type'] ?? '';
+            $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ($method != 'GET') {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
-        }
-
-        $responseBody = curl_exec($ch);
-
-        $responseType = $responseHeaders['Content-Type'] ?? '';
-        $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        switch (substr($responseType, 0, strpos($responseType, ';'))) {
-            case 'application/json':
-                $responseBody = json_decode($responseBody, true);
-                break;
-        }
-
-        if (curl_errno($ch)) {
-            throw new \Exception(curl_error($ch), $responseStatus);
-        }
-
-        curl_close($ch);
-
-        if ($responseStatus >= 400) {
-            if (is_array($responseBody)) {
-                throw new \Exception(json_encode($responseBody), $responseStatus);
-            } else {
-                throw new \Exception($responseStatus.': '.$responseBody, $responseStatus);
+            switch (substr($responseType, 0, strpos($responseType, ';'))) {
+                case 'application/json':
+                    $responseBody = json_decode($responseBody, true);
+                    break;
             }
-        }
 
-        return $responseBody;
+            if (curl_errno($ch)) {
+                throw new Exception(curl_error($ch), $responseStatus);
+            }
+
+            if ($responseStatus >= 400) {
+                if (is_array($responseBody)) {
+                    throw new Exception(json_encode($responseBody), $responseStatus);
+                } else {
+                    throw new Exception($responseStatus.': '.$responseBody, $responseStatus);
+                }
+            }
+
+            return $responseBody;
+        } finally {
+            curl_close($ch);
+        }
     }
 
     /**
