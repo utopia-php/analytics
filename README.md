@@ -45,6 +45,25 @@ $ga->createEvent("Videos", "play", "Fall Campaign");
 - [HubSpot](https://hubspot.com)
 - [Orbit](https://orbit.love)
 - [Reo.dev](https://reo.dev)
+- [ClickHouse](https://clickhouse.com)
+
+## ClickHouse adapter
+
+A ready-to-use ClickHouse service for local testing is available in `docker-compose.clickhouse.yml`:
+
+```bash
+docker compose -f docker-compose.clickhouse.yml up -d
+```
+
+The adapter expects the following environment variables (all defaults shown):
+
+- `CLICKHOUSE_ENDPOINT=http://127.0.0.1:8123`
+- `CLICKHOUSE_DATABASE=analytics`
+ - `CLICKHOUSE_TABLE=events`
+- `CLICKHOUSE_USER=default`
+- `CLICKHOUSE_PASSWORD=` (empty)
+
+Schema (simplified Plausible-style dimensions, no sessions): MergeTree partitioned by month, ordered by `(eventType, createdAt, hostName, pathName)`, with LowCardinality dimensions for browser/OS/screen/host and meta key/value arrays for arbitrary props. UTM/referrer/geo/device and revenue fields are stored as first-class columns; remaining properties are kept in `metaKey`/`metaValue`.
 
 ## System Requirements
 

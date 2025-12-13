@@ -69,10 +69,18 @@ class Plausible extends Adapter
     /**
      * Sends an event to Plausible.
      *
-     * @param  Event  $event  The event to send.
+     * @param  Event|Event[]  $event  The event(s) to send.
      */
-    public function send(Event $event): bool
+    public function send(Event|array $event): bool
     {
+        if (is_array($event)) {
+            foreach ($event as $singleEvent) {
+                $this->send($singleEvent);
+            }
+
+            return true;
+        }
+
         if (! $this->enabled) {
             return false;
         }

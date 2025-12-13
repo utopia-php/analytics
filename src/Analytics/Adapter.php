@@ -54,9 +54,11 @@ abstract class Adapter
     }
 
     /**
-     * Send the event to the adapter.
+     * Send one or many events to the adapter.
+     *
+     * @param  Event|Event[]  $event
      */
-    abstract public function send(Event $event): bool;
+    abstract public function send(Event|array $event): bool;
 
     /**
      * Validate the adapter.

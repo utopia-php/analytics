@@ -52,9 +52,19 @@ class ReoDev extends Adapter
 
     /**
      * Sends an event to the ReoDev Product API. Requires 'email' prop and checks against allowed types.
+     *
+     * @param  Event|Event[]  $event
      */
-    public function send(Event $event): bool
+    public function send(Event|array $event): bool
     {
+        if (is_array($event)) {
+            foreach ($event as $singleEvent) {
+                $this->send($singleEvent);
+            }
+
+            return true;
+        }
+
         if (! $this->validate($event)) {
             return false;
         }

@@ -36,9 +36,19 @@ class Mixpanel extends Adapter
 
     /**
      * Creates an Event on the remote analytics platform. Requires distinct_id prop.
+     *
+     * @param  Event|Event[]  $event
      */
-    public function send(Event $event): bool
+    public function send(Event|array $event): bool
     {
+        if (is_array($event)) {
+            foreach ($event as $singleEvent) {
+                $this->send($singleEvent);
+            }
+
+            return true;
+        }
+
         if (! $event->getProp('email')) {
             throw new Exception('Failed to send event - missing `email` prop');
         }

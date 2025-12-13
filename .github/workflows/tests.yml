@@ -11,7 +11,8 @@ jobs:
         services:
           [
             Plausible,
-            ReoDev
+            ReoDev,
+            ClickHouse
           ]
 
     steps:
@@ -30,8 +31,30 @@ jobs:
           echo "OR_APIKEY=${{ secrets.OR_APIKEY }}" >> .env
           echo "OR_WORKSPACEID=${{ secrets.OR_WORKSPACEID }}" >> .env
           echo "REO_APIKEY=${{ secrets.REO_APIKEY }}" >> .env
+          echo "CLICKHOUSE_ENDPOINT=http://127.0.0.1:8123" >> .env
+          echo "CLICKHOUSE_DATABASE=analytics" >> .env
+          echo "CLICKHOUSE_TABLE=events" >> .env
+          echo "CLICKHOUSE_USER=default" >> .env
+          echo "CLICKHOUSE_PASSWORD=" >> .env
+
+      - name: Start ClickHouse
+        if: matrix.services == 'ClickHouse'
+        run: |
+          docker compose -f docker-compose.clickhouse.yml up -d
+          for i in {1..20}; do
+            if curl -sSf http://127.0.0.1:8123/ping > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "ClickHouse did not become ready in time"
+          exit 1
 
       - name: Run ${{matrix.services}} Tests
         run: |
-          docker run --env-file .env --rm -v $PWD:/app composer sh -c \
+          NETWORK_FLAG=""
+          if [ "${{ matrix.services }}" = "ClickHouse" ]; then
+            NETWORK_FLAG="--network host"
+          fi
+          docker run $NETWORK_FLAG --env-file .env --rm -v $PWD:/app composer sh -c \
           "composer install --ignore-platform-reqs && ./vendor/bin/phpunit --configuration phpunit.xml --filter ${{matrix.services}}"
