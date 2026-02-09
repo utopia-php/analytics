@@ -4,65 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b06b8add52cbf3fba2efa7dafa0e2a1e",
-    "packages": [
-        {
-            "name": "utopia-php/system",
-            "version": "0.10.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/utopia-php/system.git",
-                "reference": "6441a9c180958a373e5ddb330264dd638539dfdb"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/utopia-php/system/zipball/6441a9c180958a373e5ddb330264dd638539dfdb",
-                "reference": "6441a9c180958a373e5ddb330264dd638539dfdb",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.0.0"
-            },
-            "require-dev": {
-                "laravel/pint": "1.13.*",
-                "phpstan/phpstan": "1.12.*",
-                "phpunit/phpunit": "9.6.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Utopia\\System\\": "src/System"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Eldad Fux",
-                    "email": "eldad@appwrite.io"
-                },
-                {
-                    "name": "Torsten Dittmann",
-                    "email": "torsten@appwrite.io"
-                }
-            ],
-            "description": "A simple library for obtaining information about the host's system.",
-            "keywords": [
-                "framework",
-                "php",
-                "system",
-                "upf",
-                "utopia"
-            ],
-            "support": {
-                "issues": "https://github.com/utopia-php/system/issues",
-                "source": "https://github.com/utopia-php/system/tree/0.10.0"
-            },
-            "time": "2025-10-15T19:12:00+00:00"
-        }
-    ],
+    "content-hash": "dde525332d1da2a02fda10c2eeb97180",
+    "packages": [],
     "packages-dev": [
         {
             "name": "doctrine/instantiator",
@@ -1927,6 +1870,62 @@
                 }
             ],
             "time": "2025-11-17T20:03:58+00:00"
+        },
+        {
+            "name": "utopia-php/system",
+            "version": "0.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/utopia-php/system.git",
+                "reference": "6441a9c180958a373e5ddb330264dd638539dfdb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/utopia-php/system/zipball/6441a9c180958a373e5ddb330264dd638539dfdb",
+                "reference": "6441a9c180958a373e5ddb330264dd638539dfdb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "require-dev": {
+                "laravel/pint": "1.13.*",
+                "phpstan/phpstan": "1.12.*",
+                "phpunit/phpunit": "9.6.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Utopia\\System\\": "src/System"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eldad Fux",
+                    "email": "eldad@appwrite.io"
+                },
+                {
+                    "name": "Torsten Dittmann",
+                    "email": "torsten@appwrite.io"
+                }
+            ],
+            "description": "A simple library for obtaining information about the host's system.",
+            "keywords": [
+                "framework",
+                "php",
+                "system",
+                "upf",
+                "utopia"
+            ],
+            "support": {
+                "issues": "https://github.com/utopia-php/system/issues",
+                "source": "https://github.com/utopia-php/system/tree/0.10.0"
+            },
+            "time": "2025-10-15T19:12:00+00:00"
         }
     ],
     "aliases": [],
