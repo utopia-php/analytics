@@ -144,18 +144,16 @@ abstract class Adapter
                 body: $method !== 'GET' ? $query : [],
             );
         } catch (FetchException $e) {
-            throw new Exception($e->getMessage());
+            throw new Exception($e->getMessage(), $e->getCode(), $e);
         }
 
         $responseHeaders = $response->getHeaders();
         $responseStatus = $response->getStatusCode();
         $responseBody = $response->getBody();
-        $responseType = $responseHeaders['Content-Type'] ?? '';
+        $responseType = trim(explode(';', $responseHeaders['content-type'] ?? '')[0]);
 
-        switch (substr($responseType, 0, strpos($responseType, ';'))) {
-            case 'application/json':
-                $responseBody = json_decode($responseBody, true);
-                break;
+        if ($responseType === 'application/json') {
+            $responseBody = json_decode($responseBody, true);
         }
 
         if ($responseStatus >= 400) {
