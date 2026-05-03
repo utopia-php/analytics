@@ -184,7 +184,6 @@ abstract class Adapter
 
             return $responseBody;
         } finally {
-            curl_close($ch);
         }
     }
 
