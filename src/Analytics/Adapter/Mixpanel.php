@@ -147,7 +147,7 @@ class Mixpanel extends Adapter
      */
     public function setClientIP(string $clientIP): self
     {
-        throw new \Exception('Not implemented');
+        throw new Exception('Not implemented');
     }
 
     /**
@@ -157,7 +157,7 @@ class Mixpanel extends Adapter
      */
     public function setUserAgent(string $userAgent): self
     {
-        throw new \Exception('Not implemented');
+        throw new Exception('Not implemented');
     }
 
     public function validate(Event $event): bool

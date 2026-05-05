@@ -14,22 +14,22 @@ use Utopia\System\System;
 
 class AnalyticsTest extends TestCase
 {
-    /** @var \Utopia\Analytics\Adapter\GoogleAnalytics */
+    /** @var GoogleAnalytics */
     public $ga;
 
-    /** @var \Utopia\Analytics\Adapter\Plausible */
+    /** @var Plausible */
     public $pa;
 
-    /** @var \Utopia\Analytics\Adapter\Orbit */
+    /** @var Orbit */
     public $orbit;
 
-    /** @var \Utopia\Analytics\Adapter\Mixpanel */
+    /** @var Mixpanel */
     public $mp;
 
-    /** @var \Utopia\Analytics\Adapter\HubSpot */
+    /** @var HubSpot */
     public $hs;
 
-    /** @var \Utopia\Analytics\Adapter\ReoDev */
+    /** @var ReoDev */
     public $reodev;
 
     protected function setUp(): void

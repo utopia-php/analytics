@@ -147,7 +147,6 @@ class Plausible extends Adapter
             'Content-Type' => '',
             'Authorization' => 'Bearer '.$this->apiKey,
         ]);
-        $checkCreated = json_decode($checkCreated, true);
 
         if (! isset($checkCreated['results']['visitors']['value'])) {
             throw new Exception('Failed to validate event');

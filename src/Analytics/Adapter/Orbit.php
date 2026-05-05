@@ -150,8 +150,6 @@ class Orbit extends Adapter
             'email' => $event->getProp('email'),
         ]);
 
-        $listMembers = json_decode($listMembers, true);
-
         if (empty($listMembers['data'])) {
             return false;
         }
@@ -163,8 +161,6 @@ class Orbit extends Adapter
         ], [
             'activity_type' => $event->getType(),
         ]);
-
-        $activities = json_decode($activities, true);
 
         if (empty($activities['data'])) {
             throw new \Exception('Failed to find event in Orbit');

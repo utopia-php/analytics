@@ -65,8 +65,6 @@ class HubSpot extends Adapter
             throw $e;
         }
 
-        $result = json_decode($result, true);
-
         if ($result && $result['id']) {
             return $result['id'];
         } else {
@@ -158,8 +156,6 @@ class HubSpot extends Adapter
             ]],
         ]);
 
-        $result = json_decode($result, true);
-
         if ($result && $result['total'] > 0 && count($result['results']) > 0) {
             return $result['results'][0]['id'];
         } else {
@@ -232,8 +228,6 @@ class HubSpot extends Adapter
         // See if the association already exists
 
         $response = $this->call('GET', '/crm/v4/objects/contact/'.$accountId.'/associations/company');
-
-        $response = json_decode($response, true);
 
         $associationId = null;
 

@@ -3,6 +3,8 @@
 namespace Utopia\Analytics;
 
 use Exception;
+use Utopia\Fetch\Client;
+use Utopia\Fetch\Exception as FetchException;
 
 abstract class Adapter
 {
@@ -106,16 +108,12 @@ abstract class Adapter
      * Make an API call
      *
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function call(string $method, string $path = '', array $headers = [], array $params = []): array|string
     {
         $headers = array_merge($this->headers, $headers);
-        $ch = curl_init((str_contains($path, 'http') ? $path : $this->endpoint.$path.(($method == 'GET' && ! empty($params)) ? '?'.http_build_query($params) : '')));
-        $responseHeaders = [];
-        $responseStatus = -1;
-        $responseType = '';
-        $responseBody = '';
+        $url = str_contains($path, 'http') ? $path : $this->endpoint.$path.(($method == 'GET' && ! empty($params)) ? '?'.http_build_query($params) : '');
 
         switch ($headers['Content-Type']) {
             case 'application/json':
@@ -131,61 +129,42 @@ abstract class Adapter
                 break;
         }
 
-        foreach ($headers as $i => $header) {
-            $headers[] = $i.':'.$header;
-            unset($headers[$i]);
+        $client = (new Client)
+            ->setUserAgent(php_uname('s').'-'.php_uname('r').':php-'.phpversion())
+            ->setAllowRedirects(true);
+
+        foreach ($headers as $key => $value) {
+            $client->addHeader($key, $value);
         }
 
         try {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_USERAGENT, php_uname('s').'-'.php_uname('r').':php-'.phpversion());
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($curl, $header) use (&$responseHeaders) {
-                $len = strlen($header);
-                $header = explode(':', strtolower($header), 2);
-
-                if (count($header) < 2) { // ignore invalid headers
-                    return $len;
-                }
-
-                $responseHeaders[strtolower(trim($header[0]))] = trim($header[1]);
-
-                return $len;
-            });
-
-            if ($method != 'GET') {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
-            }
-
-            $responseBody = curl_exec($ch);
-
-            $responseType = $responseHeaders['Content-Type'] ?? '';
-            $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-            switch (substr($responseType, 0, strpos($responseType, ';'))) {
-                case 'application/json':
-                    $responseBody = json_decode($responseBody, true);
-                    break;
-            }
-
-            if (curl_errno($ch)) {
-                throw new Exception(curl_error($ch), $responseStatus);
-            }
-
-            if ($responseStatus >= 400) {
-                if (is_array($responseBody)) {
-                    throw new Exception(json_encode($responseBody), $responseStatus);
-                } else {
-                    throw new Exception($responseStatus.': '.$responseBody, $responseStatus);
-                }
-            }
-
-            return $responseBody;
-        } finally {
-            curl_close($ch);
+            $response = $client->fetch(
+                url: $url,
+                method: $method,
+                body: $method !== 'GET' ? $query : [],
+            );
+        } catch (FetchException $e) {
+            throw new Exception($e->getMessage(), $e->getCode(), $e);
         }
+
+        $responseHeaders = $response->getHeaders();
+        $responseStatus = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseType = trim(explode(';', $responseHeaders['content-type'] ?? '')[0]);
+
+        if ($responseType === 'application/json') {
+            $responseBody = json_decode($responseBody, true);
+        }
+
+        if ($responseStatus >= 400) {
+            if (is_array($responseBody)) {
+                throw new Exception(json_encode($responseBody), $responseStatus);
+            } else {
+                throw new Exception($responseStatus.': '.$responseBody, $responseStatus);
+            }
+        }
+
+        return $responseBody;
     }
 
     /**
